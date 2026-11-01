@@ -1,12 +1,25 @@
 AULA DIDÁCTICA 360 - PASOS RÁPIDOS
 ==================================
 
+ARCHIVOS DEL SITIO (súbelos todos juntos al mismo repositorio)
+- index.html            Portada con todos los juegos
+- ruleta.html           Ruleta de preguntas
+- ruleta-nombres.html   Ruleta de estudiantes
+- ruleta-core.js        Lógica de las dos ruletas
+- estilos.css           Diseño
+- puntaje.js            Puntaje (se puede editar)
+- config.js             Tu Firebase y la clave del profesor
+- PASOS.txt             Esta guía (opcional subirla)
+
+Si ya habías editado config.js con tus datos de Firebase, NO lo reemplaces:
+el config.js de este ZIP es el mismo de antes (el bloque PUNTOS que trae ya no se usa).
+
 A) CONECTAR FIREBASE (una sola vez)
 1. Entra a console.firebase.google.com y abre tu proyecto (pamava-ruleta).
-2. Engranaje (arriba a la izquierda) > Configuración del proyecto > "Tus apps" > app web > "Configuración del SDK" (opción "Config").
+2. Engranaje > Configuración del proyecto > "Tus apps" > app web > "Configuración del SDK" (opción "Config").
 3. Copia los valores (apiKey, databaseURL, etc.) y pégalos en config.js, reemplazando los "PEGAR_AQUI".
    - databaseURL se ve parecido a: https://pamava-ruleta-default-rtdb.firebaseio.com
-4. En el menú izquierdo: Compilación > Realtime Database. Si no existe, "Crear base de datos" (modo de prueba está bien para empezar).
+4. Compilación > Realtime Database. Si no existe, "Crear base de datos".
 5. Pestaña "Reglas" de Realtime Database: pega esto y "Publicar":
 
 {
@@ -18,30 +31,45 @@ A) CONECTAR FIREBASE (una sola vez)
   }
 }
 
-   (Este juego guarda todo bajo "ad360", sin tocar lo que ya tengas en tu base.)
+   (Todo se guarda bajo "ad360", sin tocar lo que ya tengas en tu base.)
 6. En config.js cambia CLAVE_PROFESOR por la clave que quieras.
 
-B) SUBIR A GITHUB (sitio nuevo)
-1. En github.com: botón verde "New" > nombre: auladidactica360 > Public > Create repository.
-2. "uploading an existing file" > arrastra los 4 archivos (index.html, ruleta.html, config.js, PASOS.txt) > Commit changes.
+B) SUBIR A GITHUB
+1. github.com > "New" > nombre: auladidactica360 > Public > Create repository.
+2. "uploading an existing file" > arrastra los archivos > Commit changes.
 3. Settings > Pages > Source: "Deploy from a branch" > Branch: main / (root) > Save.
 4. Espera 1-2 minutos. Tu sitio queda en: https://TU-USUARIO.github.io/auladidactica360/
 
 C) ENLACES
-- Portada con todos los juegos:   https://TU-USUARIO.github.io/auladidactica360/
-- Ruleta para estudiantes:        https://TU-USUARIO.github.io/auladidactica360/ruleta.html
-- Ruleta panel del profesor:      https://TU-USUARIO.github.io/auladidactica360/ruleta.html?profe
+- Portada:                       https://TU-USUARIO.github.io/auladidactica360/
+- Ruleta de preguntas (alumnos): https://TU-USUARIO.github.io/auladidactica360/ruleta.html
+- Ruleta de preguntas (profesor):https://TU-USUARIO.github.io/auladidactica360/ruleta.html?profe
+- Ruleta de estudiantes (alumnos):  https://TU-USUARIO.github.io/auladidactica360/ruleta-nombres.html
+- Ruleta de estudiantes (profesor): https://TU-USUARIO.github.io/auladidactica360/ruleta-nombres.html?profe
 
-D) CÓMO SE JUEGA
-1. Profesor: abre el enlace con ?profe > pon la clave > "Mis preguntas" (carga las tuyas) > pestaña "Partida" > "Crear sala".
-2. Estudiantes: abren el enlace de la ruleta, escriben el código de 4 números y su nombre.
-3. Profesor: "Girar ruleta" > se lanza la pregunta > al terminar el tiempo se muestran resultado y ranking.
-4. "Terminar juego" muestra el podio a todos. "Salir y borrar sala" limpia la partida.
+D) LAS DOS RULETAS
+1) RULETA DE PREGUNTAS: la ruleta sortea la pregunta y TODOS responden desde el celular con tiempo límite.
+   - Múltiple y Verdadero/Falso: se califican solos, al instante, y el ranking se mueve en tu pantalla.
+   - Descriptiva: cada estudiante escribe su respuesta; tú la ves en tu pantalla y la calificas con
+     ✓ Correcta / ½ Parcial / ✗ Incorrecta (el ranking se actualiza al calificar).
+2) RULETA DE ESTUDIANTES: lanzas la pregunta, todos la leen y piensan; la ruleta elige quién responde
+   (en voz alta). Tú lo calificas con ✓ / ½ / ✗. Sirve también con estudiantes sin celular: escribe sus
+   nombres en el panel. Por defecto no repite estudiante hasta que todos hayan participado.
 
-E) PUNTOS (se cambian en config.js)
-- Respuesta correcta: 100 + hasta 50 extra por rapidez.
-- Respuesta incorrecta: -30.
+E) PREGUNTAS (pestaña "Mis preguntas", las usan las dos ruletas)
+- Tres tipos: Selección múltiple (única respuesta), Verdadero/Falso y Descriptiva.
+- En la descriptiva puedes escribir una respuesta modelo (solo la ves tú) para calificar más rápido.
+- "Ver respuesta correcta" te la muestra a ti en pantalla (ojo: si proyectas, la verán todos).
+- Al crear la partida eliges qué tipos de pregunta incluir.
+- Se guardan en el navegador del profesor: descarga una copia de vez en cuando.
+
+F) PUNTAJE (editable en puntaje.js; la tabla se muestra al crear la partida y a los estudiantes)
+- Verdadero/Falso:   acierto +50 (+ hasta 25 por rapidez), error -25.
+- Múltiple:          acierto +100 (+ hasta 50 por rapidez), error -30.
+- Descriptiva:       correcta +150, parcial +75, incorrecta 0.
 - Sin respuesta: 0.
+- El bono por rapidez solo existe en la Ruleta de preguntas (responder al instante da todo el bono,
+  al final del tiempo, cero). En la Ruleta de estudiantes no hay bono.
 
-F) PARA ACTUALIZAR DESPUÉS
-Sube el archivo nuevo al mismo repositorio: Add file > Upload files > Commit changes.
+G) PARA ACTUALIZAR DESPUÉS
+Sube los archivos nuevos al mismo repositorio: Add file > Upload files > Commit changes (reemplaza los anteriores).

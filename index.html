@@ -51,13 +51,16 @@
    estado: "listo" o "pronto". Si está "listo" pon el archivo en "archivo". */
 const JUEGOS = [
   { icono:"🎡", titulo:"Ruleta de preguntas",
-    desc:"El profesor gira la ruleta y lanza la pregunta; los estudiantes responden desde el celular con tiempo límite, suman o restan puntos y hay ranking.",
+    desc:"La ruleta sortea la pregunta (verdadero/falso, selección múltiple o descriptiva) y todos responden desde el celular con tiempo límite. Ranking en vivo.",
     estado:"listo", archivo:"ruleta.html", archivoProfe:"ruleta.html?profe" },
+  { icono:"🎯", titulo:"Ruleta de estudiantes",
+    desc:"Lanzas la pregunta para que todos la lean y piensen; la ruleta elige quién responde y tú calificas. Ranking en vivo.",
+    estado:"listo", archivo:"ruleta-nombres.html", archivoProfe:"ruleta-nombres.html?profe" },
   { icono:"🕵️", titulo:"Detective de fraudes",
     desc:"Casos de auditoría: los estudiantes buscan las señales de fraude en documentos y registros.", estado:"pronto" },
   { icono:"🏦", titulo:"Taller de conciliación bancaria",
     desc:"Cada estudiante recibe su extracto y sus libros para conciliar.", estado:"pronto" },
-  { icono:"🎯", titulo:"Bingo / concurso por equipos",
+  { icono:"🎲", titulo:"Bingo / concurso por equipos",
     desc:"Competencia en vivo por equipos con preguntas del tema de la clase.", estado:"pronto" },
   { icono:"🃏", titulo:"Tarjetas de repaso",
     desc:"Flashcards para repasar conceptos antes de la evaluación.", estado:"pronto" }

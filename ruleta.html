@@ -4,74 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ruleta de preguntas · Aula Didáctica 360</title>
-<style>
-  :root{--bg:#f4f6fb;--card:#fff;--ink:#1f2a44;--muted:#667090;--brand:#4f46e5;--brand2:#06b6d4;--line:#e3e7f2;--ok:#16a34a;--bad:#dc2626;--warn:#f59e0b}
-  *{box-sizing:border-box}
-  [hidden]{display:none!important}
-  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-  header{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:16px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-  header h1{margin:0;font-size:clamp(18px,4.5vw,24px)}
-  header a{color:#fff;font-size:13px;opacity:.9}
-  main{max-width:880px;margin:0 auto;padding:16px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 3px 10px rgba(31,42,68,.05)}
-  h2{margin:0 0 10px;font-size:18px}
-  h3{margin:14px 0 8px;font-size:15px}
-  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
-  input,select,textarea{width:100%;padding:11px 12px;border:1px solid #cfd5e6;border-radius:10px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink)}
-  textarea{min-height:90px;resize:vertical}
-  button{font-family:inherit;font-size:15px;font-weight:600;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:var(--brand);color:#fff}
-  button.sec{background:#eef0ff;color:var(--brand)}
-  button.red{background:#fee2e2;color:var(--bad)}
-  button.green{background:var(--ok)}
-  button:disabled{opacity:.5;cursor:not-allowed}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .row>*{flex:0 0 auto}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  @media(max-width:520px){.grid2{grid-template-columns:1fr}}
-  .muted{color:var(--muted);font-size:13px}
-  .banner{background:#fff4e5;border:1px solid #f5c98a;color:#7a4a05;border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:14px;line-height:1.5}
-  .tabs{display:flex;gap:6px;margin-bottom:14px}
-  .tabs button{flex:1;background:#e6e9f5;color:var(--muted)}
-  .tabs button.on{background:var(--brand);color:#fff}
-  .pq{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
-  .pq .t{font-size:14px;line-height:1.4}
-  .pq .m{font-size:12px;color:var(--muted);margin-top:3px}
-  .codebox{text-align:center;background:linear-gradient(135deg,#eef0ff,#e0f7fb);border-radius:14px;padding:14px;margin-bottom:12px}
-  .codebox .n{font-size:clamp(42px,12vw,64px);font-weight:800;letter-spacing:6px;color:var(--brand)}
-  .wheelwrap{position:relative;width:100%;max-width:340px;margin:8px auto}
-  .wheelwrap canvas{width:100%;height:auto;display:block;border-radius:50%;box-shadow:0 6px 20px rgba(31,42,68,.2)}
-  .pointer{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:28px solid #1f2a44;z-index:2;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
-  .qtext{font-size:clamp(18px,4.6vw,24px);font-weight:700;line-height:1.35;margin:6px 0 12px}
-  .opt{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:#fff;color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:9px;font-size:16px;font-weight:600}
-  .opt .l{flex:0 0 30px;height:30px;border-radius:50%;background:#eef0ff;color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:800}
-  .opt.sel{border-color:var(--brand);background:#eef0ff}
-  .opt.good{border-color:var(--ok);background:#e8f7ee}
-  .opt.badx{border-color:var(--bad);background:#fdecec}
-  .timer{font-size:34px;font-weight:800;color:var(--brand);text-align:center}
-  .timer.low{color:var(--bad)}
-  .bar{height:8px;background:#e6e9f5;border-radius:6px;overflow:hidden;margin:6px 0 14px}
-  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));width:100%}
-  .rank{list-style:none;margin:0;padding:0}
-  .rank li{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;border-radius:10px;background:#f7f8fd;margin-bottom:6px;font-size:15px}
-  .rank li.me{background:#eef0ff;border:1px solid #c9ceff;font-weight:700}
-  .rank li b{color:var(--brand)}
-  .center{text-align:center}
-  .big{font-size:56px;line-height:1.1;margin:6px 0}
-  .msg{font-size:18px;line-height:1.5;color:var(--muted)}
-  .res-ok{color:var(--ok);font-size:24px;font-weight:800}
-  .res-bad{color:var(--bad);font-size:24px;font-weight:800}
-  .podio{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:14px 0}
-  .podio div{flex:1;max-width:120px;border-radius:12px 12px 0 0;padding:10px 6px;text-align:center;color:#fff;font-weight:700;font-size:14px}
-  .podio .p1{background:#f59e0b;height:140px}
-  .podio .p2{background:#94a3b8;height:105px}
-  .podio .p3{background:#b45309;height:80px}
-  .podio small{display:block;font-weight:500;opacity:.95}
-</style>
+<link rel="stylesheet" href="estilos.css">
 </head>
 <body>
 
 <header>
-  <h1>🎡 Ruleta de preguntas</h1>
+  <h1 id="titulo"></h1>
   <a id="linkJuegos" href="index.html" hidden>← Juegos</a>
   <span id="miInfo" class="muted" style="color:#fff"></span>
 </header>
@@ -98,6 +36,10 @@
   <!-- ======================= ESTUDIANTE: JUEGO ======================= -->
   <section id="vEst" hidden>
     <div class="card" id="estPanel"></div>
+    <div class="card" id="estRankCard" hidden>
+      <h2>🏆 Ranking en vivo</h2>
+      <div id="estRank"></div>
+    </div>
   </section>
 
   <!-- ======================= PROFESOR: CLAVE ======================= -->
@@ -122,21 +64,38 @@
     <div id="tabPreg">
       <div class="card">
         <h2 id="tituloForm">Agregar pregunta</h2>
+        <label for="pTipo">Tipo de pregunta</label>
+        <select id="pTipo">
+          <option value="multiple">Selección múltiple (única respuesta)</option>
+          <option value="vf">Verdadero / Falso</option>
+          <option value="desc">Descriptiva (respuesta abierta)</option>
+        </select>
         <label>Tema (opcional, aparece en la ruleta)</label>
         <input id="pTema" maxlength="14" placeholder="Ej: IVA">
         <label>Pregunta</label>
         <textarea id="pTexto" placeholder="Escribe la pregunta"></textarea>
-        <div class="grid2">
-          <div><label>Opción A</label><input id="pA"></div>
-          <div><label>Opción B</label><input id="pB"></div>
-          <div><label>Opción C</label><input id="pC"></div>
-          <div><label>Opción D</label><input id="pD"></div>
+
+        <div id="boxMultiple">
+          <div class="grid2">
+            <div><label>Opción A</label><input id="pA"></div>
+            <div><label>Opción B</label><input id="pB"></div>
+            <div><label>Opción C</label><input id="pC"></div>
+            <div><label>Opción D</label><input id="pD"></div>
+          </div>
+          <label>Respuesta correcta</label>
+          <select id="pOk"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
         </div>
-        <div class="grid2">
-          <div><label>Respuesta correcta</label>
-            <select id="pOk"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>
-          <div><label>Segundos para responder</label><input id="pSeg" type="number" min="5" max="180" value="20"></div>
+        <div id="boxVF" hidden>
+          <label>Respuesta correcta</label>
+          <select id="pVF"><option value="0">Verdadero</option><option value="1">Falso</option></select>
         </div>
+        <div id="boxDesc" hidden>
+          <label>Respuesta modelo o criterio de calificación (solo la ves tú)</label>
+          <textarea id="pModelo" placeholder="Ej: Debe mencionar que Activo = Pasivo + Patrimonio"></textarea>
+        </div>
+
+        <label id="lblSeg">Segundos</label>
+        <input id="pSeg" type="number" min="5" max="600" value="20">
         <p id="errForm" class="muted" style="color:var(--bad)"></p>
         <div class="row">
           <button id="btnGuardarP">Guardar pregunta</button>
@@ -154,14 +113,16 @@
           <button id="btnBorrarTodo" class="red">Borrar todas</button>
           <input id="fileCopia" type="file" accept=".json,application/json" hidden>
         </div>
-        <p class="muted">Tus preguntas se guardan en este navegador. Descarga una copia de vez en cuando, por si cambias de equipo.</p>
+        <p class="muted">Tus preguntas se guardan en este navegador y las usan las dos ruletas. Descarga una copia de vez en cuando, por si cambias de equipo.</p>
       </div>
 
       <div class="card">
         <h2>Pegar varias preguntas de una vez</h2>
-        <p class="muted">Una pregunta por línea, separando con <b>|</b>:<br>
-          <code>Pregunta | Opción A | Opción B | Opción C | Opción D | Letra correcta | Segundos (opcional)</code></p>
-        <textarea id="bulk" placeholder="¿Cuál cuenta es un activo? | Caja | Proveedores | Capital | Ingresos | A | 20"></textarea>
+        <p class="muted">Una pregunta por línea, separando con <b>|</b>. Según el tipo:</p>
+        <p class="muted"><b>Múltiple:</b><br><code>M | Pregunta | Opción A | Opción B | Opción C | Opción D | Letra correcta | Segundos</code></p>
+        <p class="muted"><b>Verdadero/Falso:</b><br><code>VF | Pregunta | V (o F) | Segundos</code></p>
+        <p class="muted"><b>Descriptiva:</b><br><code>D | Pregunta | Respuesta modelo | Segundos</code></p>
+        <textarea id="bulk" placeholder="M | ¿Cuál cuenta es un activo? | Caja | Proveedores | Capital | Ingresos | A | 20&#10;VF | El IVA es un impuesto indirecto | V | 15&#10;D | Define qué es un pasivo | Obligaciones con terceros | 60"></textarea>
         <div class="row" style="margin-top:8px"><button id="btnImportar">Importar</button></div>
         <p id="resImport" class="muted"></p>
       </div>
@@ -172,6 +133,14 @@
       <div id="pSinSala" class="card">
         <h2>Nueva partida</h2>
         <p class="muted" id="infoPreg"></p>
+        <label>Tipos de pregunta en esta partida</label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" id="chkT_multiple" checked> Selección múltiple</label>
+          <label class="chip"><input type="checkbox" id="chkT_vf" checked> Verdadero / Falso</label>
+          <label class="chip"><input type="checkbox" id="chkT_desc" checked> Descriptiva</label>
+        </div>
+        <h3>Puntaje</h3>
+        <div id="tablaPuntaje"></div>
         <button id="btnCrear">Crear sala</button>
       </div>
 
@@ -180,7 +149,7 @@
           <div class="codebox">
             <div class="muted">Código de sala</div>
             <div class="n" id="sCodigo">----</div>
-            <div class="muted">Los estudiantes entran al enlace de la ruleta y escriben este código</div>
+            <div class="muted">Los estudiantes abren el enlace de este juego y escriben el código</div>
           </div>
           <div class="row" style="justify-content:space-between">
             <b>👥 <span id="sJug">0</span> jugadores</b>
@@ -188,7 +157,70 @@
           </div>
         </div>
 
+        <!-- Solo Ruleta de estudiantes: agregar nombres a mano -->
+        <div class="card" data-modo="nombres">
+          <h2>Estudiantes</h2>
+          <p class="muted">Los que entren con su celular aparecen solos. También puedes escribir nombres aquí (sirve para quien no tiene celular).</p>
+          <div class="row">
+            <input id="nomNuevo" placeholder="Nombre del estudiante" maxlength="24" style="flex:1 1 180px">
+            <button id="btnNomAdd" class="sec">Agregar</button>
+          </div>
+          <label>O pega una lista (un nombre por línea)</label>
+          <textarea id="nomLista" style="min-height:70px"></textarea>
+          <div class="row" style="margin-top:8px"><button id="btnNomLista" class="sec">Agregar lista</button></div>
+          <label class="chip" style="margin-top:12px!important"><input type="checkbox" id="chkNoRepetir" checked> No repetir estudiante hasta que todos participen</label>
+        </div>
+
+        <!-- Solo Ruleta de estudiantes: lanzar pregunta -->
+        <div class="card center" id="zonaLanzar" data-modo="nombres">
+          <p class="muted">Lanza la pregunta: los estudiantes la leen y piensan su respuesta. Luego giras la ruleta para elegir quién responde.</p>
+          <button id="btnLanzar" class="green">▶ Lanzar pregunta</button>
+        </div>
+
+        <!-- Pregunta (los dos modos) -->
+        <div class="card" id="zonaPregunta" hidden>
+          <div data-modo="preguntas">
+            <div class="timer" id="tTiempo">0</div>
+            <div class="bar"><i id="tBarra"></i></div>
+          </div>
+          <div id="tTipoBox"></div>
+          <div class="qtext" id="tTexto"></div>
+          <div id="tOpc"></div>
+          <div class="modelo" id="tModelo"></div>
+          <div class="row"><button id="btnVer" class="sec">👁 Ver respuesta correcta</button></div>
+
+          <div id="tRespuestas" data-modo="preguntas" hidden>
+            <h3>Respuestas escritas (califícalas aquí)</h3>
+            <div id="listaResp"></div>
+          </div>
+          <p class="muted" data-modo="preguntas">Respuestas recibidas: <b id="tResp">0</b> de <b id="tTotal">0</b></p>
+          <div class="row" data-modo="preguntas">
+            <button id="btnCerrar" class="sec">Cerrar pregunta ya</button>
+            <button id="btnSig" class="green" hidden>Siguiente → girar ruleta</button>
+          </div>
+
+          <div id="turnoBox" data-modo="nombres" hidden>
+            <div class="elegido">
+              <div class="muted">Responde</div>
+              <div class="nom" id="turnoNombre"></div>
+              <div class="timer" id="turnoTiempo">0</div>
+              <div id="turnoRes" class="msg"></div>
+            </div>
+          </div>
+          <div class="row" id="gradeBtns" data-modo="nombres" hidden>
+            <button class="green" data-g="ok" id="gOk">✓ Correcta</button>
+            <button class="amber" data-g="p" id="gP">½ Parcial</button>
+            <button class="red" data-g="mal" id="gMal">✗ Incorrecta</button>
+          </div>
+          <div class="row" style="margin-top:8px" data-modo="nombres">
+            <button id="btnPasar" class="sec" hidden>Pasar turno (sortear otro)</button>
+            <button id="btnSigN" class="green" hidden>Siguiente pregunta →</button>
+          </div>
+        </div>
+
+        <!-- Ruleta (los dos modos) -->
         <div class="card center" id="zonaRuleta">
+          <p class="muted" id="avisoRonda"></p>
           <div class="wheelwrap">
             <div class="pointer"></div>
             <canvas id="rueda" width="360" height="360"></canvas>
@@ -198,21 +230,10 @@
           </div>
         </div>
 
-        <div class="card" id="zonaPregunta" hidden>
-          <div class="timer" id="tTiempo">0</div>
-          <div class="bar"><i id="tBarra"></i></div>
-          <div class="qtext" id="tTexto"></div>
-          <div id="tOpc"></div>
-          <p class="muted">Respuestas recibidas: <b id="tResp">0</b> de <b id="tTotal">0</b></p>
-          <div class="row">
-            <button id="btnCerrar" class="sec">Cerrar pregunta ya</button>
-            <button id="btnSig" class="green" hidden>Siguiente → girar ruleta</button>
-          </div>
-        </div>
-
+        <!-- Ranking en vivo -->
         <div class="card">
-          <h2>🏆 Ranking</h2>
-          <ol class="rank" id="sRank"></ol>
+          <h2>🏆 Ranking en vivo</h2>
+          <ol class="rank big" id="sRank"></ol>
           <div class="row" style="margin-top:10px">
             <button id="btnFin" class="sec">Terminar juego (mostrar ganador)</button>
             <button id="btnSalir" class="red" hidden>Salir y borrar sala</button>
@@ -226,505 +247,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="config.js"></script>
-<script>
-/* =========================================================
-   UTILIDADES
-   ========================================================= */
-const $ = (s, r=document) => r.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-const LET = ['A','B','C','D'];
-const ES_PROFE = new URLSearchParams(location.search).has('profe');
-
-const cfg = window.FIREBASE_CONFIG || {};
-const sinConfig = !cfg.apiKey || String(cfg.apiKey).includes('PEGAR') || !cfg.databaseURL || String(cfg.databaseURL).includes('PEGAR');
-let db = null, offset = 0;
-if (!sinConfig) {
-  try {
-    firebase.initializeApp(cfg);
-    db = firebase.database();
-    db.ref('.info/serverTimeOffset').on('value', s => { offset = s.val() || 0; });
-  } catch (e) { console.error(e); }
-}
-const ahora = () => Date.now() + offset;
-const TS = () => firebase.database.ServerValue.TIMESTAMP;
-const salaRef = code => db.ref('ad360/ruleta/' + code);
-
-function mostrar(id){
-  ['vEntrar','vEst','vClave','vProfe'].forEach(v => { $('#'+v).hidden = (v !== id); });
-}
-function rankear(jug){
-  return Object.entries(jug || {}).map(([id, j]) => ({id, nombre: j.nombre, puntos: j.puntos || 0}))
-    .sort((a, b) => b.puntos - a.puntos);
-}
-
-/* =========================================================
-   ARRANQUE
-   ========================================================= */
-$('#bannerCfg').hidden = !sinConfig;
-if (ES_PROFE) {
-  $('#linkJuegos').hidden = false;
-  if (sessionStorage.getItem('ad360_ok') === '1') abrirPanel(); else mostrar('vClave');
-} else {
-  iniciarEstudiante();
-}
-
-/* =========================================================
-   PROFESOR: CLAVE
-   ========================================================= */
-$('#btnClave').onclick = validarClave;
-$('#inClave').addEventListener('keydown', e => { if (e.key === 'Enter') validarClave(); });
-function validarClave(){
-  if ($('#inClave').value === String(window.CLAVE_PROFESOR || '')) {
-    sessionStorage.setItem('ad360_ok', '1');
-    abrirPanel();
-  } else {
-    $('#errClave').textContent = 'Clave incorrecta';
-  }
-}
-function abrirPanel(){
-  mostrar('vProfe');
-  renderPreguntas();
-  actualizarInfoPartida();
-}
-
-/* =========================================================
-   PROFESOR: PESTAÑAS
-   ========================================================= */
-$('#tbPreg').onclick = () => cambiarTab('preg');
-$('#tbPart').onclick = () => cambiarTab('part');
-function cambiarTab(t){
-  $('#tabPreg').hidden = (t !== 'preg');
-  $('#tabPartida').hidden = (t !== 'part');
-  $('#tbPreg').classList.toggle('on', t === 'preg');
-  $('#tbPart').classList.toggle('on', t === 'part');
-  if (t === 'part') actualizarInfoPartida();
-}
-
-/* =========================================================
-   PROFESOR: MIS PREGUNTAS
-   ========================================================= */
-const KEY = 'ad360_preguntas';
-const leerP = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } };
-const guardarP = a => { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) { alert('No se pudo guardar en este navegador.'); } };
-let editId = null;
-
-function renderPreguntas(){
-  const arr = leerP();
-  $('#contP').textContent = '(' + arr.length + ')';
-  const cont = $('#listaP');
-  if (!arr.length) { cont.innerHTML = '<p class="muted">Aún no tienes preguntas. Agrega una arriba o carga las de ejemplo.</p>'; return; }
-  cont.innerHTML = arr.map((p, i) => `
-    <div class="pq">
-      <div>
-        <div class="t"><b>${i + 1}.</b> ${esc(p.texto)}</div>
-        <div class="m">${p.tema ? esc(p.tema) + ' · ' : ''}Correcta: ${LET[p.correcta]} · ${p.segundos}s</div>
-      </div>
-      <div class="row">
-        <button class="sec" data-ed="${p.id}">✏️</button>
-        <button class="red" data-del="${p.id}">🗑</button>
-      </div>
-    </div>`).join('');
-}
-$('#listaP').addEventListener('click', e => {
-  const ed = e.target.closest('[data-ed]'), del = e.target.closest('[data-del]');
-  if (ed) cargarEnForm(ed.dataset.ed);
-  if (del && confirm('¿Borrar esta pregunta?')) {
-    guardarP(leerP().filter(p => p.id !== del.dataset.del));
-    renderPreguntas();
-  }
-});
-function cargarEnForm(id){
-  const p = leerP().find(x => x.id === id); if (!p) return;
-  editId = id;
-  $('#tituloForm').textContent = 'Editar pregunta';
-  $('#pTema').value = p.tema || ''; $('#pTexto').value = p.texto;
-  ['pA','pB','pC','pD'].forEach((k, i) => { $('#'+k).value = p.opciones[i]; });
-  $('#pOk').value = p.correcta; $('#pSeg').value = p.segundos;
-  $('#btnCancelar').hidden = false;
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-function limpiarForm(){
-  editId = null; $('#tituloForm').textContent = 'Agregar pregunta';
-  ['pTema','pTexto','pA','pB','pC','pD'].forEach(k => { $('#'+k).value = ''; });
-  $('#pOk').value = 0; $('#pSeg').value = 20;
-  $('#btnCancelar').hidden = true; $('#errForm').textContent = '';
-}
-$('#btnCancelar').onclick = limpiarForm;
-$('#btnGuardarP').onclick = () => {
-  const texto = $('#pTexto').value.trim();
-  const ops = ['pA','pB','pC','pD'].map(k => $('#'+k).value.trim());
-  const seg = Math.max(5, Math.min(180, parseInt($('#pSeg').value) || 20));
-  if (!texto || ops.some(o => !o)) { $('#errForm').textContent = 'Escribe la pregunta y las 4 opciones.'; return; }
-  const arr = leerP();
-  const obj = { id: editId || uid(), tema: $('#pTema').value.trim(), texto, opciones: ops, correcta: parseInt($('#pOk').value), segundos: seg };
-  if (editId) { const i = arr.findIndex(x => x.id === editId); if (i >= 0) arr[i] = obj; else arr.push(obj); }
-  else arr.push(obj);
-  guardarP(arr); limpiarForm(); renderPreguntas();
-};
-$('#btnEjemplo').onclick = () => {
-  const arr = leerP();
-  arr.push(
-    { id: uid(), tema: 'Activos', texto: '¿Cuál de estas cuentas es un activo?', opciones: ['Caja', 'Proveedores', 'Capital social', 'Ingresos'], correcta: 0, segundos: 20 },
-    { id: uid(), tema: 'Ecuación', texto: 'La ecuación contable básica es:', opciones: ['Activo = Pasivo + Patrimonio', 'Activo = Pasivo − Patrimonio', 'Pasivo = Activo + Patrimonio', 'Patrimonio = Activo + Pasivo'], correcta: 0, segundos: 20 },
-    { id: uid(), tema: 'Partida doble', texto: 'En la partida doble, en todo asiento:', opciones: ['Débitos = Créditos', 'Débitos > Créditos', 'Solo se usa el débito', 'Solo se usa el crédito'], correcta: 0, segundos: 15 }
-  );
-  guardarP(arr); renderPreguntas();
-};
-$('#btnBorrarTodo').onclick = () => { if (confirm('¿Borrar TODAS tus preguntas?')) { guardarP([]); renderPreguntas(); } };
-$('#btnBajar').onclick = () => {
-  const blob = new Blob([JSON.stringify(leerP(), null, 2)], {type: 'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'mis-preguntas-ruleta.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-};
-$('#btnSubir').onclick = () => $('#fileCopia').click();
-$('#fileCopia').onchange = e => {
-  const f = e.target.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = () => {
-    try {
-      const data = JSON.parse(rd.result);
-      if (!Array.isArray(data)) throw 0;
-      const validas = data.filter(p => p && p.texto && Array.isArray(p.opciones) && p.opciones.length === 4 && p.correcta >= 0 && p.correcta <= 3)
-        .map(p => ({ id: uid(), tema: p.tema || '', texto: String(p.texto), opciones: p.opciones.map(String), correcta: +p.correcta, segundos: +p.segundos || 20 }));
-      guardarP(leerP().concat(validas)); renderPreguntas();
-      alert('Se cargaron ' + validas.length + ' preguntas.');
-    } catch (err) { alert('El archivo no es una copia válida.'); }
-    e.target.value = '';
-  };
-  rd.readAsText(f);
-};
-$('#btnImportar').onclick = () => {
-  const lineas = $('#bulk').value.split('\n').map(l => l.trim()).filter(Boolean);
-  const arr = leerP(); let ok = 0, mal = 0;
-  lineas.forEach(l => {
-    const p = l.split('|').map(x => x.trim());
-    const idx = LET.indexOf((p[5] || '').toUpperCase());
-    if (p.length < 6 || !p[0] || p.slice(1, 5).some(x => !x) || idx < 0) { mal++; return; }
-    arr.push({ id: uid(), tema: '', texto: p[0], opciones: p.slice(1, 5), correcta: idx, segundos: Math.max(5, Math.min(180, parseInt(p[6]) || 20)) });
-    ok++;
-  });
-  guardarP(arr); renderPreguntas();
-  $('#resImport').textContent = ok + ' importadas' + (mal ? ', ' + mal + ' con formato incorrecto (revisa esas líneas).' : '.');
-  if (ok) $('#bulk').value = '';
-};
-
-/* =========================================================
-   PROFESOR: PARTIDA
-   ========================================================= */
-let room = null, code = null, usadas = new Set(), ronda = 0, fase = 'espera';
-let jugadoresSnap = {}, correctaLocal = null, preguntaActual = null, inicioSrv = 0, timerT = null;
-let respRef = null;
-
-function disponibles(){ return leerP().filter(p => !usadas.has(p.id)); }
-function actualizarInfoPartida(){
-  const n = leerP().length;
-  $('#infoPreg').textContent = n ? ('Tienes ' + n + ' preguntas cargadas.') : 'Primero agrega preguntas en la pestaña "Mis preguntas".';
-  $('#btnCrear').disabled = (!n || sinConfig);
-  if (room) $('#sDisp').textContent = disponibles().length;
-}
-
-$('#btnCrear').onclick = async () => {
-  if (sinConfig) return;
-  $('#btnCrear').disabled = true;
-  let c, ok = false;
-  for (let i = 0; i < 8 && !ok; i++) {
-    c = String(Math.floor(1000 + Math.random() * 9000));
-    const s = await salaRef(c).child('estado').once('value');
-    ok = !s.exists();
-  }
-  if (!ok) { alert('No se pudo crear una sala. Intenta de nuevo.'); $('#btnCrear').disabled = false; return; }
-  code = c; room = salaRef(code); usadas = new Set(); ronda = 0; fase = 'espera';
-  await room.set({ estado: 'espera', ronda: 0, creada: TS() });
-  room.child('jugadores').on('value', s => { jugadoresSnap = s.val() || {}; renderRankProfe(); });
-  $('#sCodigo').textContent = code;
-  $('#pSinSala').hidden = true; $('#pSala').hidden = false;
-  $('#zonaPregunta').hidden = true; $('#zonaRuleta').hidden = false;
-  $('#btnSalir').hidden = true; $('#btnFin').hidden = false;
-  prepararRueda();
-  $('#sDisp').textContent = disponibles().length;
-};
-
-function renderRankProfe(){
-  const r = rankear(jugadoresSnap);
-  $('#sJug').textContent = r.length;
-  $('#tTotal').textContent = r.length;
-  $('#sRank').innerHTML = r.length
-    ? r.map((j, i) => `<li><span>${i + 1}. ${esc(j.nombre)}</span><b>${j.puntos}</b></li>`).join('')
-    : '<li><span class="muted">Esperando estudiantes…</span></li>';
-}
-
-/* ---------- Ruleta ---------- */
-const COLORES = ['#6366f1','#06b6d4','#f59e0b','#10b981','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#3b82f6','#84cc16','#e11d48'];
-let rot = 0, segActuales = [];
-
-function muestra(){
-  const d = disponibles();
-  const copia = d.slice().sort(() => Math.random() - 0.5).slice(0, 12);
-  return copia.map(p => ({ p, label: (p.tema || 'Pregunta').slice(0, 12) }));
-}
-function dibujar(items){
-  const c = $('#rueda'), x = c.getContext('2d'), W = c.width, R = W / 2;
-  x.clearRect(0, 0, W, W);
-  if (!items.length) {
-    x.fillStyle = '#e6e9f5'; x.beginPath(); x.arc(R, R, R - 4, 0, 2 * Math.PI); x.fill();
-    x.fillStyle = '#667090'; x.font = 'bold 20px system-ui,Arial'; x.textAlign = 'center'; x.fillText('Sin preguntas', R, R + 6);
-    return;
-  }
-  const n = items.length, seg = 2 * Math.PI / n;
-  items.forEach((it, i) => {
-    const a0 = -Math.PI / 2 + i * seg, a1 = a0 + seg;
-    x.beginPath(); x.moveTo(R, R); x.arc(R, R, R - 4, a0, a1); x.closePath();
-    x.fillStyle = COLORES[i % COLORES.length]; x.fill();
-    x.strokeStyle = '#fff'; x.lineWidth = 3; x.stroke();
-    x.save(); x.translate(R, R); x.rotate(a0 + seg / 2);
-    x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = 'bold 18px system-ui,Arial';
-    x.fillText(it.label, R - 18, 6); x.restore();
-  });
-  x.beginPath(); x.arc(R, R, 22, 0, 2 * Math.PI); x.fillStyle = '#fff'; x.fill();
-}
-function prepararRueda(){
-  const c = $('#rueda');
-  c.style.transition = 'none'; c.style.transform = 'rotate(0deg)'; rot = 0;
-  segActuales = muestra(); dibujar(segActuales);
-  void c.offsetWidth;
-  $('#btnGirar').disabled = !segActuales.length;
-}
-$('#btnGirar').onclick = async () => {
-  if (fase === 'girando' || fase === 'pregunta') return;
-  if (!segActuales.length) { prepararRueda(); if (!segActuales.length) return; }
-  fase = 'girando'; $('#btnGirar').disabled = true;
-  room.update({ estado: 'girando' });
-  const n = segActuales.length, i = Math.floor(Math.random() * n);
-  const seg = 360 / n, centro = (i + 0.5) * seg, jitter = (Math.random() - 0.5) * seg * 0.6;
-  const r0 = ((-(centro + jitter)) % 360 + 360) % 360;
-  rot = Math.ceil(rot / 360) * 360 + 360 * 5 + r0;
-  const c = $('#rueda');
-  c.style.transition = 'transform 4.6s cubic-bezier(.12,.7,.1,1)';
-  c.style.transform = 'rotate(' + rot + 'deg)';
-  setTimeout(() => lanzarPregunta(segActuales[i].p), 4900);
-};
-
-/* ---------- Pregunta ---------- */
-async function lanzarPregunta(p){
-  ronda += 1; usadas.add(p.id); preguntaActual = p; correctaLocal = p.correcta;
-  await room.update({
-    estado: 'pregunta', ronda, correcta: null,
-    pregunta: { ronda, texto: p.texto, opciones: p.opciones, segundos: p.segundos, inicio: TS() }
-  });
-  const s = await room.child('pregunta/inicio').once('value');
-  inicioSrv = s.val() || ahora();
-  fase = 'pregunta';
-  $('#zonaRuleta').hidden = true; $('#zonaPregunta').hidden = false;
-  $('#btnCerrar').hidden = false; $('#btnSig').hidden = true;
-  $('#tTexto').textContent = p.texto;
-  $('#tOpc').innerHTML = p.opciones.map((o, i) => `<div class="opt" data-i="${i}"><span class="l">${LET[i]}</span><span>${esc(o)}</span></div>`).join('');
-  $('#tResp').textContent = '0';
-  if (respRef) respRef.off();
-  respRef = room.child('respuestas/' + ronda);
-  respRef.on('value', sn => { $('#tResp').textContent = sn.numChildren(); });
-  $('#sDisp').textContent = disponibles().length;
-  clearInterval(timerT);
-  timerT = setInterval(tick, 250); tick();
-}
-function tick(){
-  if (!preguntaActual) return;
-  const total = preguntaActual.segundos * 1000;
-  const resta = Math.max(0, inicioSrv + total - ahora());
-  const seg = Math.ceil(resta / 1000);
-  $('#tTiempo').textContent = seg;
-  $('#tTiempo').classList.toggle('low', seg <= 5);
-  $('#tBarra').style.width = (100 * resta / total) + '%';
-  if (resta <= 0 && fase === 'pregunta') { clearInterval(timerT); setTimeout(cerrarRonda, 1500); }
-}
-$('#btnCerrar').onclick = () => { clearInterval(timerT); cerrarRonda(); };
-
-/* Calcula puntos: bien = base + bonus por rapidez; mal = −penalización; sin respuesta = 0 */
-function calcularDelta(r, inicio, segundos, correcta){
-  const P = window.PUNTOS || {base: 100, bonusVelocidad: 50, penalizacion: 30};
-  if (!r || r.op == null || r.t == null) return { delta: 0, ok: null };
-  const limite = inicio + segundos * 1000 + 2000;
-  if (r.t > limite) return { delta: 0, ok: null };
-  if (r.op === correcta) {
-    const usado = Math.max(0, Math.min(1, (r.t - inicio) / (segundos * 1000)));
-    return { delta: P.base + Math.round(P.bonusVelocidad * (1 - usado)), ok: true };
-  }
-  return { delta: -P.penalizacion, ok: false };
-}
-async function cerrarRonda(){
-  if (fase !== 'pregunta') return;
-  fase = 'resultado';
-  const [sr, sj] = await Promise.all([room.child('respuestas/' + ronda).once('value'), room.child('jugadores').once('value')]);
-  const resp = sr.val() || {}, jug = sj.val() || {};
-  const upd = {};
-  Object.keys(jug).forEach(id => {
-    const { delta, ok } = calcularDelta(resp[id], inicioSrv, preguntaActual.segundos, correctaLocal);
-    upd['jugadores/' + id + '/puntos'] = (jug[id].puntos || 0) + delta;
-    upd['jugadores/' + id + '/ultimo'] = { delta, ok, ronda };
-  });
-  upd['estado'] = 'resultado';
-  upd['correcta'] = correctaLocal;
-  await room.update(upd);
-  // mostrar la correcta al profesor y los conteos por opción
-  const cuenta = [0, 0, 0, 0];
-  Object.values(resp).forEach(r => { if (r && r.op >= 0 && r.op <= 3) cuenta[r.op]++; });
-  document.querySelectorAll('#tOpc .opt').forEach((el, i) => {
-    el.classList.add(i === correctaLocal ? 'good' : 'sel');
-    if (i !== correctaLocal) el.classList.remove('sel');
-    el.insertAdjacentHTML('beforeend', `<span class="muted" style="margin-left:auto">${cuenta[i]}</span>`);
-  });
-  $('#btnCerrar').hidden = true; $('#btnSig').hidden = false;
-  $('#btnSig').disabled = !disponibles().length;
-  $('#btnSig').textContent = disponibles().length ? 'Siguiente → girar ruleta' : 'No quedan preguntas';
-}
-$('#btnSig').onclick = () => {
-  fase = 'espera';
-  $('#zonaPregunta').hidden = true; $('#zonaRuleta').hidden = false;
-  room.update({ estado: 'espera' });
-  prepararRueda();
-};
-$('#btnFin').onclick = async () => {
-  if (!confirm('¿Terminar el juego y mostrar el ganador a todos?')) return;
-  clearInterval(timerT); fase = 'fin';
-  await room.update({ estado: 'fin' });
-  $('#zonaPregunta').hidden = true; $('#zonaRuleta').hidden = true;
-  $('#btnFin').hidden = true; $('#btnSalir').hidden = false;
-};
-$('#btnSalir').onclick = async () => {
-  if (!confirm('Se borrará la sala y los puntos. ¿Continuar?')) return;
-  if (respRef) respRef.off();
-  room.child('jugadores').off();
-  await room.remove();
-  room = null; code = null; jugadoresSnap = {};
-  $('#pSala').hidden = true; $('#pSinSala').hidden = false;
-  actualizarInfoPartida();
-};
-
-/* =========================================================
-   ESTUDIANTE
-   ========================================================= */
-let ME = null, S = {}, miResp = {ronda: 0, op: null}, timerE = null, estRoom = null;
-
-function iniciarEstudiante(){
-  if (sinConfig) { $('#bannerCfg').hidden = false; }
-  const guard = sessionStorage.getItem('ad360_est');
-  if (guard && db) {
-    try {
-      const g = JSON.parse(guard);
-      salaRef(g.code).child('jugadores/' + g.id).once('value').then(s => {
-        if (s.exists()) { ME = g; conectarEstudiante(); } else { sessionStorage.removeItem('ad360_est'); mostrar('vEntrar'); }
-      });
-      return;
-    } catch (e) { sessionStorage.removeItem('ad360_est'); }
-  }
-  mostrar('vEntrar');
-}
-$('#btnEntrar').onclick = entrar;
-$('#inNombre').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
-async function entrar(){
-  const c = $('#inCodigo').value.trim(), nombre = $('#inNombre').value.trim();
-  const err = $('#errEntrar'); err.textContent = '';
-  if (sinConfig || !db) { err.textContent = 'El juego aún no está configurado. Avisa al profesor.'; return; }
-  if (!/^\d{4}$/.test(c)) { err.textContent = 'El código tiene 4 números.'; return; }
-  if (!nombre) { err.textContent = 'Escribe tu nombre.'; return; }
-  $('#btnEntrar').disabled = true;
-  try {
-    const s = await salaRef(c).child('estado').once('value');
-    if (!s.exists()) { err.textContent = 'No encontré esa sala. Revisa el código.'; return; }
-    if (s.val() === 'fin') { err.textContent = 'Esa partida ya terminó.'; return; }
-    const id = 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
-    await salaRef(c).child('jugadores/' + id).set({ nombre, puntos: 0 });
-    ME = { code: c, id, nombre };
-    sessionStorage.setItem('ad360_est', JSON.stringify(ME));
-    conectarEstudiante();
-  } catch (e) { err.textContent = 'No se pudo conectar. Revisa tu internet.'; }
-  finally { $('#btnEntrar').disabled = false; }
-}
-function conectarEstudiante(){
-  mostrar('vEst');
-  estRoom = salaRef(ME.code);
-  ['estado', 'pregunta', 'correcta', 'jugadores'].forEach(k => {
-    estRoom.child(k).on('value', s => { S[k] = s.val(); renderEst(); });
-  });
-  clearInterval(timerE); timerE = setInterval(tickEst, 250);
-}
-function tickEst(){
-  const p = S.pregunta;
-  if (S.estado !== 'pregunta' || !p) return;
-  const total = p.segundos * 1000, resta = Math.max(0, p.inicio + total - ahora());
-  const t = $('#eTiempo'), b = $('#eBarra');
-  if (t) { t.textContent = Math.ceil(resta / 1000); t.classList.toggle('low', resta <= 5000); }
-  if (b) b.style.width = (100 * resta / total) + '%';
-  if (resta <= 0) document.querySelectorAll('#estPanel .opt').forEach(el => { el.style.pointerEvents = 'none'; });
-}
-function renderEst(){
-  const cont = $('#estPanel');
-  if (!S.estado) { cont.innerHTML = '<p class="msg center">Conectando…</p>'; return; }
-  const jug = S.jugadores || {};
-  const yo = jug[ME.id];
-  $('#miInfo').innerHTML = esc(ME.nombre) + ' · <b>' + (yo ? yo.puntos : 0) + '</b> pts';
-
-  if (S.estado === 'espera') {
-    cont.innerHTML = '<div class="center"><div class="big">⏳</div><p class="msg">Esperando al profesor…<br>Prepárate para la siguiente pregunta</p></div>';
-  } else if (S.estado === 'girando') {
-    cont.innerHTML = '<div class="center"><div class="big">🎡</div><p class="msg">¡La ruleta está girando!</p></div>';
-  } else if (S.estado === 'pregunta' && S.pregunta) {
-    const p = S.pregunta, ya = (miResp.ronda === p.ronda);
-    const vencido = ahora() > p.inicio + p.segundos * 1000;
-    cont.innerHTML = `
-      <div class="timer" id="eTiempo">${p.segundos}</div>
-      <div class="bar"><i id="eBarra"></i></div>
-      <div class="qtext">${esc(p.texto)}</div>
-      ${p.opciones.map((o, i) => `<button class="opt ${ya && miResp.op === i ? 'sel' : ''}" data-op="${i}" ${(ya || vencido) ? 'disabled' : ''}><span class="l">${LET[i]}</span><span>${esc(o)}</span></button>`).join('')}
-      <p class="muted center">${ya ? '✔ Respuesta enviada. Espera el resultado…' : (vencido ? '⏱ Se acabó el tiempo' : 'Toca tu respuesta')}</p>`;
-    tickEst();
-  } else if (S.estado === 'resultado' && S.pregunta) {
-    const p = S.pregunta, ult = yo && yo.ultimo && yo.ultimo.ronda === p.ronda ? yo.ultimo : null;
-    let msg = '';
-    if (ult) {
-      if (ult.ok === true) msg = `<div class="res-ok">✅ ¡Correcto! +${ult.delta}</div>`;
-      else if (ult.ok === false) msg = `<div class="res-bad">❌ Incorrecto ${ult.delta}</div>`;
-      else msg = `<div class="res-bad" style="color:var(--muted)">⏱ Sin respuesta (0)</div>`;
-    }
-    const r = rankear(jug), pos = r.findIndex(x => x.id === ME.id) + 1;
-    cont.innerHTML = `
-      <div class="center">${msg}
-        <p class="msg" style="margin:8px 0">Respuesta correcta:<br><b style="color:var(--ink)">${LET[S.correcta]}. ${esc(p.opciones[S.correcta])}</b></p>
-      </div>
-      <h3>Ranking · vas en el puesto ${pos} de ${r.length}</h3>
-      ${listaRank(r, 5)}
-      <p class="muted center">Esperando la siguiente pregunta…</p>`;
-  } else if (S.estado === 'fin') {
-    const r = rankear(jug), pos = r.findIndex(x => x.id === ME.id) + 1;
-    const top = r.slice(0, 3);
-    cont.innerHTML = `
-      <div class="center"><div class="big">🏆</div>
-        <h2>¡Juego terminado!</h2>
-        ${top[0] ? `<p class="msg">Ganador: <b style="color:var(--ink)">${esc(top[0].nombre)}</b> con ${top[0].puntos} pts</p>` : ''}</div>
-      <div class="podio">
-        ${top[1] ? `<div class="p2">🥈<small>${esc(top[1].nombre)}</small>${top[1].puntos}</div>` : ''}
-        ${top[0] ? `<div class="p1">🥇<small>${esc(top[0].nombre)}</small>${top[0].puntos}</div>` : ''}
-        ${top[2] ? `<div class="p3">🥉<small>${esc(top[2].nombre)}</small>${top[2].puntos}</div>` : ''}
-      </div>
-      <p class="center msg">Quedaste en el puesto <b style="color:var(--ink)">${pos}</b> de ${r.length} con ${yo ? yo.puntos : 0} puntos.</p>
-      ${listaRank(r, 10)}`;
-    sessionStorage.removeItem('ad360_est');
-  }
-}
-function listaRank(r, n){
-  return '<ol class="rank">' + r.slice(0, n).map((j, i) =>
-    `<li class="${j.id === ME.id ? 'me' : ''}"><span>${i + 1}. ${esc(j.nombre)}</span><b>${j.puntos}</b></li>`).join('') + '</ol>';
-}
-$('#estPanel').addEventListener('click', e => {
-  const b = e.target.closest('[data-op]'); if (!b) return;
-  const p = S.pregunta;
-  if (!p || S.estado !== 'pregunta' || miResp.ronda === p.ronda) return;
-  if (ahora() > p.inicio + p.segundos * 1000) return;
-  const op = parseInt(b.dataset.op);
-  miResp = { ronda: p.ronda, op };
-  estRoom.child('respuestas/' + p.ronda + '/' + ME.id).set({ op, t: TS() });
-  renderEst();
-});
-</script>
+<script src="puntaje.js"></script>
+<script>window.MODO = 'preguntas';</script>
+<script src="ruleta-core.js"></script>
 </body>
 </html>

@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruleta de estudiantes · Aula Didáctica 360</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<header>
+  <h1 id="titulo"></h1>
+  <a id="linkJuegos" href="index.html" hidden>← Juegos</a>
+  <span id="miInfo" class="muted" style="color:#fff"></span>
+</header>
+
+<main>
+  <div id="bannerCfg" class="banner" hidden>
+    <b>Falta conectar Firebase.</b> Abre el archivo <code>config.js</code> y pega tu configuración (apiKey y databaseURL).
+    Mientras tanto solo funciona la pantalla "Mis preguntas".
+  </div>
+
+  <!-- ======================= ESTUDIANTE: ENTRAR ======================= -->
+  <section id="vEntrar" hidden>
+    <div class="card">
+      <h2>Entrar a la partida</h2>
+      <label for="inCodigo">Código de sala (te lo muestra el profesor)</label>
+      <input id="inCodigo" inputmode="numeric" maxlength="4" placeholder="Ej: 4821" autocomplete="off">
+      <label for="inNombre">Tu nombre</label>
+      <input id="inNombre" maxlength="24" placeholder="Nombre y apellido" autocomplete="off">
+      <p id="errEntrar" class="muted" style="color:var(--bad)"></p>
+      <button id="btnEntrar" style="width:100%">Entrar</button>
+    </div>
+  </section>
+
+  <!-- ======================= ESTUDIANTE: JUEGO ======================= -->
+  <section id="vEst" hidden>
+    <div class="card" id="estPanel"></div>
+    <div class="card" id="estRankCard" hidden>
+      <h2>🏆 Ranking en vivo</h2>
+      <div id="estRank"></div>
+    </div>
+  </section>
+
+  <!-- ======================= PROFESOR: CLAVE ======================= -->
+  <section id="vClave" hidden>
+    <div class="card">
+      <h2>Panel del profesor</h2>
+      <label for="inClave">Clave</label>
+      <input id="inClave" type="password" placeholder="Clave del profesor" autocomplete="off">
+      <p id="errClave" class="muted" style="color:var(--bad)"></p>
+      <button id="btnClave" style="width:100%">Abrir panel</button>
+    </div>
+  </section>
+
+  <!-- ======================= PROFESOR: PANEL ======================= -->
+  <section id="vProfe" hidden>
+    <div class="tabs">
+      <button id="tbPreg" class="on">📝 Mis preguntas</button>
+      <button id="tbPart">🎮 Partida</button>
+    </div>
+
+    <!-- ---------- Mis preguntas ---------- -->
+    <div id="tabPreg">
+      <div class="card">
+        <h2 id="tituloForm">Agregar pregunta</h2>
+        <label for="pTipo">Tipo de pregunta</label>
+        <select id="pTipo">
+          <option value="multiple">Selección múltiple (única respuesta)</option>
+          <option value="vf">Verdadero / Falso</option>
+          <option value="desc">Descriptiva (respuesta abierta)</option>
+        </select>
+        <label>Tema (opcional, aparece en la ruleta)</label>
+        <input id="pTema" maxlength="14" placeholder="Ej: IVA">
+        <label>Pregunta</label>
+        <textarea id="pTexto" placeholder="Escribe la pregunta"></textarea>
+
+        <div id="boxMultiple">
+          <div class="grid2">
+            <div><label>Opción A</label><input id="pA"></div>
+            <div><label>Opción B</label><input id="pB"></div>
+            <div><label>Opción C</label><input id="pC"></div>
+            <div><label>Opción D</label><input id="pD"></div>
+          </div>
+          <label>Respuesta correcta</label>
+          <select id="pOk"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
+        </div>
+        <div id="boxVF" hidden>
+          <label>Respuesta correcta</label>
+          <select id="pVF"><option value="0">Verdadero</option><option value="1">Falso</option></select>
+        </div>
+        <div id="boxDesc" hidden>
+          <label>Respuesta modelo o criterio de calificación (solo la ves tú)</label>
+          <textarea id="pModelo" placeholder="Ej: Debe mencionar que Activo = Pasivo + Patrimonio"></textarea>
+        </div>
+
+        <label id="lblSeg">Segundos</label>
+        <input id="pSeg" type="number" min="5" max="600" value="20">
+        <p id="errForm" class="muted" style="color:var(--bad)"></p>
+        <div class="row">
+          <button id="btnGuardarP">Guardar pregunta</button>
+          <button id="btnCancelar" class="sec" hidden>Cancelar edición</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Mis preguntas <span id="contP" class="muted"></span></h2>
+        <div id="listaP"></div>
+        <div class="row" style="margin-top:8px">
+          <button id="btnEjemplo" class="sec">Cargar 3 de ejemplo</button>
+          <button id="btnBajar" class="sec">⬇ Descargar copia</button>
+          <button id="btnSubir" class="sec">⬆ Cargar copia</button>
+          <button id="btnBorrarTodo" class="red">Borrar todas</button>
+          <input id="fileCopia" type="file" accept=".json,application/json" hidden>
+        </div>
+        <p class="muted">Tus preguntas se guardan en este navegador y las usan las dos ruletas. Descarga una copia de vez en cuando, por si cambias de equipo.</p>
+      </div>
+
+      <div class="card">
+        <h2>Pegar varias preguntas de una vez</h2>
+        <p class="muted">Una pregunta por línea, separando con <b>|</b>. Según el tipo:</p>
+        <p class="muted"><b>Múltiple:</b><br><code>M | Pregunta | Opción A | Opción B | Opción C | Opción D | Letra correcta | Segundos</code></p>
+        <p class="muted"><b>Verdadero/Falso:</b><br><code>VF | Pregunta | V (o F) | Segundos</code></p>
+        <p class="muted"><b>Descriptiva:</b><br><code>D | Pregunta | Respuesta modelo | Segundos</code></p>
+        <textarea id="bulk" placeholder="M | ¿Cuál cuenta es un activo? | Caja | Proveedores | Capital | Ingresos | A | 20&#10;VF | El IVA es un impuesto indirecto | V | 15&#10;D | Define qué es un pasivo | Obligaciones con terceros | 60"></textarea>
+        <div class="row" style="margin-top:8px"><button id="btnImportar">Importar</button></div>
+        <p id="resImport" class="muted"></p>
+      </div>
+    </div>
+
+    <!-- ---------- Partida ---------- -->
+    <div id="tabPartida" hidden>
+      <div id="pSinSala" class="card">
+        <h2>Nueva partida</h2>
+        <p class="muted" id="infoPreg"></p>
+        <label>Tipos de pregunta en esta partida</label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" id="chkT_multiple" checked> Selección múltiple</label>
+          <label class="chip"><input type="checkbox" id="chkT_vf" checked> Verdadero / Falso</label>
+          <label class="chip"><input type="checkbox" id="chkT_desc" checked> Descriptiva</label>
+        </div>
+        <h3>Puntaje</h3>
+        <div id="tablaPuntaje"></div>
+        <button id="btnCrear">Crear sala</button>
+      </div>
+
+      <div id="pSala" hidden>
+        <div class="card">
+          <div class="codebox">
+            <div class="muted">Código de sala</div>
+            <div class="n" id="sCodigo">----</div>
+            <div class="muted">Los estudiantes abren el enlace de este juego y escriben el código</div>
+          </div>
+          <div class="row" style="justify-content:space-between">
+            <b>👥 <span id="sJug">0</span> jugadores</b>
+            <span class="muted">Preguntas disponibles: <b id="sDisp">0</b></span>
+          </div>
+        </div>
+
+        <!-- Solo Ruleta de estudiantes: agregar nombres a mano -->
+        <div class="card" data-modo="nombres">
+          <h2>Estudiantes</h2>
+          <p class="muted">Los que entren con su celular aparecen solos. También puedes escribir nombres aquí (sirve para quien no tiene celular).</p>
+          <div class="row">
+            <input id="nomNuevo" placeholder="Nombre del estudiante" maxlength="24" style="flex:1 1 180px">
+            <button id="btnNomAdd" class="sec">Agregar</button>
+          </div>
+          <label>O pega una lista (un nombre por línea)</label>
+          <textarea id="nomLista" style="min-height:70px"></textarea>
+          <div class="row" style="margin-top:8px"><button id="btnNomLista" class="sec">Agregar lista</button></div>
+          <label class="chip" style="margin-top:12px!important"><input type="checkbox" id="chkNoRepetir" checked> No repetir estudiante hasta que todos participen</label>
+        </div>
+
+        <!-- Solo Ruleta de estudiantes: lanzar pregunta -->
+        <div class="card center" id="zonaLanzar" data-modo="nombres">
+          <p class="muted">Lanza la pregunta: los estudiantes la leen y piensan su respuesta. Luego giras la ruleta para elegir quién responde.</p>
+          <button id="btnLanzar" class="green">▶ Lanzar pregunta</button>
+        </div>
+
+        <!-- Pregunta (los dos modos) -->
+        <div class="card" id="zonaPregunta" hidden>
+          <div data-modo="preguntas">
+            <div class="timer" id="tTiempo">0</div>
+            <div class="bar"><i id="tBarra"></i></div>
+          </div>
+          <div id="tTipoBox"></div>
+          <div class="qtext" id="tTexto"></div>
+          <div id="tOpc"></div>
+          <div class="modelo" id="tModelo"></div>
+          <div class="row"><button id="btnVer" class="sec">👁 Ver respuesta correcta</button></div>
+
+          <div id="tRespuestas" data-modo="preguntas" hidden>
+            <h3>Respuestas escritas (califícalas aquí)</h3>
+            <div id="listaResp"></div>
+          </div>
+          <p class="muted" data-modo="preguntas">Respuestas recibidas: <b id="tResp">0</b> de <b id="tTotal">0</b></p>
+          <div class="row" data-modo="preguntas">
+            <button id="btnCerrar" class="sec">Cerrar pregunta ya</button>
+            <button id="btnSig" class="green" hidden>Siguiente → girar ruleta</button>
+          </div>
+
+          <div id="turnoBox" data-modo="nombres" hidden>
+            <div class="elegido">
+              <div class="muted">Responde</div>
+              <div class="nom" id="turnoNombre"></div>
+              <div class="timer" id="turnoTiempo">0</div>
+              <div id="turnoRes" class="msg"></div>
+            </div>
+          </div>
+          <div class="row" id="gradeBtns" data-modo="nombres" hidden>
+            <button class="green" data-g="ok" id="gOk">✓ Correcta</button>
+            <button class="amber" data-g="p" id="gP">½ Parcial</button>
+            <button class="red" data-g="mal" id="gMal">✗ Incorrecta</button>
+          </div>
+          <div class="row" style="margin-top:8px" data-modo="nombres">
+            <button id="btnPasar" class="sec" hidden>Pasar turno (sortear otro)</button>
+            <button id="btnSigN" class="green" hidden>Siguiente pregunta →</button>
+          </div>
+        </div>
+
+        <!-- Ruleta (los dos modos) -->
+        <div class="card center" id="zonaRuleta">
+          <p class="muted" id="avisoRonda"></p>
+          <div class="wheelwrap">
+            <div class="pointer"></div>
+            <canvas id="rueda" width="360" height="360"></canvas>
+          </div>
+          <div class="row" style="justify-content:center;margin-top:10px">
+            <button id="btnGirar" class="green">🎡 Girar ruleta</button>
+          </div>
+        </div>
+
+        <!-- Ranking en vivo -->
+        <div class="card">
+          <h2>🏆 Ranking en vivo</h2>
+          <ol class="rank big" id="sRank"></ol>
+          <div class="row" style="margin-top:10px">
+            <button id="btnFin" class="sec">Terminar juego (mostrar ganador)</button>
+            <button id="btnSalir" class="red" hidden>Salir y borrar sala</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="config.js"></script>
+<script src="puntaje.js"></script>
+<script>window.MODO = 'nombres';</script>
+<script src="ruleta-core.js"></script>
+</body>
+</html>
