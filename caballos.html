@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Carrera de Caballos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Concepto: concurso en vivo. El docente proyecta la ruleta; cada celular es un tablero de cuatro teclas de colores. */
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#EEF2F9; --ink:#0E1B2E; --muted:#56667E; --line:#DAE2EE;
+  --hero:#0E1B2E; --hero-fg:#F2F6FF; --hero-mut:#A9B8D2;
+  --fin:#2459F5; --lab:#D6247A; --tri:#0A9468; --con:#EE4B24; --inv:#F2A900; --oninv:#1E1500;
+  --ok:#0A9468; --ok-s:#D7F4E6; --bad:#D6362B; --bad-s:#FDE3E0; --focus:#F2A900;
+  --shadow:0 1px 2px rgba(14,27,46,.06),0 8px 24px rgba(14,27,46,.07);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%230E1B2E' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-num:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --fin:#7B9DFF; --lab:#FF7DB5; --tri:#3DD6A0; --con:#FF8A66; --inv:#FFC93D;
+  --ok:#3DD6A0; --ok-s:#0E382B; --bad:#FF8585; --bad-s:#4A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --fin:#7B9DFF; --lab:#FF7DB5; --tri:#3DD6A0; --con:#FF8A66; --inv:#FFC93D;
+  --ok:#3DD6A0; --ok-s:#0E382B; --bad:#FF8585; --bad-s:#4A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+body::after{content:"";position:fixed;inset:0;background-image:var(--wm);pointer-events:none;z-index:12}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hero);z-index:30}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:8px}
+h1,h2,h3{font-family:var(--f-display);margin:0;letter-spacing:-.015em;text-wrap:balance}
+.in{width:100%;max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hero);color:var(--hero-fg)}
+.bar .in{display:flex;align-items:center;gap:12px;padding-block:10px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:19px;text-decoration:none;color:inherit;margin-right:auto}
+.logo b{width:34px;height:34px;border-radius:10px;background:var(--inv);color:var(--oninv);display:grid;place-items:center;font-size:20px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.tag{font-family:var(--f-num);font-size:13px;background:rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}
+.back{color:var(--hero-fg);text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:6px 14px}
+main{padding-block:22px 60px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(16px,3vw,26px);box-shadow:var(--shadow);min-width:0}
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:800;font-size:16px;background:var(--fin);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.btn.alt{background:var(--inv);color:var(--oninv)}
+.btn.ghost{background:var(--surface2);color:var(--ink);box-shadow:none;border:2px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.big{padding:16px 30px;font-size:19px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-weight:700;font-size:14px}
+input[type=text]{width:100%;border:2px solid var(--line);background:var(--surface2);border-radius:14px;padding:14px 16px;font-size:20px;font-weight:600}
+input[type=text]:focus{border-color:var(--fin);outline:none;background:var(--surface)}
+input.code{font-family:var(--f-num);letter-spacing:.3em;text-transform:uppercase;text-align:center;font-size:30px}
+.hero{background:var(--hero);color:var(--hero-fg);border-radius:26px;padding:clamp(22px,4vw,42px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.hero h1{font-size:clamp(32px,6vw,56px);line-height:1.02;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--inv)}
+.hero p{color:var(--hero-mut);margin:12px 0 0;max-width:46ch}
+.keys4{display:grid;grid-template-columns:repeat(2,70px);gap:12px;transform:rotate(-5deg)}
+.keys4 i{height:70px;border-radius:18px;background:var(--c);display:grid;place-items:center;font-style:normal;font-family:var(--f-display);font-weight:800;font-size:28px;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.38)}
+@media (max-width:640px){.hero{grid-template-columns:1fr}.keys4{display:none}}
+.choose{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px}
+.choose .card h2{font-size:22px;margin-bottom:6px}
+.choose .card p{margin:0 0 14px;color:var(--muted)}
+.notice{background:#FFF4CF;color:#4B3700;border-radius:14px;padding:10px 14px;font-size:14px;margin-top:14px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .notice{background:#3A3010;color:#FBE7A6}}
+:root[data-theme="dark"] .notice{background:#3A3010;color:#FBE7A6}
+/* docente */
+.t-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:980px){.t-grid{grid-template-columns:1fr}}
+.roomcode{font-family:var(--f-num);font-weight:600;font-size:clamp(46px,9vw,84px);letter-spacing:.14em;line-height:1}
+.joinbox{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+#qr{background:#fff;padding:10px;border-radius:14px;line-height:0}
+.opts{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 16px}
+.chk{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:600;background:var(--surface2)}
+.chk input{width:18px;height:18px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:2px solid var(--line);background:var(--surface2);border-radius:12px;padding:8px 16px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stage{text-align:center}
+.wheelwrap{position:relative;width:min(88vw,420px);margin:0 auto}
+.wheelwrap canvas{width:100%;height:auto;display:block}
+.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:34px solid var(--ink);filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))}
+.topicname{font-family:var(--f-display);font-weight:800;font-size:clamp(24px,4vw,36px);margin:14px 0 0;min-height:1.3em}
+.qbox{text-align:left}
+.qmeta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:5px 14px;color:#fff;background:var(--c,var(--fin))}
+.timer{font-family:var(--f-num);font-weight:600;font-size:clamp(34px,6vw,56px);line-height:1}
+.bar-t{height:14px;border-radius:999px;background:var(--surface2);overflow:hidden;margin:8px 0 18px}
+.bar-t i{display:block;height:100%;width:100%;background:var(--tri);border-radius:999px;transition:width .2s linear,background .3s}
+.qtext{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3.6vw,34px);line-height:1.2;margin:0 0 18px;text-wrap:balance}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.answers{grid-template-columns:1fr}}
+.ans{position:relative;display:flex;align-items:center;gap:12px;text-align:left;border:0;border-radius:18px;padding:16px 16px;min-height:78px;font-weight:700;font-size:clamp(16px,2.4vw,20px);color:#fff;background:var(--c);box-shadow:0 5px 0 rgba(0,0,0,.28);line-height:1.25}
+.ans b{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.25);display:grid;place-items:center;font-family:var(--f-display);font-size:18px}
+.ans[data-k="0"]{--c:var(--fin)}.ans[data-k="1"]{--c:var(--lab)}.ans[data-k="2"]{--c:var(--tri)}.ans[data-k="3"]{--c:var(--con)}
+.ans.dim{opacity:.35}
+.ans.right{outline:5px solid var(--ok);outline-offset:2px}
+.ans.picked::after{content:"✓ Tu respuesta";position:absolute;right:12px;top:8px;font-size:12px;background:rgba(0,0,0,.35);border-radius:999px;padding:1px 10px}
+.ans .cnt{margin-left:auto;font-family:var(--f-num);font-size:20px;background:rgba(0,0,0,.28);border-radius:10px;padding:2px 10px}
+.expl{margin-top:16px;background:var(--surface2);border-radius:16px;padding:14px 18px}
+.res{border-radius:20px;padding:18px 22px;margin-bottom:14px;display:flex;align-items:center;gap:16px}
+.res.ok{background:var(--ok-s);color:var(--ink)}.res.bad{background:var(--bad-s);color:var(--ink)}
+.res .big{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,6vw,44px);line-height:1}
+.res .pts{margin-left:auto;font-family:var(--f-num);font-weight:600;font-size:clamp(26px,5vw,38px)}
+.board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.board li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface2);border-radius:14px;padding:9px 12px;font-weight:700}
+.board li .n{font-family:var(--f-num);color:var(--muted)}
+.board li .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board li .sc{font-family:var(--f-num)}
+.board li .d{font-size:12px;font-family:var(--f-num);margin-left:8px}
+.board li .d.p{color:var(--ok)}.board li .d.m{color:var(--bad)}
+.board li.me{outline:3px solid var(--inv)}
+.board li:nth-child(1) .n{color:var(--inv)}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end;margin:12px 0 20px}
+.podium div{border-radius:18px 18px 0 0;padding:14px 8px;text-align:center;background:var(--surface2)}
+.podium .p1{background:var(--inv);color:var(--oninv);padding-block:34px}
+.podium .p2{padding-block:22px}.podium .p3{padding-block:12px}
+.podium b{display:block;font-family:var(--f-display);font-size:clamp(16px,3vw,26px);overflow:hidden;text-overflow:ellipsis}
+.podium span{font-family:var(--f-num);font-size:18px}
+.muted{color:var(--muted)}
+.track{display:flex;flex-direction:column;gap:6px}
+.lane{position:relative;height:44px;border-radius:12px;background:repeating-linear-gradient(90deg,var(--surface2) 0 24px,var(--bg) 24px 48px);border:2px solid var(--line);overflow:hidden}
+.lane.me{border-color:var(--inv)}
+.lname{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-weight:700;font-size:14px;z-index:1;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--surface);border-radius:8px;padding:0 8px}
+.flag{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:22px}
+.horse{position:absolute;top:50%;font-size:28px;line-height:1;transform:translateY(-50%) scaleX(-1);transition:left .9s ease-in-out;z-index:2}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.sp{height:14px}
+.who{font-weight:700;font-size:14px;color:var(--muted)}
+.me-score{font-family:var(--f-num);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.tag:empty{display:none}
+</style>
+</head><body>
+<header class="bar"><div class="in"><a class="logo" href="index.html"><b>🐎</b><span>Carrera de Caballos</span></a><span class="tag" id="tag"></span><a class="back" href="index.html">← Juegos</a></div></header>
+<main class="in" id="app"><p class="muted">Cargando…</p></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="config.js"></script>
+<script>(function(){var c=window.FIREBASE_CONFIG;if(c&&c.databaseURL&&c.databaseURL.indexOf("PEGAR")<0&&c.apiKey&&c.apiKey.indexOf("PEGAR")<0)window.RULETA_CONFIG=c;})();</script>
+<script>
+// Banco de preguntas: t = tema, q = pregunta, o = opciones (la primera es la correcta; el juego las mezcla), e = explicación
+const TOPICS = [
+  { id: 'iva', name: 'IVA y retención', color: '--tri' },
+  { id: 'nom', name: 'Nómina y prestaciones', color: '--lab' },
+  { id: 'asi', name: 'Asientos contables', color: '--con' },
+  { id: 'fin', name: 'Finanzas básicas', color: '--fin' }
+];
+const BANK = [
+  // ---- IVA y retención ----
+  { t: 'iva', q: '¿Cuál es la tarifa general del IVA en Colombia?', o: ['19 %', '16 %', '5 %', '21 %'], e: 'La tarifa general es del 19 %. Existen tarifas del 5 % y del 0 % para algunos bienes.' },
+  { t: 'iva', q: 'El IVA descontable es...', o: ['El IVA pagado en las compras, que se resta del IVA cobrado en las ventas', 'El IVA que cobramos a los clientes', 'Un descuento comercial al cliente', 'El impuesto de renta del año'], e: 'Se declara IVA por pagar = IVA generado en ventas − IVA descontable en compras.' },
+  { t: 'iva', q: 'Una venta de $1.000.000 antes de IVA, con IVA del 19 %, da un total de...', o: ['$1.190.000', '$1.019.000', '$1.160.000', '$1.900.000'], e: '1.000.000 × 19 % = 190.000 de IVA; total 1.190.000.' },
+  { t: 'iva', q: 'IVA generado $5.000.000 e IVA descontable $3.200.000. ¿Cuánto es el IVA por pagar?', o: ['$1.800.000', '$8.200.000', '$3.200.000', '$5.000.000'], e: '5.000.000 − 3.200.000 = 1.800.000.' },
+  { t: 'iva', q: '¿Qué cuenta del PUC se usa para el IVA generado por pagar?', o: ['2408 Impuesto sobre las ventas por pagar', '1105 Caja', '1305 Clientes', '2205 Proveedores'], e: 'La 2408 reúne el IVA generado y el descontable; su saldo es lo que se paga o se tiene a favor.' },
+  { t: 'iva', q: 'La retención en la fuente es...', o: ['Un recaudo anticipado del impuesto de renta', 'Un descuento por pronto pago', 'Un impuesto municipal', 'Una multa de la DIAN'], e: 'Quien paga retiene un porcentaje y lo consigna a la DIAN como pago anticipado del impuesto del beneficiario.' },
+  { t: 'iva', q: '¿Quién practica la retención en la fuente?', o: ['El comprador o quien hace el pago (agente retenedor)', 'El vendedor', 'El banco siempre', 'El cliente final'], e: 'El agente retenedor retiene al pagar y luego declara y consigna lo retenido.' },
+  { t: 'iva', q: '¿Qué cuenta del PUC registra la retención en la fuente por pagar?', o: ['2365 Retención en la fuente', '2408 IVA por pagar', '1110 Bancos', '4135 Ingresos por ventas'], e: 'La 2365 es un pasivo: la empresa debe consignar lo retenido a la DIAN.' },
+  { t: 'iva', q: 'Por regla general, el ReteIVA es el...', o: ['15 % del valor del IVA', '15 % del valor de la venta', '19 % del valor del IVA', '4 % del valor de la venta'], e: 'La retención de IVA se calcula sobre el IVA, no sobre el valor total de la factura.' },
+  { t: 'iva', q: '¿Qué es la UVT?', o: ['Unidad de Valor Tributario, para fijar montos en impuestos y sanciones', 'Un impuesto a las ventas', 'Una cuenta bancaria especial', 'Un tipo de factura'], e: 'La UVT se actualiza cada año y evita tener que cambiar cada monto de la norma.' },
+  { t: 'iva', q: 'La diferencia entre un bien exento y uno excluido de IVA es que el exento...', o: ['Tiene tarifa 0 % y permite descontar el IVA de las compras', 'Paga el 19 %', 'No puede venderse', 'No requiere factura'], e: 'En lo excluido no se cobra IVA y tampoco se puede descontar el IVA de las compras.' },
+  { t: 'iva', q: 'El impuesto de industria y comercio (ICA) se paga...', o: ['Al municipio o distrito', 'A la DIAN', 'A la Superintendencia', 'Al banco'], e: 'El ICA es un impuesto municipal; la tarifa depende de la actividad y de cada municipio.' },
+  { t: 'iva', q: 'El GMF, conocido como 4 x 1000, equivale a...', o: ['0,4 % de cada movimiento financiero', '4 % de cada movimiento', '0,04 %', '40 %'], e: '4 por mil es 4 ÷ 1.000 = 0,4 %.' },
+  { t: 'iva', q: 'La factura electrónica es un documento que...', o: ['Soporta la venta y es validado por la DIAN', 'Solo sirve para publicidad', 'Reemplaza al balance general', 'Se hace una vez al año'], e: 'La factura electrónica se genera en formato digital y se valida con la DIAN.' },
+  // ---- Nómina y prestaciones ----
+  { t: 'nom', q: '¿Cuánto se paga de cesantías por cada año trabajado?', o: ['Un mes de salario', 'Medio mes de salario', 'Dos meses de salario', 'Quince días de salario'], e: 'Cesantías = salario mensual (con auxilio de transporte) × días trabajados ÷ 360.' },
+  { t: 'nom', q: 'Los intereses a las cesantías son del...', o: ['12 % anual sobre las cesantías', '1 % mensual sobre el salario', '12 % sobre el salario', '30 % anual'], e: 'Intereses = cesantías × días × 12 % ÷ 360.' },
+  { t: 'nom', q: 'La prima de servicios equivale a...', o: ['15 días de salario por semestre', 'Un mes de salario por año', '8 días por semestre', 'Dos meses por año'], e: 'Se paga la mitad de un mes de salario en junio y la otra mitad en diciembre.' },
+  { t: 'nom', q: '¿Cuántos días hábiles de vacaciones corresponden por año trabajado?', o: ['15 días hábiles', '30 días hábiles', '10 días hábiles', '20 días hábiles'], e: 'Quince días hábiles remunerados por cada año de servicio.' },
+  { t: 'nom', q: '¿Qué porcentaje del salario aporta el empleado a salud?', o: ['4 %', '8,5 %', '12 %', '16 %'], e: 'El empleado aporta 4 % a salud; el empleador 8,5 % (salvo exoneración).' },
+  { t: 'nom', q: 'El aporte total a pensión es del 16 %. ¿Cómo se reparte?', o: ['12 % empleador y 4 % empleado', '8 % y 8 %', '16 % empleador', '4 % empleador y 12 % empleado'], e: 'El empleador asume 12 % y al empleado se le descuenta 4 %.' },
+  { t: 'nom', q: '¿A quién se le paga auxilio de transporte?', o: ['A quien gana hasta 2 salarios mínimos', 'A todos los empleados', 'Solo a quien gana el mínimo exacto', 'A quien gana más de 4 salarios'], e: 'Se paga a quienes devengan hasta 2 SMMLV y viven lejos del trabajo.' },
+  { t: 'nom', q: 'La hora extra diurna se paga con un recargo del...', o: ['25 %', '35 %', '75 %', '100 %'], e: 'Hora extra diurna = valor de la hora ordinaria × 1,25.' },
+  { t: 'nom', q: 'La hora extra nocturna se paga con un recargo del...', o: ['75 %', '25 %', '35 %', '50 %'], e: 'Hora extra nocturna = valor de la hora ordinaria × 1,75.' },
+  { t: 'nom', q: 'El recargo nocturno ordinario (sin ser hora extra) es del...', o: ['35 %', '25 %', '75 %', '15 %'], e: 'Trabajar de noche dentro de la jornada ordinaria se paga con un recargo del 35 %.' },
+  { t: 'nom', q: 'Con un salario de $2.100.000 y 210 horas al mes, ¿cuánto vale la hora ordinaria?', o: ['$10.000', '$9.545', '$11.000', '$7.000'], e: '2.100.000 ÷ 210 = 10.000.' },
+  { t: 'nom', q: 'El aporte a la caja de compensación familiar es del...', o: ['4 % sobre la nómina, a cargo del empleador', '4 % a cargo del empleado', '8 % a cargo del empleador', '2 % a cargo del empleador'], e: 'La caja de compensación la paga el empleador: 4 % del IBC.' },
+  { t: 'nom', q: 'Para calcular cesantías y prima, la base salarial...', o: ['Incluye el auxilio de transporte', 'Excluye el auxilio de transporte', 'Es solo el salario mínimo', 'Incluye solo las horas extras'], e: 'El auxilio de transporte hace parte de la base de cesantías y prima, pero no del IBC de seguridad social.' },
+  { t: 'nom', q: 'Salario $2.000.000 más comisiones $200.000. Con salud 4 % y pensión 4 % sobre $2.200.000 (sin auxilio), ¿cuál es el neto a pagar?', o: ['$2.024.000', '$2.112.000', '$1.936.000', '$2.200.000'], e: 'Deducciones: 2.200.000 × 8 % = 176.000. Neto: 2.200.000 − 176.000 = 2.024.000.' },
+  // ---- Asientos contables ----
+  { t: 'asi', q: 'La ecuación contable básica es...', o: ['Activo = Pasivo + Patrimonio', 'Activo = Pasivo − Patrimonio', 'Pasivo = Activo + Patrimonio', 'Patrimonio = Activo + Pasivo'], e: 'Lo que la empresa tiene (activo) lo financian terceros (pasivo) o los dueños (patrimonio).' },
+  { t: 'asi', q: 'En la partida doble, todo asiento cumple que...', o: ['Débitos = Créditos', 'Débitos > Créditos', 'Créditos > Débitos', 'Solo se registra un lado'], e: 'Cada hecho afecta al menos dos cuentas y las sumas de débito y crédito deben ser iguales.' },
+  { t: 'asi', q: 'La cuenta Caja (1105) es de naturaleza débito. Eso significa que...', o: ['Aumenta con un débito y disminuye con un crédito', 'Aumenta con un crédito', 'Nunca cambia', 'Solo se usa en el cierre'], e: 'Los activos aumentan por el débito y disminuyen por el crédito.' },
+  { t: 'asi', q: 'Compra de mercancía de contado, pagada por banco. ¿Qué se debita y qué se acredita (sin IVA)?', o: ['Débito Inventarios, crédito Bancos', 'Débito Bancos, crédito Inventarios', 'Débito Proveedores, crédito Inventarios', 'Débito Gastos, crédito Caja'], e: 'Entra mercancía (inventarios sube) y sale dinero del banco.' },
+  { t: 'asi', q: '¿Qué cuenta registra lo que nos deben los clientes por ventas a crédito?', o: ['1305 Clientes', '2205 Proveedores', '1105 Caja', '3105 Capital social'], e: 'Clientes es un activo: un derecho de cobro.' },
+  { t: 'asi', q: '¿Qué cuenta registra lo que la empresa debe a sus proveedores por compras a crédito?', o: ['2205 Proveedores', '1305 Clientes', '1435 Inventarios', '4135 Ingresos'], e: 'Proveedores es un pasivo.' },
+  { t: 'asi', q: 'En el PUC colombiano, la clase 4 corresponde a...', o: ['Ingresos', 'Gastos', 'Costos de ventas', 'Pasivos'], e: 'Clase 1 Activo, 2 Pasivo, 3 Patrimonio, 4 Ingresos, 5 Gastos, 6 Costos de ventas, 7 Costos de producción.' },
+  { t: 'asi', q: 'Venta a crédito sin IVA. ¿Cuál es el asiento?', o: ['Débito Clientes, crédito Ingresos', 'Débito Ingresos, crédito Clientes', 'Débito Caja, crédito Clientes', 'Débito Inventarios, crédito Ingresos'], e: 'Nace un derecho de cobro (Clientes sube) y se reconoce el ingreso.' },
+  { t: 'asi', q: 'Al registrar la depreciación del mes, ¿qué se acredita?', o: ['Depreciación acumulada', 'Caja', 'El activo directamente', 'Capital social'], e: 'Se debita el gasto de depreciación y se acredita la depreciación acumulada (1592).' },
+  { t: 'asi', q: 'En una conciliación bancaria, un cheque girado y aún no cobrado...', o: ['Se resta al saldo del extracto', 'Se suma al saldo del extracto', 'Se suma a los libros', 'Se ignora'], e: 'El banco aún no lo ha descontado, pero la empresa ya lo registró.' },
+  { t: 'asi', q: 'En una conciliación, un depósito en tránsito...', o: ['Se suma al saldo del extracto', 'Se resta al saldo del extracto', 'Se resta a los libros', 'Es un error del banco'], e: 'Ya lo consignó la empresa, pero el banco todavía no lo refleja.' },
+  { t: 'asi', q: 'Los socios aportan $20.000.000 en dinero al banco. ¿Cómo se registra?', o: ['Débito Bancos, crédito Capital social', 'Débito Capital social, crédito Bancos', 'Débito Ingresos, crédito Bancos', 'Débito Bancos, crédito Clientes'], e: 'Sube el activo Bancos y sube el patrimonio (Capital social 3105).' },
+  { t: 'asi', q: 'El banco cobró una comisión que no estaba en libros. ¿Qué hace la empresa?', o: ['Registra el gasto y acredita Bancos', 'Nada, es problema del banco', 'Debita Bancos', 'Acredita Clientes'], e: 'Se registra una nota débito: gasto financiero y menor saldo en Bancos.' },
+  { t: 'asi', q: 'Al vender mercancía, además del ingreso se registra el costo de ventas. ¿Cómo?', o: ['Débito Costo de ventas, crédito Inventarios', 'Débito Inventarios, crédito Costo de ventas', 'Débito Ingresos, crédito Inventarios', 'Débito Clientes, crédito Costo de ventas'], e: 'La mercancía sale del inventario y su costo se reconoce como costo de ventas.' },
+  // ---- Finanzas básicas ----
+  { t: 'fin', q: 'Capital $1.000.000 al 2 % mensual de interés simple durante 6 meses. ¿Cuánto es el interés?', o: ['$120.000', '$126.162', '$20.000', '$60.000'], e: 'I = C × i × t = 1.000.000 × 0,02 × 6 = 120.000.' },
+  { t: 'fin', q: 'En el interés compuesto...', o: ['Los intereses ganan intereses', 'El interés es siempre el mismo valor', 'No hay capitalización', 'Solo se calcula sobre la última cuota'], e: 'Los intereses se suman al capital y en el periodo siguiente también generan intereses.' },
+  { t: 'fin', q: '$1.000.000 al 10 % efectivo anual durante 2 años. ¿Cuál es el valor futuro?', o: ['$1.210.000', '$1.200.000', '$1.100.000', '$1.020.000'], e: 'VF = 1.000.000 × (1,10)² = 1.210.000.' },
+  { t: 'fin', q: 'Si el VPN de un proyecto es positivo...', o: ['El proyecto genera valor y conviene', 'El proyecto pierde dinero', 'Debe rechazarse siempre', 'No sirve para decidir'], e: 'VPN > 0 significa que rinde más que la tasa de descuento exigida.' },
+  { t: 'fin', q: 'La TIR es...', o: ['La tasa que hace el VPN igual a cero', 'La tasa de inflación', 'El interés de mora', 'El rendimiento de una cuenta de ahorros'], e: 'Es la rentabilidad propia del proyecto.' },
+  { t: 'fin', q: 'La razón corriente se calcula como...', o: ['Activo corriente ÷ Pasivo corriente', 'Pasivo corriente ÷ Activo corriente', 'Activo total ÷ Patrimonio', 'Ventas ÷ Inventarios'], e: 'Mide cuántos pesos de activo de corto plazo hay por cada peso de deuda de corto plazo.' },
+  { t: 'fin', q: 'La prueba ácida es...', o: ['(Activo corriente − Inventarios) ÷ Pasivo corriente', 'Activo corriente ÷ Pasivo corriente', 'Utilidad ÷ Ventas', 'Pasivo ÷ Activo'], e: 'Es más exigente que la razón corriente porque excluye los inventarios.' },
+  { t: 'fin', q: 'Costos fijos $12.000.000, precio $25.000 y costo variable unitario $15.000. ¿Cuál es el punto de equilibrio en unidades?', o: ['1.200', '480', '800', '2.400'], e: 'PE = CF ÷ (P − CVu) = 12.000.000 ÷ 10.000 = 1.200 unidades.' },
+  { t: 'fin', q: 'En un crédito de cuota fija (sistema francés)...', o: ['La cuota es igual y los intereses van bajando', 'El abono a capital es igual en todas las cuotas', 'Los intereses suben cada mes', 'No se pagan intereses'], e: 'Con cuota fija, al inicio se paga más interés y con el tiempo crece la parte de capital.' },
+  { t: 'fin', q: 'Una tasa nominal del 24 % con capitalización mensual da una tasa efectiva anual...', o: ['Mayor al 24 %', 'Menor al 24 %', 'Igual al 24 %', 'Del 12 %'], e: 'Por la capitalización, la efectiva anual es (1,02)¹² − 1 ≈ 26,82 %.' },
+  { t: 'fin', q: 'El margen bruto se calcula como...', o: ['(Ventas − Costo de ventas) ÷ Ventas', 'Utilidad neta ÷ Activo', 'Costo de ventas ÷ Ventas', 'Gastos ÷ Ventas'], e: 'Muestra qué parte de cada peso vendido queda después de cubrir el costo de lo vendido.' },
+  { t: 'fin', q: 'Una rotación de inventario alta indica que...', o: ['El inventario se vende rápido', 'Hay mucha mercancía parada', 'La empresa no vende', 'Hay pérdidas seguras'], e: 'Rotación = costo de ventas ÷ inventario promedio; cuanto mayor, más ágil es la venta.' },
+  { t: 'fin', q: 'Un equipo cuesta $12.000.000, valor residual $0 y vida útil de 5 años. ¿Cuál es la depreciación anual en línea recta?', o: ['$2.400.000', '$1.200.000', '$3.000.000', '$600.000'], e: '(12.000.000 − 0) ÷ 5 = 2.400.000.' },
+  { t: 'fin', q: 'Una anualidad es...', o: ['Una serie de pagos iguales a intervalos regulares', 'Un pago único al final del año', 'Un impuesto anual', 'Un préstamo sin cuotas'], e: 'Por ejemplo, ahorrar la misma cantidad cada mes.' }
+];
+
+(function () {
+  const $ = (s, r) => (r || document).querySelector(s);
+  function el(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const k in (attrs || {})) {
+      const v = attrs[k];
+      if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (v === true) e.setAttribute(k, '');
+      else if (v !== false && v != null) e.setAttribute(k, v);
+    }
+    kids.flat().forEach(c => { if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c))); });
+    return e;
+  }
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#888';
+  const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+  const rnd = n => Math.floor(Math.random() * n);
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const LETTERS = ['A', 'B', 'C', 'D'];
+  const SPIN_MS = 4200;
+
+  // ---------- transporte: sala en línea (Firebase) o modo de prueba local ----------
+  function makeLocal() {
+    const KEY = 'ruleta-demo-db'; let L = [];
+    const load = () => { try { return JSON.parse(LS.get(KEY) || '{}'); } catch (e) { return {}; } };
+    let mem = load();
+    const getP = (o, p) => p.split('/').reduce((a, k) => (a == null ? null : a[k]), o);
+    const setP = (o, p, v) => { const ks = p.split('/'); let a = o; ks.slice(0, -1).forEach(k => { if (typeof a[k] !== 'object' || a[k] === null) a[k] = {}; a = a[k]; }); if (v === null) delete a[ks[ks.length - 1]]; else a[ks[ks.length - 1]] = v; };
+    const notify = () => L.forEach(l => { const v = getP(mem, l.path), s = JSON.stringify(v); if (s !== l.last) { l.last = s; l.cb(v == null ? null : JSON.parse(s)); } });
+    window.addEventListener('storage', e => { if (e.key === KEY) { mem = load(); notify(); } });
+    setInterval(() => { mem = load(); notify(); }, 1000);
+    return {
+      mode: 'local', now: () => Date.now(),
+      set(p, v) { mem = load(); setP(mem, p, v === undefined ? null : v); LS.set(KEY, JSON.stringify(mem)); notify(); },
+      on(p, cb) { const l = { path: p, cb, last: undefined }; L.push(l); mem = load(); const v = getP(mem, p); l.last = JSON.stringify(v); cb(v == null ? null : JSON.parse(l.last)); return () => { L = L.filter(x => x !== l); }; }
+    };
+  }
+  function makeFirebase(cfg) {
+    firebase.initializeApp(cfg); const db = firebase.database(); let off = 0;
+    db.ref('.info/serverTimeOffset').on('value', s => { off = s.val() || 0; });
+    return {
+      mode: 'firebase', now: () => Date.now() + off, set: (p, v) => db.ref(p).set(v === undefined ? null : v),
+      on(p, cb) { const r = db.ref(p), f = r.on('value', s => cb(s.val())); return () => r.off('value', f); }
+    };
+  }
+  function loadScript(src) { return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); }); }
+  async function initTransport() {
+    const cfg = window.RULETA_CONFIG;
+    if (cfg && cfg.databaseURL) {
+      try {
+        await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+        await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js');
+        return makeFirebase(cfg);
+      } catch (e) { return Object.assign(makeLocal(), { failed: true }); }
+    }
+    return makeLocal();
+  }
+
+  // ---------- estado ----------
+  const app = $('#app'), top = $('#tag');
+  { const nat = Element.prototype.append; app.append = (...n) => nat.apply(app, n.flat().filter(x => x != null && x !== false)); }
+  let T, role = null, code = null, pid = null, myName = '', room = null, offRoom = null, lastSig = '';
+  // ---------- preguntas propias del docente (se guardan solo en este navegador) ----------
+  const PAL = ['--fin', '--lab', '--tri', '--con', '--inv'];
+  function parseQs(text) {
+    const topics = [], bank = [], errs = []; let tid = null, blk = [], ln0 = 0;
+    const flush = () => {
+      if (!blk.length) return; const lines = blk; blk = [];
+      if (!tid) { errs.push('Antes de la línea ' + ln0 + ' falta una línea de tema (ejemplo: # Tema: Inventarios).'); return; }
+      const q = lines[0]; let ok = -1, expl = ''; const opts = [];
+      lines.slice(1).forEach(l => {
+        if (/^(explicaci[oó]n|=)\s*:?/i.test(l)) { expl = l.replace(/^(explicaci[oó]n\s*:?|=)\s*/i, ''); return; }
+        if (l[0] === '*') { ok = opts.length; opts.push(l.slice(1).trim()); } else opts.push(l.replace(/^[A-Da-d][).]\s+/, '').trim());
+      });
+      if (opts.length !== 4) { errs.push('La pregunta “' + q.slice(0, 40) + '…” debe tener 4 opciones y tiene ' + opts.length + '.'); return; }
+      if (ok < 0) { errs.push('La pregunta “' + q.slice(0, 40) + '…” no tiene la respuesta correcta marcada con *.'); return; }
+      const o = opts.slice(); const c = o.splice(ok, 1)[0]; o.unshift(c);
+      bank.push({ t: tid, q, o, e: expl, custom: 1 });
+    };
+    text.split(/\r?\n/).forEach((raw, i) => {
+      const l = raw.trim(); if (!blk.length) ln0 = i + 1;
+      const m = l.match(/^#\s*(tema\s*:?)?\s*(.+)$/i);
+      if (m && l[0] === '#') { flush(); const name = m[2].trim(); let t = topics.find(x => x.name === name); if (!t) { t = { id: 'c' + topics.length, name, color: PAL[topics.length % PAL.length], custom: 1 }; topics.push(t); } tid = t.id; return; }
+      if (!l) { flush(); return; }
+      blk.push(l);
+    });
+    flush(); return { topics, bank, errs };
+  }
+  let CUSTOM = parseQs(LS.get('ruleta-custom') || '');
+  const ALLT = () => TOPICS.concat(CUSTOM.topics), ALLB = () => BANK.concat(CUSTOM.bank);
+  const defTopics = () => (CUSTOM.topics.length ? CUSTOM.topics : TOPICS).map(t => t.id);
+  let game = { topics: defTopics(), secs: 20, rounds: 40, goal: 8 };
+  let used = {}, cur = null, closeT = null, closing = false, tickT = null, raf = null;
+  const P = p => 'ad360/caballos/' + code + (p ? '/' + p : '');
+  const topicOf = id => { const m = room && room.meta && room.meta.tn && room.meta.tn[id]; return m ? { id, name: m.name, color: m.color } : (ALLT().find(t => t.id === id) || TOPICS[0]); };
+  const players = () => Object.keys((room && room.players) || {}).map(id => ({ id, name: room.players[id].name, j: room.players[id].j }));
+  function board() {
+    const sc = (room && room.scores) || {};
+    return players().map(p => ({ id: p.id, name: p.name, s: (sc[p.id] && sc[p.id].s) || 0, d: sc[p.id] ? sc[p.id].d : null })).sort((a, b) => b.s - a.s || a.name.localeCompare(b.name));
+  }
+
+  // ---------- ruleta ----------
+  function drawWheel(cv, ids, ang) {
+    const c = cv.getContext('2d'), W = cv.width, R = W / 2 - 14, n = ids.length, seg = 2 * Math.PI / n;
+    c.clearRect(0, 0, W, W); c.save(); c.translate(W / 2, W / 2);
+    ids.forEach((id, i) => {
+      const t = topicOf(id), a0 = ang + i * seg;
+      c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R, a0, a0 + seg); c.closePath(); c.fillStyle = css(t.color); c.fill(); c.lineWidth = 4; c.strokeStyle = css('--surface'); c.stroke();
+      c.save(); c.rotate(a0 + seg / 2); c.textAlign = 'right'; c.fillStyle = '#fff'; c.font = '700 ' + Math.round(W * 0.052) + 'px Figtree, sans-serif';
+      const words = t.name.split(' '), lines = words.length > 2 ? [words.slice(0, 2).join(' '), words.slice(2).join(' ')] : [t.name];
+      lines.forEach((ln, k) => c.fillText(ln, R - 22, (k - (lines.length - 1) / 2) * W * 0.06 + W * 0.018));
+      c.restore();
+    });
+    c.beginPath(); c.arc(0, 0, W * 0.07, 0, 7); c.fillStyle = css('--surface'); c.fill(); c.lineWidth = 6; c.strokeStyle = css('--ink'); c.stroke();
+    c.restore();
+  }
+  const ease = x => 1 - Math.pow(1 - x, 3);
+  function runWheel(ids, topic, spinAt, onDone) {
+    cancelAnimationFrame(raf);
+    const k = Math.max(0, ids.indexOf(topic)), seg = 2 * Math.PI / ids.length, end = -Math.PI / 2 - (k + 0.5) * seg + 2 * Math.PI * 6;
+    const step = () => {
+      const cv = $('#wheel'); if (!cv) return;
+      const x = Math.min(1, Math.max(0, (T.now() - spinAt) / SPIN_MS));
+      drawWheel(cv, ids, end * ease(x));
+      if (x < 1) raf = requestAnimationFrame(step); else if (onDone) onDone();
+    };
+    step();
+  }
+  function wheelView(ids, topic, spinAt) {
+    const name = el('div', { class: 'topicname', id: 'tname' }, 'Girando…');
+    const cv = el('canvas', { id: 'wheel', width: 640, height: 640 });
+    setTimeout(() => runWheel(ids, topic, spinAt, () => { const n = $('#tname'); if (n) { n.textContent = topicOf(topic).name; n.style.color = css(topicOf(topic).color); } }), 0);
+    return el('div', { class: 'card stage' }, el('div', { class: 'wheelwrap' }, el('div', { class: 'pointer' }), cv), name);
+  }
+
+  // ---------- pantallas comunes ----------
+  function podium(list) {
+    const t = list.slice(0, 3), cls = ['p1', 'p2', 'p3'];
+    const order = t.length >= 3 ? [1, 0, 2] : t.map((_, i) => i);
+    return el('div', { class: 'podium' }, order.map(i => el('div', { class: cls[i] }, el('span', {}, ['🥇', '🥈', '🥉'][i]), el('b', {}, t[i].name), el('span', {}, t[i].s + ' pts'))));
+  }
+  function boardView(me, max) {
+    const b = board();
+    return el('ol', { class: 'board' }, b.slice(0, max || 10).map((p, i) => el('li', { class: p.id === me ? 'me' : '' },
+      el('span', { class: 'n' }, i + 1), el('span', { class: 'nm' }, p.name), el('span', { class: 'sc' }, p.s, p.d != null && p.d !== 0 ? el('span', { class: 'd ' + (p.d > 0 ? 'p' : 'm') }, (p.d > 0 ? '+' : '') + p.d) : null))));
+  }
+  function timerBlock(st) {
+    return el('div', {}, el('div', { class: 'qmeta' }, el('span', { class: 'chip', style: '--c:' + css(topicOf(st.topic).color) }, topicOf(st.topic).name), el('span', { class: 'muted', style: 'font-weight:700' }, 'Meta: ' + ((room.meta && room.meta.goal) || 8) + ' pasos'), el('span', { class: 'timer', id: 'tm' }, '')), el('div', { class: 'bar-t' }, el('i', { id: 'tb' })));
+  }
+  function startTick(st) {
+    clearInterval(tickT);
+    const f = () => {
+      const tm = $('#tm'), tb = $('#tb'); if (!tm) return clearInterval(tickT);
+      const now = T.now(), left = Math.max(0, st.deadline - now), total = st.deadline - st.start;
+      tm.textContent = now < st.start ? '¡Listos!' : Math.ceil(left / 1000) + ' s';
+      tb.style.width = (now < st.start ? 100 : Math.max(0, left / total * 100)) + '%';
+      tb.style.background = left < 5000 ? css('--bad') : left < total * 0.4 ? css('--inv') : css('--tri');
+      document.querySelectorAll('.ans[data-live]').forEach(b => { b.disabled = now < st.start || left <= 0 || !!(room.answers && room.answers[st.n] && room.answers[st.n][pid]); });
+    };
+    f(); tickT = setInterval(f, 200);
+  }
+  function answersView(st, onPick, mine, reveal) {
+    return el('div', { class: 'answers' }, st.q.o.map((o, i) => {
+      const cls = ['ans']; if (reveal) { if (i === st.correct) cls.push('right'); else cls.push('dim'); }
+      if (mine === i) cls.push('picked');
+      const a = el('button', { class: cls.join(' '), type: 'button', 'data-k': i, 'data-live': onPick ? '1' : null, disabled: !onPick, onclick: () => onPick && onPick(i) },
+        el('b', {}, LETTERS[i]), o, reveal && st.counts ? el('span', { class: 'cnt' }, st.counts[i] || 0) : null);
+      return a;
+    }));
+  }
+
+  function trackView(me, anim) {
+    const goal = (room.meta && room.meta.goal) || 8, sc = room.scores || {}, ps = players().slice().sort((a, b) => a.name.localeCompare(b.name));
+    return el('div', { class: 'track' }, ps.map(p => {
+      const s = (sc[p.id] && sc[p.id].s) || 0, d = (sc[p.id] && sc[p.id].d) || 0, pos = Math.min(1, s / goal), pre = Math.min(1, Math.max(0, s - (anim ? d : 0)) / goal);
+      const h = el('span', { class: 'horse' }, '🐎'); h.style.left = 'calc(' + pre + ' * (100% - 34px))';
+      if (anim && pre !== pos) setTimeout(() => { h.style.left = 'calc(' + pos + ' * (100% - 34px))'; }, 80);
+      return el('div', { class: 'lane' + (p.id === me ? ' me' : '') }, el('span', { class: 'lname' }, p.name), el('span', { class: 'flag' }, '🏁'), h);
+    }));
+  }
+  // ---------- inicio ----------
+  function viewHome() {
+    top.textContent = '';
+    const saved = LS.get('caballos-host-code'), qs = new URLSearchParams(location.search).get('sala');
+    if (qs) return viewJoin(qs.toUpperCase());
+    app.textContent = '';
+    app.append(
+      el('section', { class: 'hero' }, el('div', {}, el('h1', {}, 'Carrera de ', el('em', {}, 'caballos')), el('p', {}, 'Cada estudiante es un caballo: responde bien desde su celular y avanza un paso. Gana el primero en llegar a la meta.')),
+        el('div', { class: 'keys4', 'aria-hidden': 'true' }, ['A', 'B', 'C', 'D'].map((l, i) => el('i', { style: '--c:var(' + ['--fin', '--lab', '--tri', '--con'][i] + ')' }, l)))),
+      el('div', { class: 'choose' },
+        el('div', { class: 'card' }, el('h2', {}, 'Soy estudiante'), el('p', {}, 'Escribe el código de cuatro letras que ves en la pantalla del profesor.'), el('button', { class: 'btn big', type: 'button', onclick: () => viewJoin('') }, 'Entrar a la sala')),
+        el('div', { class: 'card' }, el('h2', {}, 'Soy docente'), el('p', {}, 'Crea una sala, comparte el código y lanza la ruleta desde tu computador.'),
+          el('div', { class: 'row' }, el('button', { class: 'btn alt big', type: 'button', onclick: createRoom }, 'Crear una sala'), saved ? el('button', { class: 'btn ghost', type: 'button', onclick: () => resumeRoom(saved) }, 'Continuar sala ' + saved) : null,  el('button', { class: 'btn ghost', type: 'button', onclick: viewQs }, 'Mis preguntas' + (CUSTOM.bank.length ? ' (' + CUSTOM.bank.length + ')' : ''))))),
+      T.mode === 'local' ? el('div', { class: 'notice' }, T.failed ? 'No se pudo conectar con el servicio en línea. Estás en modo de prueba: solo funciona entre pestañas de este mismo navegador.' : 'Modo de prueba: la sala solo funciona entre pestañas de este mismo navegador. Para jugar con celulares hay que activar la sala en línea (se hace una sola vez, con la guía).') : null);
+  }
+
+  const EJEMPLO = '# Tema: Inventarios\n¿Qué método de inventario vende primero lo que entró primero?\n*PEPS\nUEPS\nPromedio ponderado\nIdentificación específica\nExplicación: PEPS significa primeras en entrar, primeras en salir.\n\n¿Qué documento registra las entradas y salidas de mercancía?\n*Kardex\nBalance general\nRecibo de caja\nExtracto bancario\n\n# Tema: Mi segundo tema\n¿Pregunta de ejemplo?\n*Respuesta correcta\nIncorrecta 1\nIncorrecta 2\nIncorrecta 3\n';
+  function viewQs() {
+    top.textContent = ''; app.textContent = '';
+    const ta = el('textarea', { id: 'qs', rows: '16', spellcheck: 'false', style: 'width:100%;font:15px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink)' });
+    ta.value = LS.get('ruleta-custom') || '';
+    const msg = el('div', { style: 'margin:12px 0;font-weight:700' });
+    const check = () => { const r = parseQs(ta.value); msg.style.color = r.errs.length ? 'var(--bad)' : 'var(--ok)'; msg.textContent = ''; msg.append(r.bank.length + ' preguntas en ' + r.topics.length + ' temas.' + (r.errs.length ? ' Hay ' + r.errs.length + ' problemas:' : '')); if (r.errs.length) msg.append(el('ul', { style: 'margin:6px 0 0;padding-left:20px;font-weight:600' }, r.errs.slice(0, 6).map(e => el('li', {}, e)))); return r; };
+    ta.addEventListener('input', check);
+    const file = el('input', { type: 'file', accept: '.txt,text/plain', style: 'display:none', onchange: e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { ta.value = String(rd.result); check(); }; rd.readAsText(f, 'utf-8'); } });
+    app.append(el('div', { class: 'card' },
+      el('h2', {}, 'Mis preguntas'),
+      el('p', { class: 'muted' }, 'Escribe o pega tus preguntas con este formato. Cada tema empieza con #. La respuesta correcta lleva * al inicio. Cada pregunta tiene exactamente 4 opciones y se separa de la siguiente con una línea en blanco. La explicación es opcional.'),
+      ta, msg,
+      el('div', { class: 'row' },
+        el('button', { class: 'btn alt big', type: 'button', onclick: () => { const r = check(); if (r.errs.length) return; LS.set('ruleta-custom', ta.value.trim()); CUSTOM = r; game = { topics: defTopics(), secs: 20, rounds: 40, goal: 8 }; viewHome(); } }, 'Guardar'),
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => { ta.value = EJEMPLO; check(); } }, 'Poner ejemplo'),
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => file.click() }, 'Cargar archivo .txt'), file,
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => viewHome() }, 'Volver')),
+      el('p', { class: 'muted', style: 'margin-top:14px' }, 'Las preguntas se guardan en este computador y navegador. Si abres la ruleta en otro equipo, vuelve a pegarlas. Si borras todo y guardas, se usan otra vez las preguntas de ejemplo.')));
+    check();
+  }
+
+  // ---------- estudiante ----------
+  function viewJoin(prefill) {
+    role = 'join'; app.textContent = '';
+    const ci = el('input', { type: 'text', class: 'code', id: 'code', maxlength: '4', autocomplete: 'off', placeholder: 'ABCD', value: prefill || '' });
+    const ni = el('input', { type: 'text', id: 'nm', maxlength: '20', autocomplete: 'off', placeholder: 'Tu nombre', value: LS.get('ruleta-name') || '' });
+    const err = el('p', { style: 'color:var(--bad);font-weight:700;min-height:1.4em;margin:0 0 8px' });
+    const go = () => {
+      const c = ci.value.trim().toUpperCase(), n = ni.value.trim();
+      if (c.length !== 4) { err.textContent = 'El código tiene 4 letras.'; return; }
+      if (n.length < 2) { err.textContent = 'Escribe tu nombre.'; return; }
+      joinRoom(c, n, err);
+    };
+    ni.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    app.append(el('div', { class: 'card', style: 'max-width:520px;margin:0 auto' }, el('h2', { style: 'margin-bottom:14px' }, 'Entrar a la sala'),
+      el('div', { class: 'field' }, el('label', { for: 'code' }, 'Código de la sala'), ci), el('div', { class: 'field' }, el('label', { for: 'nm' }, 'Tu nombre'), ni), err,
+      el('button', { class: 'btn big', type: 'button', style: 'width:100%', onclick: go }, 'Entrar')));
+  }
+  function joinRoom(c, n, err) {
+    let first = true, off = null;
+    code = c; myName = n; const pk = 'ruleta-pid-' + c + '-' + n.toLowerCase(); pid = LS.get(pk) || Math.random().toString(36).slice(2, 10); LS.set(pk, pid); LS.set('ruleta-name', n);
+    off = T.on(P(), v => {
+      if (first) {
+        first = false;
+        if (!v || !v.meta) { off(); code = null; err.textContent = 'No encontramos esa sala. Revisa el código.'; return; }
+        T.set(P('players/' + pid), { name: n, j: T.now() });
+        role = 'student'; top.textContent = 'Sala ' + c; offRoom = off;
+      }
+      room = v; if (role === 'student') render();
+    });
+  }
+  function myAnswer(n) { return room.answers && room.answers[n] && room.answers[n][pid] ? room.answers[n][pid].c : null; }
+  function renderStudent() {
+    const st = room.st || { phase: 'lobby' }, sc = (room.scores && room.scores[pid]) || null, b = board(), rank = b.findIndex(p => p.id === pid) + 1;
+    const head = el('div', { class: 'row', style: 'justify-content:space-between;margin-bottom:12px' }, el('span', { class: 'who' }, myName), el('span', { class: 'me-score' }, (sc ? sc.s : 0) + ' pts' + (rank ? ' · puesto ' + rank : '')));
+    app.textContent = '';
+    if (st.phase === 'lobby') {
+      app.append(head, el('div', { class: 'card stage' }, el('h2', {}, '¡Ya estás dentro!'), el('p', { class: 'muted' }, 'Espera a que el profesor largue la carrera.'), el('p', { class: 'who', id: 'cnt' }, players().length + ' en la sala')));
+    } else if (st.phase === 'spin') {
+      app.append(head, wheelView(room.meta.topics, st.topic, st.spinAt));
+    } else if (st.phase === 'question') {
+      const mine = myAnswer(st.n);
+      app.append(head, el('div', { class: 'card qbox' }, timerBlock(st), el('p', { class: 'qtext' }, st.q.t), answersView(st, i => { if (myAnswer(st.n) == null) { T.set(P('answers/' + st.n + '/' + pid), { c: i, t: T.now() }); } }, mine, false),
+        el('p', { class: 'muted', id: 'sw', style: 'text-align:center;font-weight:700;margin:14px 0 0' }, mine != null ? 'Respuesta enviada. Espera el resultado…' : '')));
+      startTick(st);
+    } else if (st.phase === 'reveal') {
+      const mine = myAnswer(st.n), ok = sc ? sc.ok : 0, d = sc ? sc.d : 0, wn = st.win ? players().find(p => p.id === st.win) : null;
+      app.append(head, wn ? el('div', { class: 'res ok' }, el('div', { class: 'big' }, '🏆 ¡Ganó ' + wn.name + '!')) : null, el('div', { class: 'res ' + (ok === 1 ? 'ok' : 'bad') }, el('div', {}, el('div', { class: 'big' }, ok === 1 ? '¡Correcto!' : ok === -1 ? 'Incorrecta' : 'Sin respuesta'), el('div', { class: 'muted' }, ok === 1 ? 'Tu caballo avanza un paso.' : ok === -1 ? 'Tu caballo no avanza.' : 'Se acabó el tiempo.')), el('div', { class: 'pts' }, (d > 0 ? '+' : '') + d)),
+        el('div', { class: 'card qbox' }, el('p', { class: 'qtext' }, st.q.t), answersView(st, null, mine, true), el('div', { class: 'expl' }, el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. ', st.expl)),
+        el('div', { class: 'sp' }), el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, '🏁 La carrera'), trackView(pid, true)), el('div', { class: 'sp' }), el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, 'Ranking'), boardView(pid, 8)));
+    } else {
+      app.append(head, el('div', { class: 'card stage' }, el('h2', {}, '¡Fin del juego!'), podium(b), el('p', { class: 'muted' }, rank ? 'Quedaste en el puesto ' + rank + ' de ' + b.length + ' con ' + (sc ? sc.s : 0) + ' puntos.' : '')), el('div', { class: 'sp' }), el('div', { class: 'card' }, boardView(pid, 20)));
+    }
+  }
+
+  // ---------- docente ----------
+  const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  function createRoom() {
+    code = Array.from({ length: 4 }, () => CODE_CHARS[rnd(CODE_CHARS.length)]).join(''); LS.set('caballos-host-code', code);
+    used = {}; cur = null; role = 'host';
+    T.set(P(), { meta: { topics: game.topics, tn: tnMap(), secs: game.secs, rounds: game.rounds, goal: game.goal, created: T.now() }, st: { phase: 'lobby', n: 0 } });
+    listenHost();
+  }
+  function tnMap() { const o = {}; ALLT().forEach(t => { o[t.id] = { name: t.name, color: t.color }; }); return o; }
+  function resumeRoom(c) { code = c; role = 'host'; used = {}; cur = null; listenHost(); }
+  function listenHost() {
+    top.textContent = 'Sala ' + code; let first = true;
+    offRoom = T.on(P(), v => {
+      room = v;
+      if (first) { first = false; if (!v || !v.meta) { LS.set('caballos-host-code', ''); role = null; code = null; viewHome(); return; } game = { topics: v.meta.topics, secs: v.meta.secs, rounds: v.meta.rounds, goal: v.meta.goal || 8 }; }
+      render(); hostWatch();
+    });
+  }
+  function hostWatch() {
+    const st = room && room.st; if (!st || st.phase !== 'question' || closing || !cur || cur.n !== st.n) return;
+    const ps = players(), ans = (room.answers && room.answers[st.n]) || {};
+    if (ps.length && ps.every(p => ans[p.id])) { closing = true; clearTimeout(closeT); setTimeout(closeQuestion, 700); }
+  }
+  function saveMeta() { if (room && room.st && room.st.phase === 'lobby') T.set(P('meta'), { topics: game.topics, tn: tnMap(), secs: game.secs, rounds: game.rounds, goal: game.goal, created: room.meta.created }); }
+  function hostSpin() {
+    const st = room.st, n = (st.n || 0) + 1, g = room.meta;
+    if (n > g.rounds) return T.set(P('st'), { phase: 'end', n: st.n });
+    const tid = g.topics[rnd(g.topics.length)]; closing = false;
+    launch(n, tid);
+  }
+  function launch(n, tid) {
+    const g = room.meta; const BK = ALLB(); let pool = BK.map((b, i) => i).filter(i => BK[i].t === tid && !used[i]);
+    if (!pool.length) { BK.forEach((b, i) => { if (b.t === tid) delete used[i]; }); pool = BK.map((b, i) => i).filter(i => BK[i].t === tid); }
+    const idx = pool[rnd(pool.length)]; used[idx] = 1; const b = BK[idx], order = shuffle([0, 1, 2, 3]);
+    cur = { n, correct: order.indexOf(0), expl: b.e }; const start = T.now() + 700, deadline = start + g.secs * 1000;
+    T.set(P('st'), { phase: 'question', n, topic: tid, q: { t: b.q, o: order.map(i => b.o[i]) }, start, deadline });
+    clearTimeout(closeT); closing = false; closeT = setTimeout(() => { if (!closing) { closing = true; closeQuestion(); } }, g.secs * 1000 + 1500);
+  }
+  function closeQuestion() {
+    const st = room.st; if (!st || st.phase !== 'question' || !cur || cur.n !== st.n) return;
+    const g = room.meta, ans = (room.answers && room.answers[st.n]) || {}, sc = room.scores || {}, counts = [0, 0, 0, 0];
+    let best = null;
+    players().forEach(p => {
+      if (p.j > st.start) return;
+      const a = ans[p.id]; let d = 0, ok = 0; const valid = !!(a && a.t <= st.deadline + 800 && a.c >= 0 && a.c < 4);
+      if (valid) { counts[a.c]++; if (a.c === cur.correct) { ok = 1; d = 1; } else ok = -1; }
+      const sNew = ((sc[p.id] && sc[p.id].s) || 0) + d;
+      T.set(P('scores/' + p.id), { s: sNew, d, ok });
+      if (sNew >= (g.goal || 8) && (!best || sNew > best.s || (sNew === best.s && valid && a.t < best.t))) best = { id: p.id, s: sNew, t: valid ? a.t : 9e15 };
+    });
+    T.set(P('st'), Object.assign({}, st, { phase: 'reveal', correct: cur.correct, expl: cur.expl, counts, win: best ? best.id : null }));
+  }
+  function qrDraw(url) { const b = $('#qr'); if (!b) return; b.textContent = ''; if (window.QRCode) { try { new QRCode(b, { text: url, width: 150, height: 150 }); return; } catch (e) { } } b.style.display = 'none'; }
+  function renderHost() {
+    const st = room.st || { phase: 'lobby' }, g = room.meta, url = location.origin + location.pathname + '?sala=' + code, ps = players();
+    app.textContent = '';
+    const side = el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, st.phase === 'lobby' ? 'En la sala (' + ps.length + ')' : 'Ranking'),
+      st.phase === 'lobby' ? (ps.length ? el('ol', { class: 'board' }, ps.map((p, i) => el('li', {}, el('span', { class: 'n' }, i + 1), el('span', { class: 'nm' }, p.name), el('span')))) : el('p', { class: 'muted' }, 'Aún no entra nadie. Pide a tus estudiantes que abran el enlace o escaneen el código QR.')) : boardView(null, 12));
+    let main;
+    if (st.phase === 'lobby') {
+      const tp = el('div', { class: 'opts' }, ALLT().filter(t => ALLB().some(b => b.t === t.id)).map(t => el('label', { class: 'chk' }, el('input', { type: 'checkbox', checked: game.topics.includes(t.id), onchange: e => { game.topics = ALLT().filter(x => (x.id === t.id ? e.target.checked : game.topics.includes(x.id))).map(x => x.id); if (!game.topics.length) { game.topics = [t.id]; } saveMeta(); } }), t.name + ' (' + ALLB().filter(b => b.t === t.id).length + ')')));
+      const seg = (arr, key, suf) => el('div', { class: 'seg' }, arr.map(v => el('button', { type: 'button', 'aria-pressed': String(game[key] === v), onclick: () => { game[key] = v; saveMeta(); } }, v + suf)));
+      main = el('div', { class: 'card' },
+        el('div', { class: 'joinbox' }, el('div', {}, el('div', { class: 'muted', style: 'font-weight:700' }, 'Código de la sala'), el('div', { class: 'roomcode' }, code), el('p', { class: 'muted', style: 'margin:8px 0 0;word-break:break-all' }, 'Enlace: ', el('b', {}, url))), el('div', { id: 'qr' })),
+        el('div', { class: 'sp' }), el('h3', {}, 'Temas'), tp, el('h3', {}, 'Segundos por pregunta'), el('div', { style: 'margin:8px 0 16px' }, seg([15, 20, 30, 45], 'secs', ' s')),
+        el('h3', {}, 'Meta de la carrera (respuestas correctas para ganar)'), el('div', { style: 'margin:8px 0 20px' }, seg([5, 8, 10, 15], 'goal', ' pasos')),
+        el('button', { class: 'btn alt big', type: 'button', disabled: !ps.length, onclick: () => { saveMeta(); hostSpin(); } }, ps.length ? '¡Largar la carrera!' : 'Esperando estudiantes…'));
+      setTimeout(() => qrDraw(url), 0);
+    } else if (st.phase === 'spin') {
+      main = wheelView(g.topics, st.topic, st.spinAt);
+    } else if (st.phase === 'question') {
+      main = el('div', { class: 'card qbox' }, timerBlock(st), el('p', { class: 'qtext' }, st.q.t), answersView(st, null, null, false), el('p', { class: 'muted', id: 'acount', style: 'font-weight:700;margin:16px 0 0' }, ''));
+      setTimeout(() => startTick(st), 0);
+    } else if (st.phase === 'reveal') {
+      const last = !!st.win || st.n >= g.rounds;
+      main = el('div', { class: 'card qbox' }, el('p', { class: 'qtext' }, st.q.t), answersView(st, null, null, true), el('div', { class: 'expl' }, el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. ', st.expl),
+        el('div', { class: 'row', style: 'margin-top:18px' }, el('button', { class: 'btn alt big', type: 'button', onclick: () => (last ? T.set(P('st'), { phase: 'end', n: st.n }) : hostSpin()) }, last ? 'Ver el podio' : 'Siguiente pregunta →')));
+    } else {
+      const b = board();
+      main = el('div', { class: 'card stage' }, el('h2', {}, '¡Tenemos ganador!'), b.length ? podium(b) : null, el('div', { class: 'row', style: 'justify-content:center' }, el('button', { class: 'btn big', type: 'button', onclick: () => { LS.set('caballos-host-code', ''); location.href = location.pathname; } }, 'Nueva sala')));
+    }
+    if (st.phase === 'question' || st.phase === 'reveal' || st.phase === 'end') {
+      const wp = st.win ? ps.find(p => p.id === st.win) : null;
+      main = el('div', {}, wp ? el('div', { class: 'res ok' }, el('div', { class: 'big' }, '🏆 ¡Ganó ' + wp.name + '!')) : null, main, el('div', { class: 'sp' }), el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, '🏁 La carrera'), trackView(null, st.phase === 'reveal')));
+    }
+    const endBtn = st.phase !== 'lobby' && st.phase !== 'end' ? el('div', { style: 'margin-top:12px;text-align:right' }, el('button', { class: 'btn ghost', type: 'button', onclick: () => { clearTimeout(closeT); T.set(P('st'), { phase: 'end', n: st.n }); } }, 'Terminar el juego')) : null;
+    app.append(el('div', { class: 't-grid' }, el('div', {}, main, endBtn), side));
+    dynHost();
+  }
+  function dynHost() {
+    const st = room.st, a = $('#acount'); if (!a || !st || st.phase !== 'question') return;
+    const ans = (room.answers && room.answers[st.n]) || {}; a.textContent = Object.keys(ans).length + ' de ' + players().length + ' han respondido';
+  }
+
+  // ---------- render ----------
+  function render() {
+    const st = (room && room.st) || {}, extra = role === 'host' && st.phase === 'lobby' ? players().map(p => p.id).join(',') + game.secs + game.rounds + game.goal + game.topics.join('') : '';
+    const sig = role + '|' + st.phase + '|' + st.n + '|' + (role === 'student' && st.phase === 'question' ? myAnswer(st.n) : '') + '|' + (role === 'student' && st.phase === 'lobby' ? players().length : '') + '|' + (role === 'student' && st.phase === 'reveal' && room.scores && room.scores[pid] ? room.scores[pid].s : '') + '|' + extra;
+    if (sig === lastSig) { if (role === 'host') dynHost(); if (role === 'student') { const sw = $('#sw'); if (sw) sw.textContent = myAnswer(st.n) != null ? 'Respuesta enviada. Espera el resultado…' : ''; } return; }
+    lastSig = sig; clearInterval(tickT);
+    if (role === 'host') renderHost(); else if (role === 'student') renderStudent();
+  }
+
+  initTransport().then(t => { T = t; viewHome(); });
+})();
+</script>
+</body></html>
