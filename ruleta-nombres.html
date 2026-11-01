@@ -1,267 +1,581 @@
 <!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ruleta de estudiantes · Aula Didáctica 360</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Ruleta de Estudiantes</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
-<link rel="stylesheet" href="estilos.css">
-</head>
-<body>
-
-<header>
-  <h1 id="titulo"></h1>
-  <span id="miInfo"></span>
-  <a id="linkJuegos" href="index.html" hidden>← Juegos</a>
-</header>
-
-<main>
-  <div id="bannerCfg" class="banner" hidden>
-    <b>Falta conectar Firebase.</b> Abre el archivo <code>config.js</code> y pega tu configuración (apiKey y databaseURL).
-    Mientras tanto solo funciona la pantalla "Mis preguntas".
-  </div>
-
-  <!-- ======================= ESTUDIANTE: ENTRAR ======================= -->
-  <section id="vEntrar" hidden>
-    <div class="card">
-      <h2>Entrar a la partida</h2>
-      <label for="inCodigo">Código de sala (te lo muestra el profesor)</label>
-      <input id="inCodigo" inputmode="numeric" maxlength="4" placeholder="Ej: 4821" autocomplete="off">
-      <label for="inNombre">Tu nombre</label>
-      <input id="inNombre" maxlength="24" placeholder="Nombre y apellido" autocomplete="off">
-      <p id="errEntrar" class="muted" style="color:var(--bad)"></p>
-      <button id="btnEntrar" style="width:100%">Entrar</button>
-    </div>
-  </section>
-
-  <!-- ======================= ESTUDIANTE: JUEGO ======================= -->
-  <section id="vEst" hidden>
-    <div class="card" id="estPanel"></div>
-    <div class="card" id="estRankCard" hidden>
-      <h2>🏆 Ranking en vivo</h2>
-      <div id="estRank"></div>
-    </div>
-  </section>
-
-  <!-- ======================= PROFESOR: CLAVE ======================= -->
-  <section id="vClave" hidden>
-    <div class="card">
-      <h2>Panel del profesor</h2>
-      <label for="inClave">Clave</label>
-      <input id="inClave" type="password" placeholder="Clave del profesor" autocomplete="off">
-      <p id="errClave" class="muted" style="color:var(--bad)"></p>
-      <button id="btnClave" style="width:100%">Abrir panel</button>
-    </div>
-  </section>
-
-  <!-- ======================= PROFESOR: PANEL ======================= -->
-  <section id="vProfe" hidden>
-    <div class="tabs">
-      <button id="tbPreg" class="on">📝 Mis preguntas</button>
-      <button id="tbPart">🎮 Partida</button>
-    </div>
-
-    <!-- ---------- Mis preguntas ---------- -->
-    <div id="tabPreg">
-      <div class="card">
-        <h2>📚 Bancos de preguntas listos</h2>
-        <p class="muted">Elige un tema y agrégalo con un clic: ya trae preguntas de selección múltiple, verdadero/falso y descriptivas, sin escribir nada.</p>
-        <div class="row">
-          <select id="selBanco" style="flex:1 1 220px"></select>
-          <button id="btnBanco">Agregar al banco</button>
-        </div>
-        <p id="resBanco" class="muted"></p>
-      </div>
-
-      <div class="card">
-        <h2 id="tituloForm">Agregar pregunta</h2>
-        <label for="pTipo">Tipo de pregunta</label>
-        <select id="pTipo">
-          <option value="multiple">Selección múltiple (única respuesta)</option>
-          <option value="vf">Verdadero / Falso</option>
-          <option value="desc">Descriptiva (respuesta abierta)</option>
-        </select>
-        <label>Tema (opcional, aparece en la ruleta)</label>
-        <input id="pTema" maxlength="14" placeholder="Ej: IVA">
-        <label>Pregunta</label>
-        <textarea id="pTexto" placeholder="Escribe la pregunta"></textarea>
-
-        <div id="boxMultiple">
-          <div class="grid2">
-            <div><label>Opción A</label><input id="pA"></div>
-            <div><label>Opción B</label><input id="pB"></div>
-            <div><label>Opción C</label><input id="pC"></div>
-            <div><label>Opción D</label><input id="pD"></div>
-          </div>
-          <label>Respuesta correcta</label>
-          <select id="pOk"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
-        </div>
-        <div id="boxVF" hidden>
-          <label>Respuesta correcta</label>
-          <select id="pVF"><option value="0">Verdadero</option><option value="1">Falso</option></select>
-        </div>
-        <div id="boxDesc" hidden>
-          <label>Respuesta modelo o criterio de calificación (solo la ves tú)</label>
-          <textarea id="pModelo" placeholder="Ej: Debe mencionar que Activo = Pasivo + Patrimonio"></textarea>
-        </div>
-
-        <label id="lblSeg">Segundos</label>
-        <input id="pSeg" type="number" min="5" max="600" value="20">
-        <p id="errForm" class="muted" style="color:var(--bad)"></p>
-        <div class="row">
-          <button id="btnGuardarP">Guardar pregunta</button>
-          <button id="btnCancelar" class="sec" hidden>Cancelar edición</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Mis preguntas <span id="contP" class="muted"></span></h2>
-        <div id="listaP"></div>
-        <div class="row" style="margin-top:8px">
-          <button id="btnEjemplo" class="sec">Cargar 3 de ejemplo</button>
-          <button id="btnBajar" class="sec">⬇ Descargar copia</button>
-          <button id="btnSubir" class="sec">⬆ Cargar archivo (.txt o .json)</button>
-          <button id="btnBorrarTodo" class="red">Borrar todas</button>
-          <input id="fileCopia" type="file" accept=".txt,.json,text/plain,application/json" hidden>
-        </div>
-        <p class="muted">Tus preguntas se guardan en este navegador y las usan las dos ruletas. Descarga una copia de vez en cuando, por si cambias de equipo.</p>
-      </div>
-
-      <div class="card">
-        <h2>Pegar muchas preguntas de una vez</h2>
-        <p class="muted">Pega todo el bloque (o sube un archivo .txt con el botón de arriba). La página detecta sola si cada pregunta es de selección múltiple, verdadero/falso o descriptiva. Formato:</p>
-        <p class="muted"><code>1. ¿Cuál es un activo?<br>A. Proveedores<br>B. Caja<br>C. Capital<br>D. Ingresos<br>Respuesta: B</code></p>
-        <p class="muted"><code>2. Verdadero o falso: El IVA es un impuesto indirecto.<br>Respuesta: Verdadero</code></p>
-        <p class="muted"><code>3. Define qué es un pasivo.<br>Respuesta modelo: Obligaciones con terceros.</code></p>
-        <p class="muted">Opcional en cada pregunta: <code>Tema: IVA</code> y <code>Tiempo: 30</code> (segundos).</p>
-        <textarea id="bulk" style="min-height:160px" placeholder="1. ¿Cuál es un activo?&#10;A. Proveedores&#10;B. Caja&#10;C. Capital&#10;D. Ingresos&#10;Respuesta: B&#10;&#10;2. Verdadero o falso: El IVA es un impuesto indirecto.&#10;Respuesta: Verdadero&#10;&#10;3. Define qué es un pasivo.&#10;Respuesta modelo: Obligaciones con terceros."></textarea>
-        <div class="row" style="margin-top:8px"><button id="btnImportar">Importar preguntas</button></div>
-        <p id="resImport" class="muted"></p>
-      </div>
-    </div>
-
-    <!-- ---------- Partida ---------- -->
-    <div id="tabPartida" hidden>
-      <div id="pSinSala" class="card">
-        <h2>Nueva partida</h2>
-        <p class="muted" id="infoPreg"></p>
-        <label>Tipos de pregunta en esta partida</label>
-        <div class="chips">
-          <label class="chip"><input type="checkbox" id="chkT_multiple" checked> Selección múltiple</label>
-          <label class="chip"><input type="checkbox" id="chkT_vf" checked> Verdadero / Falso</label>
-          <label class="chip"><input type="checkbox" id="chkT_desc" checked> Descriptiva</label>
-        </div>
-        <h3>Puntaje</h3>
-        <div id="tablaPuntaje"></div>
-        <button id="btnCrear">Crear sala</button>
-      </div>
-
-      <div id="pSala" hidden>
-        <div class="card">
-          <div class="codebox">
-            <div class="muted">Código de sala</div>
-            <div class="n" id="sCodigo">----</div>
-            <div class="muted">Los estudiantes abren el enlace de este juego y escriben el código</div>
-          </div>
-          <div class="row" style="justify-content:space-between">
-            <b>👥 <span id="sJug">0</span> jugadores</b>
-            <span class="muted">Preguntas disponibles: <b id="sDisp">0</b></span>
-          </div>
-        </div>
-
-        <!-- Solo Ruleta de estudiantes: agregar nombres a mano -->
-        <div class="card" data-modo="nombres">
-          <h2>Estudiantes</h2>
-          <p class="muted">Los que entren con su celular aparecen solos. También puedes escribir nombres aquí (sirve para quien no tiene celular).</p>
-          <div class="row">
-            <input id="nomNuevo" placeholder="Nombre del estudiante" maxlength="24" style="flex:1 1 180px">
-            <button id="btnNomAdd" class="sec">Agregar</button>
-          </div>
-          <label>O pega una lista (un nombre por línea)</label>
-          <textarea id="nomLista" style="min-height:70px"></textarea>
-          <div class="row" style="margin-top:8px"><button id="btnNomLista" class="sec">Agregar lista</button></div>
-          <label class="chip" style="margin-top:12px!important"><input type="checkbox" id="chkNoRepetir" checked> No repetir estudiante hasta que todos participen</label>
-        </div>
-
-        <!-- Solo Ruleta de estudiantes: lanzar pregunta -->
-        <div class="card center" id="zonaLanzar" data-modo="nombres">
-          <p class="muted">Lanza la pregunta: los estudiantes la leen y piensan su respuesta. Luego giras la ruleta para elegir quién responde.</p>
-          <button id="btnLanzar" class="green">▶ Lanzar pregunta</button>
-        </div>
-
-        <!-- Pregunta (los dos modos) -->
-        <div class="card" id="zonaPregunta" hidden>
-          <div data-modo="preguntas">
-            <div class="timer" id="tTiempo">0</div>
-            <div class="bar"><i id="tBarra"></i></div>
-          </div>
-          <div id="tTipoBox"></div>
-          <div class="qtext" id="tTexto"></div>
-          <div id="tOpc"></div>
-          <div class="modelo" id="tModelo"></div>
-          <div class="row"><button id="btnVer" class="sec">👁 Ver respuesta correcta</button></div>
-
-          <div id="tRespuestas" data-modo="preguntas" hidden>
-            <h3>Respuestas escritas (califícalas aquí)</h3>
-            <div id="listaResp"></div>
-          </div>
-          <p class="muted" data-modo="preguntas">Respuestas recibidas: <b id="tResp">0</b> de <b id="tTotal">0</b></p>
-          <div class="row" data-modo="preguntas">
-            <button id="btnCerrar" class="sec">Cerrar pregunta ya</button>
-            <button id="btnSig" class="green" hidden>Siguiente → girar ruleta</button>
-          </div>
-
-          <div id="turnoBox" data-modo="nombres" hidden>
-            <div class="elegido">
-              <div class="muted">Responde</div>
-              <div class="nom" id="turnoNombre"></div>
-              <div class="timer" id="turnoTiempo">0</div>
-              <div id="turnoRes" class="msg"></div>
-            </div>
-          </div>
-          <div class="row" id="gradeBtns" data-modo="nombres" hidden>
-            <button class="green" data-g="ok" id="gOk">✓ Correcta</button>
-            <button class="amber" data-g="p" id="gP">½ Parcial</button>
-            <button class="red" data-g="mal" id="gMal">✗ Incorrecta</button>
-          </div>
-          <div class="row" style="margin-top:8px" data-modo="nombres">
-            <button id="btnPasar" class="sec" hidden>Pasar turno (sortear otro)</button>
-            <button id="btnSigN" class="green" hidden>Siguiente pregunta →</button>
-          </div>
-        </div>
-
-        <!-- Ruleta (los dos modos) -->
-        <div class="card center" id="zonaRuleta">
-          <p class="muted" id="avisoRonda"></p>
-          <div class="wheelwrap">
-            <div class="pointer"></div>
-            <canvas id="rueda" width="360" height="360"></canvas>
-          </div>
-          <div class="row" style="justify-content:center;margin-top:10px">
-            <button id="btnGirar" class="green">🎡 Girar ruleta</button>
-          </div>
-        </div>
-
-        <!-- Ranking en vivo -->
-        <div class="card">
-          <h2>🏆 Ranking en vivo</h2>
-          <ol class="rank big" id="sRank"></ol>
-          <div class="row" style="margin-top:10px">
-            <button id="btnFin" class="sec">Terminar juego (mostrar ganador)</button>
-            <button id="btnSalir" class="red" hidden>Salir y borrar sala</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+/* Concepto: concurso en vivo. El docente proyecta la ruleta; cada celular es un tablero de cuatro teclas de colores. */
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#EEF2F9; --ink:#0E1B2E; --muted:#56667E; --line:#DAE2EE;
+  --hero:#0E1B2E; --hero-fg:#F2F6FF; --hero-mut:#A9B8D2;
+  --fin:#2459F5; --lab:#D6247A; --tri:#0A9468; --con:#EE4B24; --inv:#F2A900; --oninv:#1E1500;
+  --ok:#0A9468; --ok-s:#D7F4E6; --bad:#D6362B; --bad-s:#FDE3E0; --focus:#F2A900;
+  --shadow:0 1px 2px rgba(14,27,46,.06),0 8px 24px rgba(14,27,46,.07);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%230E1B2E' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-num:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --fin:#7B9DFF; --lab:#FF7DB5; --tri:#3DD6A0; --con:#FF8A66; --inv:#FFC93D;
+  --ok:#3DD6A0; --ok-s:#0E382B; --bad:#FF8585; --bad-s:#4A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --fin:#7B9DFF; --lab:#FF7DB5; --tri:#3DD6A0; --con:#FF8A66; --inv:#FFC93D;
+  --ok:#3DD6A0; --ok-s:#0E382B; --bad:#FF8585; --bad-s:#4A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+body::after{content:"";position:fixed;inset:0;background-image:var(--wm);pointer-events:none;z-index:12}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hero);z-index:30}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:8px}
+h1,h2,h3{font-family:var(--f-display);margin:0;letter-spacing:-.015em;text-wrap:balance}
+.in{width:100%;max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hero);color:var(--hero-fg)}
+.bar .in{display:flex;align-items:center;gap:12px;padding-block:10px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:19px;text-decoration:none;color:inherit;margin-right:auto}
+.logo b{width:34px;height:34px;border-radius:10px;background:var(--inv);color:var(--oninv);display:grid;place-items:center;font-size:20px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.tag{font-family:var(--f-num);font-size:13px;background:rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}
+.back{color:var(--hero-fg);text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:6px 14px}
+main{padding-block:22px 60px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(16px,3vw,26px);box-shadow:var(--shadow);min-width:0}
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:800;font-size:16px;background:var(--fin);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.btn.alt{background:var(--inv);color:var(--oninv)}
+.btn.ghost{background:var(--surface2);color:var(--ink);box-shadow:none;border:2px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.big{padding:16px 30px;font-size:19px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-weight:700;font-size:14px}
+input[type=text]{width:100%;border:2px solid var(--line);background:var(--surface2);border-radius:14px;padding:14px 16px;font-size:20px;font-weight:600}
+input[type=text]:focus{border-color:var(--fin);outline:none;background:var(--surface)}
+input.code{font-family:var(--f-num);letter-spacing:.3em;text-transform:uppercase;text-align:center;font-size:30px}
+.hero{background:var(--hero);color:var(--hero-fg);border-radius:26px;padding:clamp(22px,4vw,42px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.hero h1{font-size:clamp(32px,6vw,56px);line-height:1.02;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--inv)}
+.hero p{color:var(--hero-mut);margin:12px 0 0;max-width:46ch}
+.keys4{display:grid;grid-template-columns:repeat(2,70px);gap:12px;transform:rotate(-5deg)}
+.keys4 i{height:70px;border-radius:18px;background:var(--c);display:grid;place-items:center;font-style:normal;font-family:var(--f-display);font-weight:800;font-size:28px;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.38)}
+@media (max-width:640px){.hero{grid-template-columns:1fr}.keys4{display:none}}
+.choose{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px}
+.choose .card h2{font-size:22px;margin-bottom:6px}
+.choose .card p{margin:0 0 14px;color:var(--muted)}
+.notice{background:#FFF4CF;color:#4B3700;border-radius:14px;padding:10px 14px;font-size:14px;margin-top:14px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .notice{background:#3A3010;color:#FBE7A6}}
+:root[data-theme="dark"] .notice{background:#3A3010;color:#FBE7A6}
+/* docente */
+.t-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:980px){.t-grid{grid-template-columns:1fr}}
+.roomcode{font-family:var(--f-num);font-weight:600;font-size:clamp(46px,9vw,84px);letter-spacing:.14em;line-height:1}
+.joinbox{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+#qr{background:#fff;padding:10px;border-radius:14px;line-height:0}
+.opts{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 16px}
+.chk{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:600;background:var(--surface2)}
+.chk input{width:18px;height:18px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:2px solid var(--line);background:var(--surface2);border-radius:12px;padding:8px 16px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stage{text-align:center}
+.wheelwrap{position:relative;width:min(88vw,420px);margin:0 auto}
+.wheelwrap canvas{width:100%;height:auto;display:block}
+.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:34px solid var(--ink);filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))}
+.topicname{font-family:var(--f-display);font-weight:800;font-size:clamp(24px,4vw,36px);margin:14px 0 0;min-height:1.3em}
+.qbox{text-align:left}
+.qmeta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:5px 14px;color:#fff;background:var(--c,var(--fin))}
+.timer{font-family:var(--f-num);font-weight:600;font-size:clamp(34px,6vw,56px);line-height:1}
+.bar-t{height:14px;border-radius:999px;background:var(--surface2);overflow:hidden;margin:8px 0 18px}
+.bar-t i{display:block;height:100%;width:100%;background:var(--tri);border-radius:999px;transition:width .2s linear,background .3s}
+.qtext{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3.6vw,34px);line-height:1.2;margin:0 0 18px;text-wrap:balance}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.answers{grid-template-columns:1fr}}
+.ans{position:relative;display:flex;align-items:center;gap:12px;text-align:left;border:0;border-radius:18px;padding:16px 16px;min-height:78px;font-weight:700;font-size:clamp(16px,2.4vw,20px);color:#fff;background:var(--c);box-shadow:0 5px 0 rgba(0,0,0,.28);line-height:1.25}
+.ans b{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.25);display:grid;place-items:center;font-family:var(--f-display);font-size:18px}
+.ans[data-k="0"]{--c:var(--fin)}.ans[data-k="1"]{--c:var(--lab)}.ans[data-k="2"]{--c:var(--tri)}.ans[data-k="3"]{--c:var(--con)}
+.ans.dim{opacity:.35}
+.ans.right{outline:5px solid var(--ok);outline-offset:2px}
+.ans.picked::after{content:"✓ Tu respuesta";position:absolute;right:12px;top:8px;font-size:12px;background:rgba(0,0,0,.35);border-radius:999px;padding:1px 10px}
+.ans .cnt{margin-left:auto;font-family:var(--f-num);font-size:20px;background:rgba(0,0,0,.28);border-radius:10px;padding:2px 10px}
+.expl{margin-top:16px;background:var(--surface2);border-radius:16px;padding:14px 18px}
+.res{border-radius:20px;padding:18px 22px;margin-bottom:14px;display:flex;align-items:center;gap:16px}
+.res.ok{background:var(--ok-s);color:var(--ink)}.res.bad{background:var(--bad-s);color:var(--ink)}
+.res .big{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,6vw,44px);line-height:1}
+.res .pts{margin-left:auto;font-family:var(--f-num);font-weight:600;font-size:clamp(26px,5vw,38px)}
+.board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.board li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface2);border-radius:14px;padding:9px 12px;font-weight:700}
+.board li .n{font-family:var(--f-num);color:var(--muted)}
+.board li .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board li .sc{font-family:var(--f-num)}
+.board li .d{font-size:12px;font-family:var(--f-num);margin-left:8px}
+.board li .d.p{color:var(--ok)}.board li .d.m{color:var(--bad)}
+.board li.me{outline:3px solid var(--inv)}
+.board li:nth-child(1) .n{color:var(--inv)}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end;margin:12px 0 20px}
+.podium div{border-radius:18px 18px 0 0;padding:14px 8px;text-align:center;background:var(--surface2)}
+.podium .p1{background:var(--inv);color:var(--oninv);padding-block:34px}
+.podium .p2{padding-block:22px}.podium .p3{padding-block:12px}
+.podium b{display:block;font-family:var(--f-display);font-size:clamp(16px,3vw,26px);overflow:hidden;text-overflow:ellipsis}
+.podium span{font-family:var(--f-num);font-size:18px}
+.muted{color:var(--muted)}
+.ans:disabled{cursor:default}
+.winner{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,7vw,64px);color:var(--inv);line-height:1.1;margin:8px 0;word-break:break-word}
+.names{width:100%;min-height:90px;font:15px/1.5 var(--f-body);padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink)}
+.x{border:0;background:transparent;color:var(--muted);font-weight:800;padding:0 6px;cursor:pointer}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.sp{height:14px}
+.who{font-weight:700;font-size:14px;color:var(--muted)}
+.me-score{font-family:var(--f-num);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.tag:empty{display:none}
+</style>
+</head><body>
+<header class="bar"><div class="in"><a class="logo" href="index.html"><b>🎯</b><span>Ruleta de Estudiantes</span></a><span class="tag" id="tag"></span><a class="back" href="index.html">← Juegos</a></div></header>
+<main class="in" id="app"><p class="muted">Cargando…</p></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="config.js"></script>
-<script src="puntaje.js"></script>
-<script src="bancos.js"></script>
-<script>window.MODO = 'nombres';</script>
-<script src="ruleta-core.js"></script>
-</body>
-</html>
+<script>(function(){var c=window.FIREBASE_CONFIG;if(c&&c.databaseURL&&c.databaseURL.indexOf("PEGAR")<0&&c.apiKey&&c.apiKey.indexOf("PEGAR")<0)window.RULETA_CONFIG=c;})();</script>
+<script>
+// Banco de preguntas: t = tema, q = pregunta, o = opciones (la primera es la correcta; el juego las mezcla), e = explicación
+const TOPICS = [
+  { id: 'iva', name: 'IVA y retención', color: '--tri' },
+  { id: 'nom', name: 'Nómina y prestaciones', color: '--lab' },
+  { id: 'asi', name: 'Asientos contables', color: '--con' },
+  { id: 'fin', name: 'Finanzas básicas', color: '--fin' }
+];
+const BANK = [
+  // ---- IVA y retención ----
+  { t: 'iva', q: '¿Cuál es la tarifa general del IVA en Colombia?', o: ['19 %', '16 %', '5 %', '21 %'], e: 'La tarifa general es del 19 %. Existen tarifas del 5 % y del 0 % para algunos bienes.' },
+  { t: 'iva', q: 'El IVA descontable es...', o: ['El IVA pagado en las compras, que se resta del IVA cobrado en las ventas', 'El IVA que cobramos a los clientes', 'Un descuento comercial al cliente', 'El impuesto de renta del año'], e: 'Se declara IVA por pagar = IVA generado en ventas − IVA descontable en compras.' },
+  { t: 'iva', q: 'Una venta de $1.000.000 antes de IVA, con IVA del 19 %, da un total de...', o: ['$1.190.000', '$1.019.000', '$1.160.000', '$1.900.000'], e: '1.000.000 × 19 % = 190.000 de IVA; total 1.190.000.' },
+  { t: 'iva', q: 'IVA generado $5.000.000 e IVA descontable $3.200.000. ¿Cuánto es el IVA por pagar?', o: ['$1.800.000', '$8.200.000', '$3.200.000', '$5.000.000'], e: '5.000.000 − 3.200.000 = 1.800.000.' },
+  { t: 'iva', q: '¿Qué cuenta del PUC se usa para el IVA generado por pagar?', o: ['2408 Impuesto sobre las ventas por pagar', '1105 Caja', '1305 Clientes', '2205 Proveedores'], e: 'La 2408 reúne el IVA generado y el descontable; su saldo es lo que se paga o se tiene a favor.' },
+  { t: 'iva', q: 'La retención en la fuente es...', o: ['Un recaudo anticipado del impuesto de renta', 'Un descuento por pronto pago', 'Un impuesto municipal', 'Una multa de la DIAN'], e: 'Quien paga retiene un porcentaje y lo consigna a la DIAN como pago anticipado del impuesto del beneficiario.' },
+  { t: 'iva', q: '¿Quién practica la retención en la fuente?', o: ['El comprador o quien hace el pago (agente retenedor)', 'El vendedor', 'El banco siempre', 'El cliente final'], e: 'El agente retenedor retiene al pagar y luego declara y consigna lo retenido.' },
+  { t: 'iva', q: '¿Qué cuenta del PUC registra la retención en la fuente por pagar?', o: ['2365 Retención en la fuente', '2408 IVA por pagar', '1110 Bancos', '4135 Ingresos por ventas'], e: 'La 2365 es un pasivo: la empresa debe consignar lo retenido a la DIAN.' },
+  { t: 'iva', q: 'Por regla general, el ReteIVA es el...', o: ['15 % del valor del IVA', '15 % del valor de la venta', '19 % del valor del IVA', '4 % del valor de la venta'], e: 'La retención de IVA se calcula sobre el IVA, no sobre el valor total de la factura.' },
+  { t: 'iva', q: '¿Qué es la UVT?', o: ['Unidad de Valor Tributario, para fijar montos en impuestos y sanciones', 'Un impuesto a las ventas', 'Una cuenta bancaria especial', 'Un tipo de factura'], e: 'La UVT se actualiza cada año y evita tener que cambiar cada monto de la norma.' },
+  { t: 'iva', q: 'La diferencia entre un bien exento y uno excluido de IVA es que el exento...', o: ['Tiene tarifa 0 % y permite descontar el IVA de las compras', 'Paga el 19 %', 'No puede venderse', 'No requiere factura'], e: 'En lo excluido no se cobra IVA y tampoco se puede descontar el IVA de las compras.' },
+  { t: 'iva', q: 'El impuesto de industria y comercio (ICA) se paga...', o: ['Al municipio o distrito', 'A la DIAN', 'A la Superintendencia', 'Al banco'], e: 'El ICA es un impuesto municipal; la tarifa depende de la actividad y de cada municipio.' },
+  { t: 'iva', q: 'El GMF, conocido como 4 x 1000, equivale a...', o: ['0,4 % de cada movimiento financiero', '4 % de cada movimiento', '0,04 %', '40 %'], e: '4 por mil es 4 ÷ 1.000 = 0,4 %.' },
+  { t: 'iva', q: 'La factura electrónica es un documento que...', o: ['Soporta la venta y es validado por la DIAN', 'Solo sirve para publicidad', 'Reemplaza al balance general', 'Se hace una vez al año'], e: 'La factura electrónica se genera en formato digital y se valida con la DIAN.' },
+  // ---- Nómina y prestaciones ----
+  { t: 'nom', q: '¿Cuánto se paga de cesantías por cada año trabajado?', o: ['Un mes de salario', 'Medio mes de salario', 'Dos meses de salario', 'Quince días de salario'], e: 'Cesantías = salario mensual (con auxilio de transporte) × días trabajados ÷ 360.' },
+  { t: 'nom', q: 'Los intereses a las cesantías son del...', o: ['12 % anual sobre las cesantías', '1 % mensual sobre el salario', '12 % sobre el salario', '30 % anual'], e: 'Intereses = cesantías × días × 12 % ÷ 360.' },
+  { t: 'nom', q: 'La prima de servicios equivale a...', o: ['15 días de salario por semestre', 'Un mes de salario por año', '8 días por semestre', 'Dos meses por año'], e: 'Se paga la mitad de un mes de salario en junio y la otra mitad en diciembre.' },
+  { t: 'nom', q: '¿Cuántos días hábiles de vacaciones corresponden por año trabajado?', o: ['15 días hábiles', '30 días hábiles', '10 días hábiles', '20 días hábiles'], e: 'Quince días hábiles remunerados por cada año de servicio.' },
+  { t: 'nom', q: '¿Qué porcentaje del salario aporta el empleado a salud?', o: ['4 %', '8,5 %', '12 %', '16 %'], e: 'El empleado aporta 4 % a salud; el empleador 8,5 % (salvo exoneración).' },
+  { t: 'nom', q: 'El aporte total a pensión es del 16 %. ¿Cómo se reparte?', o: ['12 % empleador y 4 % empleado', '8 % y 8 %', '16 % empleador', '4 % empleador y 12 % empleado'], e: 'El empleador asume 12 % y al empleado se le descuenta 4 %.' },
+  { t: 'nom', q: '¿A quién se le paga auxilio de transporte?', o: ['A quien gana hasta 2 salarios mínimos', 'A todos los empleados', 'Solo a quien gana el mínimo exacto', 'A quien gana más de 4 salarios'], e: 'Se paga a quienes devengan hasta 2 SMMLV y viven lejos del trabajo.' },
+  { t: 'nom', q: 'La hora extra diurna se paga con un recargo del...', o: ['25 %', '35 %', '75 %', '100 %'], e: 'Hora extra diurna = valor de la hora ordinaria × 1,25.' },
+  { t: 'nom', q: 'La hora extra nocturna se paga con un recargo del...', o: ['75 %', '25 %', '35 %', '50 %'], e: 'Hora extra nocturna = valor de la hora ordinaria × 1,75.' },
+  { t: 'nom', q: 'El recargo nocturno ordinario (sin ser hora extra) es del...', o: ['35 %', '25 %', '75 %', '15 %'], e: 'Trabajar de noche dentro de la jornada ordinaria se paga con un recargo del 35 %.' },
+  { t: 'nom', q: 'Con un salario de $2.100.000 y 210 horas al mes, ¿cuánto vale la hora ordinaria?', o: ['$10.000', '$9.545', '$11.000', '$7.000'], e: '2.100.000 ÷ 210 = 10.000.' },
+  { t: 'nom', q: 'El aporte a la caja de compensación familiar es del...', o: ['4 % sobre la nómina, a cargo del empleador', '4 % a cargo del empleado', '8 % a cargo del empleador', '2 % a cargo del empleador'], e: 'La caja de compensación la paga el empleador: 4 % del IBC.' },
+  { t: 'nom', q: 'Para calcular cesantías y prima, la base salarial...', o: ['Incluye el auxilio de transporte', 'Excluye el auxilio de transporte', 'Es solo el salario mínimo', 'Incluye solo las horas extras'], e: 'El auxilio de transporte hace parte de la base de cesantías y prima, pero no del IBC de seguridad social.' },
+  { t: 'nom', q: 'Salario $2.000.000 más comisiones $200.000. Con salud 4 % y pensión 4 % sobre $2.200.000 (sin auxilio), ¿cuál es el neto a pagar?', o: ['$2.024.000', '$2.112.000', '$1.936.000', '$2.200.000'], e: 'Deducciones: 2.200.000 × 8 % = 176.000. Neto: 2.200.000 − 176.000 = 2.024.000.' },
+  // ---- Asientos contables ----
+  { t: 'asi', q: 'La ecuación contable básica es...', o: ['Activo = Pasivo + Patrimonio', 'Activo = Pasivo − Patrimonio', 'Pasivo = Activo + Patrimonio', 'Patrimonio = Activo + Pasivo'], e: 'Lo que la empresa tiene (activo) lo financian terceros (pasivo) o los dueños (patrimonio).' },
+  { t: 'asi', q: 'En la partida doble, todo asiento cumple que...', o: ['Débitos = Créditos', 'Débitos > Créditos', 'Créditos > Débitos', 'Solo se registra un lado'], e: 'Cada hecho afecta al menos dos cuentas y las sumas de débito y crédito deben ser iguales.' },
+  { t: 'asi', q: 'La cuenta Caja (1105) es de naturaleza débito. Eso significa que...', o: ['Aumenta con un débito y disminuye con un crédito', 'Aumenta con un crédito', 'Nunca cambia', 'Solo se usa en el cierre'], e: 'Los activos aumentan por el débito y disminuyen por el crédito.' },
+  { t: 'asi', q: 'Compra de mercancía de contado, pagada por banco. ¿Qué se debita y qué se acredita (sin IVA)?', o: ['Débito Inventarios, crédito Bancos', 'Débito Bancos, crédito Inventarios', 'Débito Proveedores, crédito Inventarios', 'Débito Gastos, crédito Caja'], e: 'Entra mercancía (inventarios sube) y sale dinero del banco.' },
+  { t: 'asi', q: '¿Qué cuenta registra lo que nos deben los clientes por ventas a crédito?', o: ['1305 Clientes', '2205 Proveedores', '1105 Caja', '3105 Capital social'], e: 'Clientes es un activo: un derecho de cobro.' },
+  { t: 'asi', q: '¿Qué cuenta registra lo que la empresa debe a sus proveedores por compras a crédito?', o: ['2205 Proveedores', '1305 Clientes', '1435 Inventarios', '4135 Ingresos'], e: 'Proveedores es un pasivo.' },
+  { t: 'asi', q: 'En el PUC colombiano, la clase 4 corresponde a...', o: ['Ingresos', 'Gastos', 'Costos de ventas', 'Pasivos'], e: 'Clase 1 Activo, 2 Pasivo, 3 Patrimonio, 4 Ingresos, 5 Gastos, 6 Costos de ventas, 7 Costos de producción.' },
+  { t: 'asi', q: 'Venta a crédito sin IVA. ¿Cuál es el asiento?', o: ['Débito Clientes, crédito Ingresos', 'Débito Ingresos, crédito Clientes', 'Débito Caja, crédito Clientes', 'Débito Inventarios, crédito Ingresos'], e: 'Nace un derecho de cobro (Clientes sube) y se reconoce el ingreso.' },
+  { t: 'asi', q: 'Al registrar la depreciación del mes, ¿qué se acredita?', o: ['Depreciación acumulada', 'Caja', 'El activo directamente', 'Capital social'], e: 'Se debita el gasto de depreciación y se acredita la depreciación acumulada (1592).' },
+  { t: 'asi', q: 'En una conciliación bancaria, un cheque girado y aún no cobrado...', o: ['Se resta al saldo del extracto', 'Se suma al saldo del extracto', 'Se suma a los libros', 'Se ignora'], e: 'El banco aún no lo ha descontado, pero la empresa ya lo registró.' },
+  { t: 'asi', q: 'En una conciliación, un depósito en tránsito...', o: ['Se suma al saldo del extracto', 'Se resta al saldo del extracto', 'Se resta a los libros', 'Es un error del banco'], e: 'Ya lo consignó la empresa, pero el banco todavía no lo refleja.' },
+  { t: 'asi', q: 'Los socios aportan $20.000.000 en dinero al banco. ¿Cómo se registra?', o: ['Débito Bancos, crédito Capital social', 'Débito Capital social, crédito Bancos', 'Débito Ingresos, crédito Bancos', 'Débito Bancos, crédito Clientes'], e: 'Sube el activo Bancos y sube el patrimonio (Capital social 3105).' },
+  { t: 'asi', q: 'El banco cobró una comisión que no estaba en libros. ¿Qué hace la empresa?', o: ['Registra el gasto y acredita Bancos', 'Nada, es problema del banco', 'Debita Bancos', 'Acredita Clientes'], e: 'Se registra una nota débito: gasto financiero y menor saldo en Bancos.' },
+  { t: 'asi', q: 'Al vender mercancía, además del ingreso se registra el costo de ventas. ¿Cómo?', o: ['Débito Costo de ventas, crédito Inventarios', 'Débito Inventarios, crédito Costo de ventas', 'Débito Ingresos, crédito Inventarios', 'Débito Clientes, crédito Costo de ventas'], e: 'La mercancía sale del inventario y su costo se reconoce como costo de ventas.' },
+  // ---- Finanzas básicas ----
+  { t: 'fin', q: 'Capital $1.000.000 al 2 % mensual de interés simple durante 6 meses. ¿Cuánto es el interés?', o: ['$120.000', '$126.162', '$20.000', '$60.000'], e: 'I = C × i × t = 1.000.000 × 0,02 × 6 = 120.000.' },
+  { t: 'fin', q: 'En el interés compuesto...', o: ['Los intereses ganan intereses', 'El interés es siempre el mismo valor', 'No hay capitalización', 'Solo se calcula sobre la última cuota'], e: 'Los intereses se suman al capital y en el periodo siguiente también generan intereses.' },
+  { t: 'fin', q: '$1.000.000 al 10 % efectivo anual durante 2 años. ¿Cuál es el valor futuro?', o: ['$1.210.000', '$1.200.000', '$1.100.000', '$1.020.000'], e: 'VF = 1.000.000 × (1,10)² = 1.210.000.' },
+  { t: 'fin', q: 'Si el VPN de un proyecto es positivo...', o: ['El proyecto genera valor y conviene', 'El proyecto pierde dinero', 'Debe rechazarse siempre', 'No sirve para decidir'], e: 'VPN > 0 significa que rinde más que la tasa de descuento exigida.' },
+  { t: 'fin', q: 'La TIR es...', o: ['La tasa que hace el VPN igual a cero', 'La tasa de inflación', 'El interés de mora', 'El rendimiento de una cuenta de ahorros'], e: 'Es la rentabilidad propia del proyecto.' },
+  { t: 'fin', q: 'La razón corriente se calcula como...', o: ['Activo corriente ÷ Pasivo corriente', 'Pasivo corriente ÷ Activo corriente', 'Activo total ÷ Patrimonio', 'Ventas ÷ Inventarios'], e: 'Mide cuántos pesos de activo de corto plazo hay por cada peso de deuda de corto plazo.' },
+  { t: 'fin', q: 'La prueba ácida es...', o: ['(Activo corriente − Inventarios) ÷ Pasivo corriente', 'Activo corriente ÷ Pasivo corriente', 'Utilidad ÷ Ventas', 'Pasivo ÷ Activo'], e: 'Es más exigente que la razón corriente porque excluye los inventarios.' },
+  { t: 'fin', q: 'Costos fijos $12.000.000, precio $25.000 y costo variable unitario $15.000. ¿Cuál es el punto de equilibrio en unidades?', o: ['1.200', '480', '800', '2.400'], e: 'PE = CF ÷ (P − CVu) = 12.000.000 ÷ 10.000 = 1.200 unidades.' },
+  { t: 'fin', q: 'En un crédito de cuota fija (sistema francés)...', o: ['La cuota es igual y los intereses van bajando', 'El abono a capital es igual en todas las cuotas', 'Los intereses suben cada mes', 'No se pagan intereses'], e: 'Con cuota fija, al inicio se paga más interés y con el tiempo crece la parte de capital.' },
+  { t: 'fin', q: 'Una tasa nominal del 24 % con capitalización mensual da una tasa efectiva anual...', o: ['Mayor al 24 %', 'Menor al 24 %', 'Igual al 24 %', 'Del 12 %'], e: 'Por la capitalización, la efectiva anual es (1,02)¹² − 1 ≈ 26,82 %.' },
+  { t: 'fin', q: 'El margen bruto se calcula como...', o: ['(Ventas − Costo de ventas) ÷ Ventas', 'Utilidad neta ÷ Activo', 'Costo de ventas ÷ Ventas', 'Gastos ÷ Ventas'], e: 'Muestra qué parte de cada peso vendido queda después de cubrir el costo de lo vendido.' },
+  { t: 'fin', q: 'Una rotación de inventario alta indica que...', o: ['El inventario se vende rápido', 'Hay mucha mercancía parada', 'La empresa no vende', 'Hay pérdidas seguras'], e: 'Rotación = costo de ventas ÷ inventario promedio; cuanto mayor, más ágil es la venta.' },
+  { t: 'fin', q: 'Un equipo cuesta $12.000.000, valor residual $0 y vida útil de 5 años. ¿Cuál es la depreciación anual en línea recta?', o: ['$2.400.000', '$1.200.000', '$3.000.000', '$600.000'], e: '(12.000.000 − 0) ÷ 5 = 2.400.000.' },
+  { t: 'fin', q: 'Una anualidad es...', o: ['Una serie de pagos iguales a intervalos regulares', 'Un pago único al final del año', 'Un impuesto anual', 'Un préstamo sin cuotas'], e: 'Por ejemplo, ahorrar la misma cantidad cada mes.' }
+];
+
+(function () {
+  const $ = (s, r) => (r || document).querySelector(s);
+  function el(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const k in (attrs || {})) {
+      const v = attrs[k];
+      if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (v === true) e.setAttribute(k, '');
+      else if (v !== false && v != null) e.setAttribute(k, v);
+    }
+    kids.flat().forEach(c => { if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c))); });
+    return e;
+  }
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#888';
+  const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+  const rnd = n => Math.floor(Math.random() * n);
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const LETTERS = ['A', 'B', 'C', 'D'];
+  const SPIN_MS = 4200;
+
+  // ---------- transporte: sala en línea (Firebase) o modo de prueba local ----------
+  function makeLocal() {
+    const KEY = 'ruleta-demo-db'; let L = [];
+    const load = () => { try { return JSON.parse(LS.get(KEY) || '{}'); } catch (e) { return {}; } };
+    let mem = load();
+    const getP = (o, p) => p.split('/').reduce((a, k) => (a == null ? null : a[k]), o);
+    const setP = (o, p, v) => { const ks = p.split('/'); let a = o; ks.slice(0, -1).forEach(k => { if (typeof a[k] !== 'object' || a[k] === null) a[k] = {}; a = a[k]; }); if (v === null) delete a[ks[ks.length - 1]]; else a[ks[ks.length - 1]] = v; };
+    const notify = () => L.forEach(l => { const v = getP(mem, l.path), s = JSON.stringify(v); if (s !== l.last) { l.last = s; l.cb(v == null ? null : JSON.parse(s)); } });
+    window.addEventListener('storage', e => { if (e.key === KEY) { mem = load(); notify(); } });
+    setInterval(() => { mem = load(); notify(); }, 1000);
+    return {
+      mode: 'local', now: () => Date.now(),
+      set(p, v) { mem = load(); setP(mem, p, v === undefined ? null : v); LS.set(KEY, JSON.stringify(mem)); notify(); },
+      on(p, cb) { const l = { path: p, cb, last: undefined }; L.push(l); mem = load(); const v = getP(mem, p); l.last = JSON.stringify(v); cb(v == null ? null : JSON.parse(l.last)); return () => { L = L.filter(x => x !== l); }; }
+    };
+  }
+  function makeFirebase(cfg) {
+    firebase.initializeApp(cfg); const db = firebase.database(); let off = 0;
+    db.ref('.info/serverTimeOffset').on('value', s => { off = s.val() || 0; });
+    return {
+      mode: 'firebase', now: () => Date.now() + off, set: (p, v) => db.ref(p).set(v === undefined ? null : v),
+      on(p, cb) { const r = db.ref(p), f = r.on('value', s => cb(s.val())); return () => r.off('value', f); }
+    };
+  }
+  function loadScript(src) { return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); }); }
+  async function initTransport() {
+    const cfg = window.RULETA_CONFIG;
+    if (cfg && cfg.databaseURL) {
+      try {
+        await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+        await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js');
+        return makeFirebase(cfg);
+      } catch (e) { return Object.assign(makeLocal(), { failed: true }); }
+    }
+    return makeLocal();
+  }
+
+  // ---------- estado ----------
+  const app = $('#app'), top = $('#tag');
+  { const nat = Element.prototype.append; app.append = (...n) => nat.apply(app, n.flat().filter(x => x != null && x !== false)); }
+  let T, role = null, code = null, pid = null, myName = '', room = null, offRoom = null, lastSig = '';
+  // ---------- preguntas propias del docente (se guardan solo en este navegador) ----------
+  const PAL = ['--fin', '--lab', '--tri', '--con', '--inv'];
+  function parseQs(text) {
+    const topics = [], bank = [], errs = []; let tid = null, blk = [], ln0 = 0;
+    const flush = () => {
+      if (!blk.length) return; const lines = blk; blk = [];
+      if (!tid) { errs.push('Antes de la línea ' + ln0 + ' falta una línea de tema (ejemplo: # Tema: Inventarios).'); return; }
+      const q = lines[0]; let ok = -1, expl = ''; const opts = [];
+      lines.slice(1).forEach(l => {
+        if (/^(explicaci[oó]n|=)\s*:?/i.test(l)) { expl = l.replace(/^(explicaci[oó]n\s*:?|=)\s*/i, ''); return; }
+        if (l[0] === '*') { ok = opts.length; opts.push(l.slice(1).trim()); } else opts.push(l.replace(/^[A-Da-d][).]\s+/, '').trim());
+      });
+      if (opts.length !== 4) { errs.push('La pregunta “' + q.slice(0, 40) + '…” debe tener 4 opciones y tiene ' + opts.length + '.'); return; }
+      if (ok < 0) { errs.push('La pregunta “' + q.slice(0, 40) + '…” no tiene la respuesta correcta marcada con *.'); return; }
+      const o = opts.slice(); const c = o.splice(ok, 1)[0]; o.unshift(c);
+      bank.push({ t: tid, q, o, e: expl, custom: 1 });
+    };
+    text.split(/\r?\n/).forEach((raw, i) => {
+      const l = raw.trim(); if (!blk.length) ln0 = i + 1;
+      const m = l.match(/^#\s*(tema\s*:?)?\s*(.+)$/i);
+      if (m && l[0] === '#') { flush(); const name = m[2].trim(); let t = topics.find(x => x.name === name); if (!t) { t = { id: 'c' + topics.length, name, color: PAL[topics.length % PAL.length], custom: 1 }; topics.push(t); } tid = t.id; return; }
+      if (!l) { flush(); return; }
+      blk.push(l);
+    });
+    flush(); return { topics, bank, errs };
+  }
+  let CUSTOM = parseQs(LS.get('ruleta-custom') || '');
+  const ALLT = () => TOPICS.concat(CUSTOM.topics), ALLB = () => BANK.concat(CUSTOM.bank);
+  const defTopics = () => (CUSTOM.topics.length ? CUSTOM.topics : TOPICS).map(t => t.id);
+  let game = { topics: defTopics(), secs: 20, rounds: 10 };
+  let used = {}, cur = null, closeT = null, closing = false, tickT = null, raf = null;
+  const P = p => 'ad360/rooms2/' + code + (p ? '/' + p : '');
+  const topicOf = id => { const m = room && room.meta && room.meta.tn && room.meta.tn[id]; return m ? { id, name: m.name, color: m.color } : (ALLT().find(t => t.id === id) || TOPICS[0]); };
+  const players = () => Object.keys((room && room.players) || {}).map(id => ({ id, name: room.players[id].name, j: room.players[id].j }));
+  function board() {
+    const sc = (room && room.scores) || {};
+    return players().map(p => ({ id: p.id, name: p.name, s: (sc[p.id] && sc[p.id].s) || 0, d: sc[p.id] ? sc[p.id].d : null })).sort((a, b) => b.s - a.s || a.name.localeCompare(b.name));
+  }
+
+
+  // ---------- ruleta de nombres ----------
+  const ease = x => 1 - Math.pow(1 - x, 3);
+  function segCI(i, n) { let c = i % 5; if (i === n - 1 && c === 0 && n > 1) c = 2; return c; }
+  function drawWheel(cv, names, ang) {
+    const c = cv.getContext('2d'), W = cv.width, R = W / 2 - 14, n = names.length, seg = 2 * Math.PI / n;
+    c.clearRect(0, 0, W, W); c.save(); c.translate(W / 2, W / 2);
+    names.forEach((nm, i) => {
+      const a0 = ang + i * seg, ci = segCI(i, n);
+      c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R, a0, a0 + seg); c.closePath(); c.fillStyle = css(PAL[ci]); c.fill(); c.lineWidth = n > 24 ? 2 : 4; c.strokeStyle = css('--surface'); c.stroke();
+      c.save(); c.rotate(a0 + seg / 2); c.textAlign = 'right'; c.fillStyle = ci === 4 ? '#1E1500' : '#fff';
+      const fs = Math.max(11, Math.min(W * 0.056, R * seg * 0.5)); c.font = '700 ' + Math.round(fs) + 'px Figtree, sans-serif';
+      let t = String(nm); const mx = Math.max(4, Math.floor(R * 0.62 / (fs * 0.55))); if (t.length > mx) t = t.slice(0, mx - 1) + '…';
+      c.fillText(t, R - 18, fs * 0.35); c.restore();
+    });
+    c.beginPath(); c.arc(0, 0, W * 0.07, 0, 7); c.fillStyle = css('--surface'); c.fill(); c.lineWidth = 6; c.strokeStyle = css('--ink'); c.stroke();
+    c.restore();
+  }
+  function runWheel(names, k, spinAt, onDone) {
+    cancelAnimationFrame(raf);
+    const seg = 2 * Math.PI / names.length, end = -Math.PI / 2 - (k + 0.5) * seg + 2 * Math.PI * 6;
+    const step = () => {
+      const cv = $('#wheel'); if (!cv) return;
+      const x = Math.min(1, Math.max(0, (T.now() - spinAt) / SPIN_MS));
+      drawWheel(cv, names, end * ease(x));
+      if (x < 1) raf = requestAnimationFrame(step); else if (onDone) onDone();
+    };
+    step();
+  }
+  function wheelView(st) {
+    const name = el('div', { class: 'topicname', id: 'tname' }, 'Girando…');
+    const cv = el('canvas', { id: 'wheel', width: 640, height: 640 });
+    setTimeout(() => runWheel(st.names, st.k, st.spinAt, () => { const x = $('#tname'); if (x) { x.textContent = st.whoName; x.style.color = css(PAL[segCI(st.k, st.names.length)]); } }), 0);
+    return el('div', { class: 'card stage' }, el('div', { class: 'wheelwrap' }, el('div', { class: 'pointer' }), cv), name);
+  }
+
+  // ---------- pantallas comunes ----------
+  function podium(list) {
+    const t = list.slice(0, 3), cls = ['p1', 'p2', 'p3'];
+    const order = t.length >= 3 ? [1, 0, 2] : t.map((_, i) => i);
+    return el('div', { class: 'podium' }, order.map(i => el('div', { class: cls[i] }, el('span', {}, ['🥇', '🥈', '🥉'][i]), el('b', {}, t[i].name), el('span', {}, t[i].s + ' pts'))));
+  }
+  function boardView(me, max) {
+    const b = board();
+    return el('ol', { class: 'board' }, b.slice(0, max || 10).map((p, i) => el('li', { class: p.id === me ? 'me' : '' },
+      el('span', { class: 'n' }, i + 1), el('span', { class: 'nm' }, p.name), el('span', { class: 'sc' }, p.s, p.d != null && p.d !== 0 ? el('span', { class: 'd ' + (p.d > 0 ? 'p' : 'm') }, (p.d > 0 ? '+' : '') + p.d) : null))));
+  }
+  function answersView(st, onPick, mine, reveal) {
+    return el('div', { class: 'answers' }, st.q.o.map((o, i) => {
+      const cls = ['ans']; if (reveal) { if (i === st.correct) cls.push('right'); else cls.push('dim'); }
+      if (mine === i) cls.push('picked');
+      const a = el('button', { class: cls.join(' '), type: 'button', 'data-k': i, 'data-live': onPick ? '1' : null, disabled: !onPick, onclick: () => onPick && onPick(i) },
+        el('b', {}, LETTERS[i]), o, reveal && st.counts ? el('span', { class: 'cnt' }, st.counts[i] || 0) : null);
+      return a;
+    }));
+  }
+  function qCard(st, reveal, ...extra) {
+    return el('div', { class: 'card qbox' },
+      el('div', { class: 'qmeta' }, el('span', { class: 'chip', style: '--c:' + css(topicOf(st.topic).color) }, topicOf(st.topic).name), el('span', { class: 'muted', style: 'font-weight:700' }, 'Pregunta ' + st.n + ' de ' + ((room.meta && room.meta.rounds) || ''))),
+      el('p', { class: 'qtext' }, st.q.t), answersView(st, null, null, !!reveal), ...extra);
+  }
+
+  // ---------- inicio ----------
+  function viewHome() {
+    top.textContent = '';
+    const saved = LS.get('ruleta2-host-code'), qs = new URLSearchParams(location.search).get('sala');
+    if (qs) return viewJoin(qs.toUpperCase());
+    app.textContent = '';
+    app.append(
+      el('section', { class: 'hero' }, el('div', {}, el('h1', {}, 'Ruleta de ', el('em', {}, 'estudiantes')), el('p', {}, 'El docente lanza una pregunta, todos la leen y piensan su respuesta; luego la ruleta con los nombres elige quién responde.')),
+        el('div', { class: 'keys4', 'aria-hidden': 'true' }, ['A', 'B', 'C', 'D'].map((l, i) => el('i', { style: '--c:var(' + ['--fin', '--lab', '--tri', '--con'][i] + ')' }, l)))),
+      el('div', { class: 'choose' },
+        el('div', { class: 'card' }, el('h2', {}, 'Soy estudiante'), el('p', {}, 'Escribe el código de cuatro letras que ves en la pantalla del profesor.'), el('button', { class: 'btn big', type: 'button', onclick: () => viewJoin('') }, 'Entrar a la sala')),
+        el('div', { class: 'card' }, el('h2', {}, 'Soy docente'), el('p', {}, 'Crea una sala, comparte el código y lanza la ruleta desde tu computador.'),
+          el('div', { class: 'row' }, el('button', { class: 'btn alt big', type: 'button', onclick: createRoom }, 'Crear una sala'), saved ? el('button', { class: 'btn ghost', type: 'button', onclick: () => resumeRoom(saved) }, 'Continuar sala ' + saved) : null,  el('button', { class: 'btn ghost', type: 'button', onclick: viewQs }, 'Mis preguntas' + (CUSTOM.bank.length ? ' (' + CUSTOM.bank.length + ')' : ''))))),
+      T.mode === 'local' ? el('div', { class: 'notice' }, T.failed ? 'No se pudo conectar con el servicio en línea. Estás en modo de prueba: solo funciona entre pestañas de este mismo navegador.' : 'Modo de prueba: la sala solo funciona entre pestañas de este mismo navegador. Para jugar con celulares hay que activar la sala en línea (se hace una sola vez, con la guía).') : null);
+  }
+
+  const EJEMPLO = '# Tema: Inventarios\n¿Qué método de inventario vende primero lo que entró primero?\n*PEPS\nUEPS\nPromedio ponderado\nIdentificación específica\nExplicación: PEPS significa primeras en entrar, primeras en salir.\n\n¿Qué documento registra las entradas y salidas de mercancía?\n*Kardex\nBalance general\nRecibo de caja\nExtracto bancario\n\n# Tema: Mi segundo tema\n¿Pregunta de ejemplo?\n*Respuesta correcta\nIncorrecta 1\nIncorrecta 2\nIncorrecta 3\n';
+  function viewQs() {
+    top.textContent = ''; app.textContent = '';
+    const ta = el('textarea', { id: 'qs', rows: '16', spellcheck: 'false', style: 'width:100%;font:15px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink)' });
+    ta.value = LS.get('ruleta-custom') || '';
+    const msg = el('div', { style: 'margin:12px 0;font-weight:700' });
+    const check = () => { const r = parseQs(ta.value); msg.style.color = r.errs.length ? 'var(--bad)' : 'var(--ok)'; msg.textContent = ''; msg.append(r.bank.length + ' preguntas en ' + r.topics.length + ' temas.' + (r.errs.length ? ' Hay ' + r.errs.length + ' problemas:' : '')); if (r.errs.length) msg.append(el('ul', { style: 'margin:6px 0 0;padding-left:20px;font-weight:600' }, r.errs.slice(0, 6).map(e => el('li', {}, e)))); return r; };
+    ta.addEventListener('input', check);
+    const file = el('input', { type: 'file', accept: '.txt,text/plain', style: 'display:none', onchange: e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { ta.value = String(rd.result); check(); }; rd.readAsText(f, 'utf-8'); } });
+    app.append(el('div', { class: 'card' },
+      el('h2', {}, 'Mis preguntas'),
+      el('p', { class: 'muted' }, 'Escribe o pega tus preguntas con este formato. Cada tema empieza con #. La respuesta correcta lleva * al inicio. Cada pregunta tiene exactamente 4 opciones y se separa de la siguiente con una línea en blanco. La explicación es opcional.'),
+      ta, msg,
+      el('div', { class: 'row' },
+        el('button', { class: 'btn alt big', type: 'button', onclick: () => { const r = check(); if (r.errs.length) return; LS.set('ruleta-custom', ta.value.trim()); CUSTOM = r; game = { topics: defTopics(), secs: 20, rounds: 10 }; viewHome(); } }, 'Guardar'),
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => { ta.value = EJEMPLO; check(); } }, 'Poner ejemplo'),
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => file.click() }, 'Cargar archivo .txt'), file,
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => viewHome() }, 'Volver')),
+      el('p', { class: 'muted', style: 'margin-top:14px' }, 'Las preguntas se guardan en este computador y navegador. Si abres la ruleta en otro equipo, vuelve a pegarlas. Si borras todo y guardas, se usan otra vez las preguntas de ejemplo.')));
+    check();
+  }
+
+  // ---------- estudiante (entrar) ----------
+  function viewJoin(prefill) {
+    role = 'join'; app.textContent = '';
+    const ci = el('input', { type: 'text', class: 'code', id: 'code', maxlength: '4', autocomplete: 'off', placeholder: 'ABCD', value: prefill || '' });
+    const ni = el('input', { type: 'text', id: 'nm', maxlength: '20', autocomplete: 'off', placeholder: 'Tu nombre', value: LS.get('ruleta-name') || '' });
+    const err = el('p', { style: 'color:var(--bad);font-weight:700;min-height:1.4em;margin:0 0 8px' });
+    const go = () => {
+      const c = ci.value.trim().toUpperCase(), n = ni.value.trim();
+      if (c.length !== 4) { err.textContent = 'El código tiene 4 letras.'; return; }
+      if (n.length < 2) { err.textContent = 'Escribe tu nombre.'; return; }
+      joinRoom(c, n, err);
+    };
+    ni.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    app.append(el('div', { class: 'card', style: 'max-width:520px;margin:0 auto' }, el('h2', { style: 'margin-bottom:14px' }, 'Entrar a la sala'),
+      el('div', { class: 'field' }, el('label', { for: 'code' }, 'Código de la sala'), ci), el('div', { class: 'field' }, el('label', { for: 'nm' }, 'Tu nombre'), ni), err,
+      el('button', { class: 'btn big', type: 'button', style: 'width:100%', onclick: go }, 'Entrar')));
+  }
+  function joinRoom(c, n, err) {
+    let first = true, off = null;
+    code = c; myName = n; const pk = 'ruleta-pid-' + c + '-' + n.toLowerCase(); pid = LS.get(pk) || Math.random().toString(36).slice(2, 10); LS.set(pk, pid); LS.set('ruleta-name', n);
+    off = T.on(P(), v => {
+      if (first) {
+        first = false;
+        if (!v || !v.meta) { off(); code = null; err.textContent = 'No encontramos esa sala. Revisa el código.'; return; }
+        T.set(P('players/' + pid), { name: n, j: T.now() });
+        role = 'student'; top.textContent = 'Sala ' + c; offRoom = off;
+      }
+      room = v; if (role === 'student') render();
+    });
+  }
+
+  // ---------- estudiante ----------
+  function renderStudent() {
+    const st = room.st || { phase: 'lobby' }, sc = (room.scores && room.scores[pid]) || null, b = board(), rank = b.findIndex(p => p.id === pid) + 1;
+    const head = el('div', { class: 'row', style: 'justify-content:space-between;margin-bottom:12px' }, el('span', { class: 'who' }, myName), el('span', { class: 'me-score' }, (sc ? sc.s : 0) + ' pts' + (rank ? ' · puesto ' + rank : '')));
+    app.textContent = '';
+    if (st.phase === 'lobby') {
+      app.append(head, el('div', { class: 'card stage' }, el('h2', {}, '¡Ya estás dentro!'), el('p', { class: 'muted' }, 'Espera a que el profesor lance la primera pregunta.'), el('p', { class: 'who' }, players().length + ' en la sala')));
+    } else if (st.phase === 'ask') {
+      app.append(head, qCard(st, false, el('p', { class: 'muted', style: 'text-align:center;font-weight:700;margin:14px 0 0' }, 'Lee con calma y piensa tu respuesta. Enseguida se gira la ruleta…')));
+    } else if (st.phase === 'spin') {
+      app.append(head, wheelView(st), el('div', { class: 'sp' }), qCard(st, false));
+    } else if (st.phase === 'turn') {
+      const me = st.who === pid;
+      app.append(head, me ? el('div', { class: 'res ok' }, el('div', {}, el('div', { class: 'big' }, '¡Te tocó a ti!'), el('div', { class: 'muted' }, 'Responde en voz alta al profesor.')))
+        : el('div', { class: 'card stage' }, el('div', { class: 'muted', style: 'font-weight:700' }, 'Responde'), el('div', { class: 'winner' }, st.whoName)),
+        el('div', { class: 'sp' }), qCard(st, false));
+    } else if (st.phase === 'reveal') {
+      const me = st.who === pid, ok = st.res === 'ok', mid = st.res === 'mid';
+      app.append(head, el('div', { class: 'res ' + (ok || mid ? 'ok' : 'bad') }, el('div', {}, el('div', { class: 'big' }, ok ? '¡Correcto!' : mid ? 'Respuesta parcial' : 'Incorrecta'), el('div', { class: 'muted' }, (me ? 'Tú' : st.whoName) + (ok ? ' sumó 10 puntos.' : mid ? ' sumó 5 puntos.' : ' no suma puntos.'))), el('div', { class: 'pts' }, '+' + (st.d || 0))),
+        qCard(st, true, el('div', { class: 'expl' }, st.correct >= 0 && st.q.o[st.correct] ? [el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. '] : null, st.expl || '')),
+        el('div', { class: 'sp' }), el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, 'Ranking'), boardView(pid, 8)));
+    } else {
+      app.append(head, el('div', { class: 'card stage' }, el('h2', {}, '¡Fin del juego!'), podium(b), el('p', { class: 'muted' }, rank ? 'Quedaste en el puesto ' + rank + ' de ' + b.length + ' con ' + (sc ? sc.s : 0) + ' puntos.' : '')), el('div', { class: 'sp' }), el('div', { class: 'card' }, boardView(pid, 20)));
+    }
+  }
+
+  // ---------- docente ----------
+  const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let namesDraft = '';
+  function createRoom() {
+    code = Array.from({ length: 4 }, () => CODE_CHARS[rnd(CODE_CHARS.length)]).join(''); LS.set('ruleta2-host-code', code);
+    used = {}; cur = null; role = 'host';
+    T.set(P(), { meta: { topics: game.topics, tn: tnMap(), rounds: game.rounds, created: T.now() }, st: { phase: 'lobby', n: 0 } });
+    listenHost();
+  }
+  function tnMap() { const o = {}; ALLT().forEach(t => { o[t.id] = { name: t.name, color: t.color }; }); return o; }
+  function resumeRoom(c) { code = c; role = 'host'; used = {}; cur = null; listenHost(); }
+  function listenHost() {
+    top.textContent = 'Sala ' + code; let first = true;
+    offRoom = T.on(P(), v => {
+      room = v;
+      if (first) { first = false; if (!v || !v.meta) { LS.set('ruleta2-host-code', ''); role = null; code = null; viewHome(); return; } game = { topics: v.meta.topics, rounds: v.meta.rounds }; }
+      render();
+    });
+  }
+  function saveMeta() { if (room && room.st && room.st.phase === 'lobby') T.set(P('meta'), { topics: game.topics, tn: tnMap(), rounds: game.rounds, created: room.meta.created }); }
+  function addNames(text) {
+    text.split(/\r?\n|,/).map(s => s.trim()).filter(Boolean).forEach(nm => { const id = 'm' + Math.random().toString(36).slice(2, 8); T.set(P('players/' + id), { name: nm.slice(0, 24), j: T.now(), manual: 1 }); });
+  }
+  function hostAsk() {
+    const st = room.st, n = (st.n || 0) + 1, g = room.meta;
+    if (n > g.rounds) return T.set(P('st'), { phase: 'end', n: st.n });
+    const tid = g.topics[rnd(g.topics.length)], BK = ALLB();
+    let pool = BK.map((b, i) => i).filter(i => BK[i].t === tid && !used[i]);
+    if (!pool.length) { BK.forEach((b, i) => { if (b.t === tid) delete used[i]; }); pool = BK.map((b, i) => i).filter(i => BK[i].t === tid); }
+    const idx = pool[rnd(pool.length)]; used[idx] = 1; const b = BK[idx], order = shuffle([0, 1, 2, 3]);
+    cur = { n, correct: order.indexOf(0), expl: b.e || '' };
+    T.set(P('secret'), cur);
+    T.set(P('st'), { phase: 'ask', n, topic: tid, q: { t: b.q, o: order.map(i => b.o[i]) } });
+  }
+  function hostSpin() {
+    const st = room.st, ps = players(); if (!ps.length) return;
+    const part = room.part || {}; let pool = ps.filter(p => !part[p.id]);
+    if (!pool.length) { T.set(P('part'), null); pool = ps; }
+    const pick = pool[rnd(pool.length)], names = ps.map(p => p.name), k = ps.findIndex(p => p.id === pick.id);
+    T.set(P('part/' + pick.id), 1);
+    T.set(P('st'), { phase: 'spin', n: st.n, topic: st.topic, q: st.q, who: pick.id, whoName: pick.name, names, k, spinAt: T.now() });
+    setTimeout(() => { const s = room && room.st; if (s && s.phase === 'spin' && s.n === st.n && s.who === pick.id) T.set(P('st'), Object.assign({}, s, { phase: 'turn' })); }, SPIN_MS + 400);
+  }
+  function grade(res) {
+    const st = room.st, d = res === 'ok' ? 10 : res === 'mid' ? 5 : 0, sc = room.scores || {};
+    players().forEach(p => { const mine = p.id === st.who; T.set(P('scores/' + p.id), { s: ((sc[p.id] && sc[p.id].s) || 0) + (mine ? d : 0), d: mine ? d : 0, ok: mine ? (res === 'ok' ? 1 : res === 'mid' ? 0 : -1) : 0 }); });
+    const sec = (cur && cur.n === st.n) ? cur : (room.secret || {});
+    T.set(P('st'), Object.assign({}, st, { phase: 'reveal', res, d, correct: sec.correct == null ? -1 : sec.correct, expl: sec.expl || '' }));
+  }
+  function qrDraw(url) { const b = $('#qr'); if (!b) return; b.textContent = ''; if (window.QRCode) { try { new QRCode(b, { text: url, width: 150, height: 150 }); return; } catch (e) { } } b.style.display = 'none'; }
+  function renderHost() {
+    const st = room.st || { phase: 'lobby' }, g = room.meta, url = location.origin + location.pathname.replace(/[^/]*$/, '') + 'ruleta-nombres.html?sala=' + code, ps = players();
+    app.textContent = '';
+    const side = el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, st.phase === 'lobby' ? 'En la ruleta (' + ps.length + ')' : 'Ranking'),
+      st.phase === 'lobby' ? (ps.length ? el('ol', { class: 'board' }, ps.map((p, i) => el('li', {}, el('span', { class: 'n' }, i + 1), el('span', { class: 'nm' }, p.name), el('button', { class: 'x', type: 'button', title: 'Quitar', onclick: () => T.set(P('players/' + p.id), null) }, '×')))) : el('p', { class: 'muted' }, 'Aún no hay nombres. Los estudiantes entran con su celular o escribe los nombres abajo.')) : boardView(null, 12));
+    let main;
+    if (st.phase === 'lobby') {
+      const tp = el('div', { class: 'opts' }, ALLT().filter(t => ALLB().some(b => b.t === t.id)).map(t => el('label', { class: 'chk' }, el('input', { type: 'checkbox', checked: game.topics.includes(t.id), onchange: e => { game.topics = ALLT().filter(x => (x.id === t.id ? e.target.checked : game.topics.includes(x.id))).map(x => x.id); if (!game.topics.length) { game.topics = [t.id]; } saveMeta(); } }), t.name + ' (' + ALLB().filter(b => b.t === t.id).length + ')')));
+      const seg = (arr, key, suf) => el('div', { class: 'seg' }, arr.map(v => el('button', { type: 'button', 'aria-pressed': String(game[key] === v), onclick: () => { game[key] = v; saveMeta(); } }, v + suf)));
+      const ta = el('textarea', { class: 'names', id: 'nomLista', placeholder: 'Un nombre por línea (o separados por comas)', oninput: e => { namesDraft = e.target.value; } }); ta.value = namesDraft;
+      main = el('div', { class: 'card' },
+        el('div', { class: 'joinbox' }, el('div', {}, el('div', { class: 'muted', style: 'font-weight:700' }, 'Código de la sala'), el('div', { class: 'roomcode' }, code), el('p', { class: 'muted', style: 'margin:8px 0 0;word-break:break-all' }, 'Enlace: ', el('b', {}, url))), el('div', { id: 'qr' })),
+        el('div', { class: 'sp' }), el('h3', {}, 'Nombres de los estudiantes'), el('p', { class: 'muted', style: 'margin:4px 0 8px' }, 'Los que entran con el celular aparecen solos. También puedes escribirlos aquí (sirve para quien no tiene celular).'), ta,
+        el('div', { class: 'row', style: 'margin:10px 0 16px' }, el('button', { class: 'btn ghost', type: 'button', onclick: () => { addNames(namesDraft); namesDraft = ''; } }, 'Agregar nombres')),
+        el('h3', {}, 'Temas'), tp, el('h3', {}, 'Número de preguntas'), el('div', { style: 'margin:8px 0 20px' }, seg([5, 10, 15, 20], 'rounds', '')),
+        el('button', { class: 'btn alt big', type: 'button', disabled: !ps.length, onclick: () => { saveMeta(); hostAsk(); } }, ps.length ? '¡Lanzar la primera pregunta!' : 'Esperando estudiantes…'));
+      setTimeout(() => qrDraw(url), 0);
+    } else if (st.phase === 'ask') {
+      const done = Object.keys(room.part || {}).length;
+      main = qCard(st, false, el('p', { class: 'muted', style: 'font-weight:700;margin:12px 0 0' }, 'Dales un momento para leer y pensar. Participaron ' + Math.min(done, ps.length) + ' de ' + ps.length + '.'),
+        el('div', { class: 'row', style: 'margin-top:16px' }, el('button', { class: 'btn alt big', type: 'button', disabled: !ps.length, onclick: hostSpin }, '🎡 Girar la ruleta')));
+    } else if (st.phase === 'spin') {
+      main = el('div', {}, wheelView(st), el('div', { class: 'sp' }), qCard(st, false));
+    } else if (st.phase === 'turn') {
+      const ver = el('p', { class: 'muted', id: 'rcorr', style: 'font-weight:700;margin:12px 0 0', hidden: true }, '');
+      const sec = (cur && cur.n === st.n) ? cur : (room.secret || {});
+      main = el('div', {}, el('div', { class: 'card stage' }, el('div', { class: 'muted', style: 'font-weight:700' }, 'Responde'), el('div', { class: 'winner' }, st.whoName)),
+        el('div', { class: 'sp' }), qCard(st, false, ver, el('div', { class: 'row', style: 'margin-top:12px' }, el('button', { class: 'btn ghost', type: 'button', onclick: () => { ver.hidden = !ver.hidden; ver.textContent = ver.hidden ? '' : 'Correcta: ' + LETTERS[sec.correct] + '. ' + (st.q.o[sec.correct] || ''); } }, '👁 Ver respuesta correcta'))),
+        el('div', { class: 'sp' }), el('div', { class: 'card' }, el('div', { class: 'row' },
+          el('button', { class: 'btn', id: 'gOk', type: 'button', style: '--fin:var(--tri)', onclick: () => grade('ok') }, '✓ Correcta (+10)'),
+          el('button', { class: 'btn alt', id: 'gMid', type: 'button', onclick: () => grade('mid') }, '½ Parcial (+5)'),
+          el('button', { class: 'btn ghost', id: 'gMal', type: 'button', onclick: () => grade('bad') }, '✗ Incorrecta (0)'),
+          el('button', { class: 'btn ghost', id: 'gPasar', type: 'button', onclick: hostSpin }, '↻ Pasar y sortear otro'))));
+    } else if (st.phase === 'reveal') {
+      const last = st.n >= g.rounds, ok = st.res === 'ok', mid = st.res === 'mid';
+      main = el('div', {}, el('div', { class: 'res ' + (ok || mid ? 'ok' : 'bad') }, el('div', {}, el('div', { class: 'big' }, (ok ? '¡Correcto! ' : mid ? 'Parcial · ' : 'Incorrecta · ') + st.whoName)), el('div', { class: 'pts' }, '+' + (st.d || 0))),
+        qCard(st, true, el('div', { class: 'expl' }, st.correct >= 0 && st.q.o[st.correct] ? [el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. '] : null, st.expl || ''),
+          el('div', { class: 'row', style: 'margin-top:18px' }, el('button', { class: 'btn alt big', id: 'btnSig', type: 'button', onclick: () => (last ? T.set(P('st'), { phase: 'end', n: st.n }) : hostAsk()) }, last ? 'Ver el podio' : 'Siguiente pregunta →'))));
+    } else {
+      const b = board();
+      main = el('div', { class: 'card stage' }, el('h2', {}, '¡Tenemos ganador!'), b.length ? podium(b) : null, el('div', { class: 'row', style: 'justify-content:center' }, el('button', { class: 'btn big', type: 'button', onclick: () => { LS.set('ruleta2-host-code', ''); location.href = location.pathname; } }, 'Nueva sala')));
+    }
+    const endBtn = st.phase !== 'lobby' && st.phase !== 'end' ? el('div', { style: 'margin-top:12px;text-align:right' }, el('button', { class: 'btn ghost', type: 'button', onclick: () => { T.set(P('st'), { phase: 'end', n: st.n }); } }, 'Terminar el juego')) : null;
+    app.append(el('div', { class: 't-grid' }, el('div', {}, main, endBtn), side));
+  }
+
+  // ---------- render ----------
+  function render() {
+    const st = (room && room.st) || {}, sc = room && room.scores && room.scores[pid] ? room.scores[pid].s : '';
+    const extra = st.phase === 'lobby' ? players().map(p => p.id + p.name).join(',') + (role === 'host' ? game.rounds + game.topics.join('') : '') : '';
+    const sig = role + '|' + st.phase + '|' + st.n + '|' + (st.who || '') + '|' + (role === 'student' ? sc : '') + '|' + (st.phase === 'ask' && role === 'host' ? players().length + Object.keys(room.part || {}).length : '') + '|' + extra;
+    if (sig === lastSig) return;
+    lastSig = sig; cancelAnimationFrame(raf);
+    if (role === 'host') renderHost(); else if (role === 'student') renderStudent();
+  }
+
+  initTransport().then(t => { T = t; viewHome(); });
+})();
+</script>
+</body></html>
