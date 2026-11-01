@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}.modh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:16px 0 6px;padding:8px 12px;border-radius:12px;background:var(--surface2);font-weight:800;font-size:14px}
+</style>
 <title>Concurso por equipos</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
@@ -135,77 +136,73 @@ input.code{font-family:var(--f-num);letter-spacing:.3em;text-transform:uppercase
 <header class="bar"><div class="in"><a class="logo" href="index.html"><b>🏆</b><span>Concurso por equipos</span></a><span class="tag" id="tag"></span><a class="back" href="index.html">← Juegos</a></div></header>
 <main class="in" id="app"><p class="muted">Cargando…</p></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="asignaturas.js"></script>
 <script src="config.js"></script>
 <script>(function(){var c=window.FIREBASE_CONFIG;if(c&&c.databaseURL&&c.databaseURL.indexOf("PEGAR")<0&&c.apiKey&&c.apiKey.indexOf("PEGAR")<0)window.RULETA_CONFIG=c;})();</script>
 <script>
 // Banco de preguntas: t = tema, q = pregunta, o = opciones (la primera es la correcta; el juego las mezcla), e = explicación
-const TOPICS = [
-  { id: 'iva', name: 'IVA y retención', color: '--tri' },
-  { id: 'nom', name: 'Nómina y prestaciones', color: '--lab' },
-  { id: 'asi', name: 'Asientos contables', color: '--con' },
-  { id: 'fin', name: 'Finanzas básicas', color: '--fin' }
-];
+const TOPICS = ASIGNATURAS.map((a, i) => ({ id: 'a' + a.id, num: a.id, m: a.m, name: a.s, full: a.n, color: ['--fin', '--lab', '--tri', '--con', '--inv'][i % 5] }));
 const BANK = [
   // ---- IVA y retención ----
-  { t: 'iva', q: '¿Cuál es la tarifa general del IVA en Colombia?', o: ['19 %', '16 %', '5 %', '21 %'], e: 'La tarifa general es del 19 %. Existen tarifas del 5 % y del 0 % para algunos bienes.' },
-  { t: 'iva', q: 'El IVA descontable es...', o: ['El IVA pagado en las compras, que se resta del IVA cobrado en las ventas', 'El IVA que cobramos a los clientes', 'Un descuento comercial al cliente', 'El impuesto de renta del año'], e: 'Se declara IVA por pagar = IVA generado en ventas − IVA descontable en compras.' },
-  { t: 'iva', q: 'Una venta de $1.000.000 antes de IVA, con IVA del 19 %, da un total de...', o: ['$1.190.000', '$1.019.000', '$1.160.000', '$1.900.000'], e: '1.000.000 × 19 % = 190.000 de IVA; total 1.190.000.' },
-  { t: 'iva', q: 'IVA generado $5.000.000 e IVA descontable $3.200.000. ¿Cuánto es el IVA por pagar?', o: ['$1.800.000', '$8.200.000', '$3.200.000', '$5.000.000'], e: '5.000.000 − 3.200.000 = 1.800.000.' },
-  { t: 'iva', q: '¿Qué cuenta del PUC se usa para el IVA generado por pagar?', o: ['2408 Impuesto sobre las ventas por pagar', '1105 Caja', '1305 Clientes', '2205 Proveedores'], e: 'La 2408 reúne el IVA generado y el descontable; su saldo es lo que se paga o se tiene a favor.' },
-  { t: 'iva', q: 'La retención en la fuente es...', o: ['Un recaudo anticipado del impuesto de renta', 'Un descuento por pronto pago', 'Un impuesto municipal', 'Una multa de la DIAN'], e: 'Quien paga retiene un porcentaje y lo consigna a la DIAN como pago anticipado del impuesto del beneficiario.' },
-  { t: 'iva', q: '¿Quién practica la retención en la fuente?', o: ['El comprador o quien hace el pago (agente retenedor)', 'El vendedor', 'El banco siempre', 'El cliente final'], e: 'El agente retenedor retiene al pagar y luego declara y consigna lo retenido.' },
-  { t: 'iva', q: '¿Qué cuenta del PUC registra la retención en la fuente por pagar?', o: ['2365 Retención en la fuente', '2408 IVA por pagar', '1110 Bancos', '4135 Ingresos por ventas'], e: 'La 2365 es un pasivo: la empresa debe consignar lo retenido a la DIAN.' },
-  { t: 'iva', q: 'Por regla general, el ReteIVA es el...', o: ['15 % del valor del IVA', '15 % del valor de la venta', '19 % del valor del IVA', '4 % del valor de la venta'], e: 'La retención de IVA se calcula sobre el IVA, no sobre el valor total de la factura.' },
-  { t: 'iva', q: '¿Qué es la UVT?', o: ['Unidad de Valor Tributario, para fijar montos en impuestos y sanciones', 'Un impuesto a las ventas', 'Una cuenta bancaria especial', 'Un tipo de factura'], e: 'La UVT se actualiza cada año y evita tener que cambiar cada monto de la norma.' },
-  { t: 'iva', q: 'La diferencia entre un bien exento y uno excluido de IVA es que el exento...', o: ['Tiene tarifa 0 % y permite descontar el IVA de las compras', 'Paga el 19 %', 'No puede venderse', 'No requiere factura'], e: 'En lo excluido no se cobra IVA y tampoco se puede descontar el IVA de las compras.' },
-  { t: 'iva', q: 'El impuesto de industria y comercio (ICA) se paga...', o: ['Al municipio o distrito', 'A la DIAN', 'A la Superintendencia', 'Al banco'], e: 'El ICA es un impuesto municipal; la tarifa depende de la actividad y de cada municipio.' },
-  { t: 'iva', q: 'El GMF, conocido como 4 x 1000, equivale a...', o: ['0,4 % de cada movimiento financiero', '4 % de cada movimiento', '0,04 %', '40 %'], e: '4 por mil es 4 ÷ 1.000 = 0,4 %.' },
-  { t: 'iva', q: 'La factura electrónica es un documento que...', o: ['Soporta la venta y es validado por la DIAN', 'Solo sirve para publicidad', 'Reemplaza al balance general', 'Se hace una vez al año'], e: 'La factura electrónica se genera en formato digital y se valida con la DIAN.' },
+  { t: 'a15', q: '¿Cuál es la tarifa general del IVA en Colombia?', o: ['19 %', '16 %', '5 %', '21 %'], e: 'La tarifa general es del 19 %. Existen tarifas del 5 % y del 0 % para algunos bienes.' },
+  { t: 'a15', q: 'El IVA descontable es...', o: ['El IVA pagado en las compras, que se resta del IVA cobrado en las ventas', 'El IVA que cobramos a los clientes', 'Un descuento comercial al cliente', 'El impuesto de renta del año'], e: 'Se declara IVA por pagar = IVA generado en ventas − IVA descontable en compras.' },
+  { t: 'a15', q: 'Una venta de $1.000.000 antes de IVA, con IVA del 19 %, da un total de...', o: ['$1.190.000', '$1.019.000', '$1.160.000', '$1.900.000'], e: '1.000.000 × 19 % = 190.000 de IVA; total 1.190.000.' },
+  { t: 'a15', q: 'IVA generado $5.000.000 e IVA descontable $3.200.000. ¿Cuánto es el IVA por pagar?', o: ['$1.800.000', '$8.200.000', '$3.200.000', '$5.000.000'], e: '5.000.000 − 3.200.000 = 1.800.000.' },
+  { t: 'a15', q: '¿Qué cuenta del PUC se usa para el IVA generado por pagar?', o: ['2408 Impuesto sobre las ventas por pagar', '1105 Caja', '1305 Clientes', '2205 Proveedores'], e: 'La 2408 reúne el IVA generado y el descontable; su saldo es lo que se paga o se tiene a favor.' },
+  { t: 'a15', q: 'La retención en la fuente es...', o: ['Un recaudo anticipado del impuesto de renta', 'Un descuento por pronto pago', 'Un impuesto municipal', 'Una multa de la DIAN'], e: 'Quien paga retiene un porcentaje y lo consigna a la DIAN como pago anticipado del impuesto del beneficiario.' },
+  { t: 'a15', q: '¿Quién practica la retención en la fuente?', o: ['El comprador o quien hace el pago (agente retenedor)', 'El vendedor', 'El banco siempre', 'El cliente final'], e: 'El agente retenedor retiene al pagar y luego declara y consigna lo retenido.' },
+  { t: 'a15', q: '¿Qué cuenta del PUC registra la retención en la fuente por pagar?', o: ['2365 Retención en la fuente', '2408 IVA por pagar', '1110 Bancos', '4135 Ingresos por ventas'], e: 'La 2365 es un pasivo: la empresa debe consignar lo retenido a la DIAN.' },
+  { t: 'a15', q: 'Por regla general, el ReteIVA es el...', o: ['15 % del valor del IVA', '15 % del valor de la venta', '19 % del valor del IVA', '4 % del valor de la venta'], e: 'La retención de IVA se calcula sobre el IVA, no sobre el valor total de la factura.' },
+  { t: 'a15', q: '¿Qué es la UVT?', o: ['Unidad de Valor Tributario, para fijar montos en impuestos y sanciones', 'Un impuesto a las ventas', 'Una cuenta bancaria especial', 'Un tipo de factura'], e: 'La UVT se actualiza cada año y evita tener que cambiar cada monto de la norma.' },
+  { t: 'a15', q: 'La diferencia entre un bien exento y uno excluido de IVA es que el exento...', o: ['Tiene tarifa 0 % y permite descontar el IVA de las compras', 'Paga el 19 %', 'No puede venderse', 'No requiere factura'], e: 'En lo excluido no se cobra IVA y tampoco se puede descontar el IVA de las compras.' },
+  { t: 'a15', q: 'El impuesto de industria y comercio (ICA) se paga...', o: ['Al municipio o distrito', 'A la DIAN', 'A la Superintendencia', 'Al banco'], e: 'El ICA es un impuesto municipal; la tarifa depende de la actividad y de cada municipio.' },
+  { t: 'a15', q: 'El GMF, conocido como 4 x 1000, equivale a...', o: ['0,4 % de cada movimiento financiero', '4 % de cada movimiento', '0,04 %', '40 %'], e: '4 por mil es 4 ÷ 1.000 = 0,4 %.' },
+  { t: 'a15', q: 'La factura electrónica es un documento que...', o: ['Soporta la venta y es validado por la DIAN', 'Solo sirve para publicidad', 'Reemplaza al balance general', 'Se hace una vez al año'], e: 'La factura electrónica se genera en formato digital y se valida con la DIAN.' },
   // ---- Nómina y prestaciones ----
-  { t: 'nom', q: '¿Cuánto se paga de cesantías por cada año trabajado?', o: ['Un mes de salario', 'Medio mes de salario', 'Dos meses de salario', 'Quince días de salario'], e: 'Cesantías = salario mensual (con auxilio de transporte) × días trabajados ÷ 360.' },
-  { t: 'nom', q: 'Los intereses a las cesantías son del...', o: ['12 % anual sobre las cesantías', '1 % mensual sobre el salario', '12 % sobre el salario', '30 % anual'], e: 'Intereses = cesantías × días × 12 % ÷ 360.' },
-  { t: 'nom', q: 'La prima de servicios equivale a...', o: ['15 días de salario por semestre', 'Un mes de salario por año', '8 días por semestre', 'Dos meses por año'], e: 'Se paga la mitad de un mes de salario en junio y la otra mitad en diciembre.' },
-  { t: 'nom', q: '¿Cuántos días hábiles de vacaciones corresponden por año trabajado?', o: ['15 días hábiles', '30 días hábiles', '10 días hábiles', '20 días hábiles'], e: 'Quince días hábiles remunerados por cada año de servicio.' },
-  { t: 'nom', q: '¿Qué porcentaje del salario aporta el empleado a salud?', o: ['4 %', '8,5 %', '12 %', '16 %'], e: 'El empleado aporta 4 % a salud; el empleador 8,5 % (salvo exoneración).' },
-  { t: 'nom', q: 'El aporte total a pensión es del 16 %. ¿Cómo se reparte?', o: ['12 % empleador y 4 % empleado', '8 % y 8 %', '16 % empleador', '4 % empleador y 12 % empleado'], e: 'El empleador asume 12 % y al empleado se le descuenta 4 %.' },
-  { t: 'nom', q: '¿A quién se le paga auxilio de transporte?', o: ['A quien gana hasta 2 salarios mínimos', 'A todos los empleados', 'Solo a quien gana el mínimo exacto', 'A quien gana más de 4 salarios'], e: 'Se paga a quienes devengan hasta 2 SMMLV y viven lejos del trabajo.' },
-  { t: 'nom', q: 'La hora extra diurna se paga con un recargo del...', o: ['25 %', '35 %', '75 %', '100 %'], e: 'Hora extra diurna = valor de la hora ordinaria × 1,25.' },
-  { t: 'nom', q: 'La hora extra nocturna se paga con un recargo del...', o: ['75 %', '25 %', '35 %', '50 %'], e: 'Hora extra nocturna = valor de la hora ordinaria × 1,75.' },
-  { t: 'nom', q: 'El recargo nocturno ordinario (sin ser hora extra) es del...', o: ['35 %', '25 %', '75 %', '15 %'], e: 'Trabajar de noche dentro de la jornada ordinaria se paga con un recargo del 35 %.' },
-  { t: 'nom', q: 'Con un salario de $2.100.000 y 210 horas al mes, ¿cuánto vale la hora ordinaria?', o: ['$10.000', '$9.545', '$11.000', '$7.000'], e: '2.100.000 ÷ 210 = 10.000.' },
-  { t: 'nom', q: 'El aporte a la caja de compensación familiar es del...', o: ['4 % sobre la nómina, a cargo del empleador', '4 % a cargo del empleado', '8 % a cargo del empleador', '2 % a cargo del empleador'], e: 'La caja de compensación la paga el empleador: 4 % del IBC.' },
-  { t: 'nom', q: 'Para calcular cesantías y prima, la base salarial...', o: ['Incluye el auxilio de transporte', 'Excluye el auxilio de transporte', 'Es solo el salario mínimo', 'Incluye solo las horas extras'], e: 'El auxilio de transporte hace parte de la base de cesantías y prima, pero no del IBC de seguridad social.' },
-  { t: 'nom', q: 'Salario $2.000.000 más comisiones $200.000. Con salud 4 % y pensión 4 % sobre $2.200.000 (sin auxilio), ¿cuál es el neto a pagar?', o: ['$2.024.000', '$2.112.000', '$1.936.000', '$2.200.000'], e: 'Deducciones: 2.200.000 × 8 % = 176.000. Neto: 2.200.000 − 176.000 = 2.024.000.' },
+  { t: 'a19', q: '¿Cuánto se paga de cesantías por cada año trabajado?', o: ['Un mes de salario', 'Medio mes de salario', 'Dos meses de salario', 'Quince días de salario'], e: 'Cesantías = salario mensual (con auxilio de transporte) × días trabajados ÷ 360.' },
+  { t: 'a19', q: 'Los intereses a las cesantías son del...', o: ['12 % anual sobre las cesantías', '1 % mensual sobre el salario', '12 % sobre el salario', '30 % anual'], e: 'Intereses = cesantías × días × 12 % ÷ 360.' },
+  { t: 'a19', q: 'La prima de servicios equivale a...', o: ['15 días de salario por semestre', 'Un mes de salario por año', '8 días por semestre', 'Dos meses por año'], e: 'Se paga la mitad de un mes de salario en junio y la otra mitad en diciembre.' },
+  { t: 'a19', q: '¿Cuántos días hábiles de vacaciones corresponden por año trabajado?', o: ['15 días hábiles', '30 días hábiles', '10 días hábiles', '20 días hábiles'], e: 'Quince días hábiles remunerados por cada año de servicio.' },
+  { t: 'a19', q: '¿Qué porcentaje del salario aporta el empleado a salud?', o: ['4 %', '8,5 %', '12 %', '16 %'], e: 'El empleado aporta 4 % a salud; el empleador 8,5 % (salvo exoneración).' },
+  { t: 'a19', q: 'El aporte total a pensión es del 16 %. ¿Cómo se reparte?', o: ['12 % empleador y 4 % empleado', '8 % y 8 %', '16 % empleador', '4 % empleador y 12 % empleado'], e: 'El empleador asume 12 % y al empleado se le descuenta 4 %.' },
+  { t: 'a19', q: '¿A quién se le paga auxilio de transporte?', o: ['A quien gana hasta 2 salarios mínimos', 'A todos los empleados', 'Solo a quien gana el mínimo exacto', 'A quien gana más de 4 salarios'], e: 'Se paga a quienes devengan hasta 2 SMMLV y viven lejos del trabajo.' },
+  { t: 'a19', q: 'La hora extra diurna se paga con un recargo del...', o: ['25 %', '35 %', '75 %', '100 %'], e: 'Hora extra diurna = valor de la hora ordinaria × 1,25.' },
+  { t: 'a19', q: 'La hora extra nocturna se paga con un recargo del...', o: ['75 %', '25 %', '35 %', '50 %'], e: 'Hora extra nocturna = valor de la hora ordinaria × 1,75.' },
+  { t: 'a19', q: 'El recargo nocturno ordinario (sin ser hora extra) es del...', o: ['35 %', '25 %', '75 %', '15 %'], e: 'Trabajar de noche dentro de la jornada ordinaria se paga con un recargo del 35 %.' },
+  { t: 'a19', q: 'Con un salario de $2.100.000 y 210 horas al mes, ¿cuánto vale la hora ordinaria?', o: ['$10.000', '$9.545', '$11.000', '$7.000'], e: '2.100.000 ÷ 210 = 10.000.' },
+  { t: 'a19', q: 'El aporte a la caja de compensación familiar es del...', o: ['4 % sobre la nómina, a cargo del empleador', '4 % a cargo del empleado', '8 % a cargo del empleador', '2 % a cargo del empleador'], e: 'La caja de compensación la paga el empleador: 4 % del IBC.' },
+  { t: 'a19', q: 'Para calcular cesantías y prima, la base salarial...', o: ['Incluye el auxilio de transporte', 'Excluye el auxilio de transporte', 'Es solo el salario mínimo', 'Incluye solo las horas extras'], e: 'El auxilio de transporte hace parte de la base de cesantías y prima, pero no del IBC de seguridad social.' },
+  { t: 'a19', q: 'Salario $2.000.000 más comisiones $200.000. Con salud 4 % y pensión 4 % sobre $2.200.000 (sin auxilio), ¿cuál es el neto a pagar?', o: ['$2.024.000', '$2.112.000', '$1.936.000', '$2.200.000'], e: 'Deducciones: 2.200.000 × 8 % = 176.000. Neto: 2.200.000 − 176.000 = 2.024.000.' },
   // ---- Asientos contables ----
-  { t: 'asi', q: 'La ecuación contable básica es...', o: ['Activo = Pasivo + Patrimonio', 'Activo = Pasivo − Patrimonio', 'Pasivo = Activo + Patrimonio', 'Patrimonio = Activo + Pasivo'], e: 'Lo que la empresa tiene (activo) lo financian terceros (pasivo) o los dueños (patrimonio).' },
-  { t: 'asi', q: 'En la partida doble, todo asiento cumple que...', o: ['Débitos = Créditos', 'Débitos > Créditos', 'Créditos > Débitos', 'Solo se registra un lado'], e: 'Cada hecho afecta al menos dos cuentas y las sumas de débito y crédito deben ser iguales.' },
-  { t: 'asi', q: 'La cuenta Caja (1105) es de naturaleza débito. Eso significa que...', o: ['Aumenta con un débito y disminuye con un crédito', 'Aumenta con un crédito', 'Nunca cambia', 'Solo se usa en el cierre'], e: 'Los activos aumentan por el débito y disminuyen por el crédito.' },
-  { t: 'asi', q: 'Compra de mercancía de contado, pagada por banco. ¿Qué se debita y qué se acredita (sin IVA)?', o: ['Débito Inventarios, crédito Bancos', 'Débito Bancos, crédito Inventarios', 'Débito Proveedores, crédito Inventarios', 'Débito Gastos, crédito Caja'], e: 'Entra mercancía (inventarios sube) y sale dinero del banco.' },
-  { t: 'asi', q: '¿Qué cuenta registra lo que nos deben los clientes por ventas a crédito?', o: ['1305 Clientes', '2205 Proveedores', '1105 Caja', '3105 Capital social'], e: 'Clientes es un activo: un derecho de cobro.' },
-  { t: 'asi', q: '¿Qué cuenta registra lo que la empresa debe a sus proveedores por compras a crédito?', o: ['2205 Proveedores', '1305 Clientes', '1435 Inventarios', '4135 Ingresos'], e: 'Proveedores es un pasivo.' },
-  { t: 'asi', q: 'En el PUC colombiano, la clase 4 corresponde a...', o: ['Ingresos', 'Gastos', 'Costos de ventas', 'Pasivos'], e: 'Clase 1 Activo, 2 Pasivo, 3 Patrimonio, 4 Ingresos, 5 Gastos, 6 Costos de ventas, 7 Costos de producción.' },
-  { t: 'asi', q: 'Venta a crédito sin IVA. ¿Cuál es el asiento?', o: ['Débito Clientes, crédito Ingresos', 'Débito Ingresos, crédito Clientes', 'Débito Caja, crédito Clientes', 'Débito Inventarios, crédito Ingresos'], e: 'Nace un derecho de cobro (Clientes sube) y se reconoce el ingreso.' },
-  { t: 'asi', q: 'Al registrar la depreciación del mes, ¿qué se acredita?', o: ['Depreciación acumulada', 'Caja', 'El activo directamente', 'Capital social'], e: 'Se debita el gasto de depreciación y se acredita la depreciación acumulada (1592).' },
-  { t: 'asi', q: 'En una conciliación bancaria, un cheque girado y aún no cobrado...', o: ['Se resta al saldo del extracto', 'Se suma al saldo del extracto', 'Se suma a los libros', 'Se ignora'], e: 'El banco aún no lo ha descontado, pero la empresa ya lo registró.' },
-  { t: 'asi', q: 'En una conciliación, un depósito en tránsito...', o: ['Se suma al saldo del extracto', 'Se resta al saldo del extracto', 'Se resta a los libros', 'Es un error del banco'], e: 'Ya lo consignó la empresa, pero el banco todavía no lo refleja.' },
-  { t: 'asi', q: 'Los socios aportan $20.000.000 en dinero al banco. ¿Cómo se registra?', o: ['Débito Bancos, crédito Capital social', 'Débito Capital social, crédito Bancos', 'Débito Ingresos, crédito Bancos', 'Débito Bancos, crédito Clientes'], e: 'Sube el activo Bancos y sube el patrimonio (Capital social 3105).' },
-  { t: 'asi', q: 'El banco cobró una comisión que no estaba en libros. ¿Qué hace la empresa?', o: ['Registra el gasto y acredita Bancos', 'Nada, es problema del banco', 'Debita Bancos', 'Acredita Clientes'], e: 'Se registra una nota débito: gasto financiero y menor saldo en Bancos.' },
-  { t: 'asi', q: 'Al vender mercancía, además del ingreso se registra el costo de ventas. ¿Cómo?', o: ['Débito Costo de ventas, crédito Inventarios', 'Débito Inventarios, crédito Costo de ventas', 'Débito Ingresos, crédito Inventarios', 'Débito Clientes, crédito Costo de ventas'], e: 'La mercancía sale del inventario y su costo se reconoce como costo de ventas.' },
+  { t: 'a11', q: 'La ecuación contable básica es...', o: ['Activo = Pasivo + Patrimonio', 'Activo = Pasivo − Patrimonio', 'Pasivo = Activo + Patrimonio', 'Patrimonio = Activo + Pasivo'], e: 'Lo que la empresa tiene (activo) lo financian terceros (pasivo) o los dueños (patrimonio).' },
+  { t: 'a11', q: 'En la partida doble, todo asiento cumple que...', o: ['Débitos = Créditos', 'Débitos > Créditos', 'Créditos > Débitos', 'Solo se registra un lado'], e: 'Cada hecho afecta al menos dos cuentas y las sumas de débito y crédito deben ser iguales.' },
+  { t: 'a11', q: 'La cuenta Caja (1105) es de naturaleza débito. Eso significa que...', o: ['Aumenta con un débito y disminuye con un crédito', 'Aumenta con un crédito', 'Nunca cambia', 'Solo se usa en el cierre'], e: 'Los activos aumentan por el débito y disminuyen por el crédito.' },
+  { t: 'a11', q: 'Compra de mercancía de contado, pagada por banco. ¿Qué se debita y qué se acredita (sin IVA)?', o: ['Débito Inventarios, crédito Bancos', 'Débito Bancos, crédito Inventarios', 'Débito Proveedores, crédito Inventarios', 'Débito Gastos, crédito Caja'], e: 'Entra mercancía (inventarios sube) y sale dinero del banco.' },
+  { t: 'a11', q: '¿Qué cuenta registra lo que nos deben los clientes por ventas a crédito?', o: ['1305 Clientes', '2205 Proveedores', '1105 Caja', '3105 Capital social'], e: 'Clientes es un activo: un derecho de cobro.' },
+  { t: 'a11', q: '¿Qué cuenta registra lo que la empresa debe a sus proveedores por compras a crédito?', o: ['2205 Proveedores', '1305 Clientes', '1435 Inventarios', '4135 Ingresos'], e: 'Proveedores es un pasivo.' },
+  { t: 'a11', q: 'En el PUC colombiano, la clase 4 corresponde a...', o: ['Ingresos', 'Gastos', 'Costos de ventas', 'Pasivos'], e: 'Clase 1 Activo, 2 Pasivo, 3 Patrimonio, 4 Ingresos, 5 Gastos, 6 Costos de ventas, 7 Costos de producción.' },
+  { t: 'a11', q: 'Venta a crédito sin IVA. ¿Cuál es el asiento?', o: ['Débito Clientes, crédito Ingresos', 'Débito Ingresos, crédito Clientes', 'Débito Caja, crédito Clientes', 'Débito Inventarios, crédito Ingresos'], e: 'Nace un derecho de cobro (Clientes sube) y se reconoce el ingreso.' },
+  { t: 'a11', q: 'Al registrar la depreciación del mes, ¿qué se acredita?', o: ['Depreciación acumulada', 'Caja', 'El activo directamente', 'Capital social'], e: 'Se debita el gasto de depreciación y se acredita la depreciación acumulada (1592).' },
+  { t: 'a11', q: 'En una conciliación bancaria, un cheque girado y aún no cobrado...', o: ['Se resta al saldo del extracto', 'Se suma al saldo del extracto', 'Se suma a los libros', 'Se ignora'], e: 'El banco aún no lo ha descontado, pero la empresa ya lo registró.' },
+  { t: 'a11', q: 'En una conciliación, un depósito en tránsito...', o: ['Se suma al saldo del extracto', 'Se resta al saldo del extracto', 'Se resta a los libros', 'Es un error del banco'], e: 'Ya lo consignó la empresa, pero el banco todavía no lo refleja.' },
+  { t: 'a11', q: 'Los socios aportan $20.000.000 en dinero al banco. ¿Cómo se registra?', o: ['Débito Bancos, crédito Capital social', 'Débito Capital social, crédito Bancos', 'Débito Ingresos, crédito Bancos', 'Débito Bancos, crédito Clientes'], e: 'Sube el activo Bancos y sube el patrimonio (Capital social 3105).' },
+  { t: 'a11', q: 'El banco cobró una comisión que no estaba en libros. ¿Qué hace la empresa?', o: ['Registra el gasto y acredita Bancos', 'Nada, es problema del banco', 'Debita Bancos', 'Acredita Clientes'], e: 'Se registra una nota débito: gasto financiero y menor saldo en Bancos.' },
+  { t: 'a11', q: 'Al vender mercancía, además del ingreso se registra el costo de ventas. ¿Cómo?', o: ['Débito Costo de ventas, crédito Inventarios', 'Débito Inventarios, crédito Costo de ventas', 'Débito Ingresos, crédito Inventarios', 'Débito Clientes, crédito Costo de ventas'], e: 'La mercancía sale del inventario y su costo se reconoce como costo de ventas.' },
   // ---- Finanzas básicas ----
-  { t: 'fin', q: 'Capital $1.000.000 al 2 % mensual de interés simple durante 6 meses. ¿Cuánto es el interés?', o: ['$120.000', '$126.162', '$20.000', '$60.000'], e: 'I = C × i × t = 1.000.000 × 0,02 × 6 = 120.000.' },
-  { t: 'fin', q: 'En el interés compuesto...', o: ['Los intereses ganan intereses', 'El interés es siempre el mismo valor', 'No hay capitalización', 'Solo se calcula sobre la última cuota'], e: 'Los intereses se suman al capital y en el periodo siguiente también generan intereses.' },
-  { t: 'fin', q: '$1.000.000 al 10 % efectivo anual durante 2 años. ¿Cuál es el valor futuro?', o: ['$1.210.000', '$1.200.000', '$1.100.000', '$1.020.000'], e: 'VF = 1.000.000 × (1,10)² = 1.210.000.' },
-  { t: 'fin', q: 'Si el VPN de un proyecto es positivo...', o: ['El proyecto genera valor y conviene', 'El proyecto pierde dinero', 'Debe rechazarse siempre', 'No sirve para decidir'], e: 'VPN > 0 significa que rinde más que la tasa de descuento exigida.' },
-  { t: 'fin', q: 'La TIR es...', o: ['La tasa que hace el VPN igual a cero', 'La tasa de inflación', 'El interés de mora', 'El rendimiento de una cuenta de ahorros'], e: 'Es la rentabilidad propia del proyecto.' },
-  { t: 'fin', q: 'La razón corriente se calcula como...', o: ['Activo corriente ÷ Pasivo corriente', 'Pasivo corriente ÷ Activo corriente', 'Activo total ÷ Patrimonio', 'Ventas ÷ Inventarios'], e: 'Mide cuántos pesos de activo de corto plazo hay por cada peso de deuda de corto plazo.' },
-  { t: 'fin', q: 'La prueba ácida es...', o: ['(Activo corriente − Inventarios) ÷ Pasivo corriente', 'Activo corriente ÷ Pasivo corriente', 'Utilidad ÷ Ventas', 'Pasivo ÷ Activo'], e: 'Es más exigente que la razón corriente porque excluye los inventarios.' },
-  { t: 'fin', q: 'Costos fijos $12.000.000, precio $25.000 y costo variable unitario $15.000. ¿Cuál es el punto de equilibrio en unidades?', o: ['1.200', '480', '800', '2.400'], e: 'PE = CF ÷ (P − CVu) = 12.000.000 ÷ 10.000 = 1.200 unidades.' },
-  { t: 'fin', q: 'En un crédito de cuota fija (sistema francés)...', o: ['La cuota es igual y los intereses van bajando', 'El abono a capital es igual en todas las cuotas', 'Los intereses suben cada mes', 'No se pagan intereses'], e: 'Con cuota fija, al inicio se paga más interés y con el tiempo crece la parte de capital.' },
-  { t: 'fin', q: 'Una tasa nominal del 24 % con capitalización mensual da una tasa efectiva anual...', o: ['Mayor al 24 %', 'Menor al 24 %', 'Igual al 24 %', 'Del 12 %'], e: 'Por la capitalización, la efectiva anual es (1,02)¹² − 1 ≈ 26,82 %.' },
-  { t: 'fin', q: 'El margen bruto se calcula como...', o: ['(Ventas − Costo de ventas) ÷ Ventas', 'Utilidad neta ÷ Activo', 'Costo de ventas ÷ Ventas', 'Gastos ÷ Ventas'], e: 'Muestra qué parte de cada peso vendido queda después de cubrir el costo de lo vendido.' },
-  { t: 'fin', q: 'Una rotación de inventario alta indica que...', o: ['El inventario se vende rápido', 'Hay mucha mercancía parada', 'La empresa no vende', 'Hay pérdidas seguras'], e: 'Rotación = costo de ventas ÷ inventario promedio; cuanto mayor, más ágil es la venta.' },
-  { t: 'fin', q: 'Un equipo cuesta $12.000.000, valor residual $0 y vida útil de 5 años. ¿Cuál es la depreciación anual en línea recta?', o: ['$2.400.000', '$1.200.000', '$3.000.000', '$600.000'], e: '(12.000.000 − 0) ÷ 5 = 2.400.000.' },
-  { t: 'fin', q: 'Una anualidad es...', o: ['Una serie de pagos iguales a intervalos regulares', 'Un pago único al final del año', 'Un impuesto anual', 'Un préstamo sin cuotas'], e: 'Por ejemplo, ahorrar la misma cantidad cada mes.' }
+  { t: 'a13', q: 'Capital $1.000.000 al 2 % mensual de interés simple durante 6 meses. ¿Cuánto es el interés?', o: ['$120.000', '$126.162', '$20.000', '$60.000'], e: 'I = C × i × t = 1.000.000 × 0,02 × 6 = 120.000.' },
+  { t: 'a13', q: 'En el interés compuesto...', o: ['Los intereses ganan intereses', 'El interés es siempre el mismo valor', 'No hay capitalización', 'Solo se calcula sobre la última cuota'], e: 'Los intereses se suman al capital y en el periodo siguiente también generan intereses.' },
+  { t: 'a13', q: '$1.000.000 al 10 % efectivo anual durante 2 años. ¿Cuál es el valor futuro?', o: ['$1.210.000', '$1.200.000', '$1.100.000', '$1.020.000'], e: 'VF = 1.000.000 × (1,10)² = 1.210.000.' },
+  { t: 'a13', q: 'Si el VPN de un proyecto es positivo...', o: ['El proyecto genera valor y conviene', 'El proyecto pierde dinero', 'Debe rechazarse siempre', 'No sirve para decidir'], e: 'VPN > 0 significa que rinde más que la tasa de descuento exigida.' },
+  { t: 'a13', q: 'La TIR es...', o: ['La tasa que hace el VPN igual a cero', 'La tasa de inflación', 'El interés de mora', 'El rendimiento de una cuenta de ahorros'], e: 'Es la rentabilidad propia del proyecto.' },
+  { t: 'a13', q: 'La razón corriente se calcula como...', o: ['Activo corriente ÷ Pasivo corriente', 'Pasivo corriente ÷ Activo corriente', 'Activo total ÷ Patrimonio', 'Ventas ÷ Inventarios'], e: 'Mide cuántos pesos de activo de corto plazo hay por cada peso de deuda de corto plazo.' },
+  { t: 'a13', q: 'La prueba ácida es...', o: ['(Activo corriente − Inventarios) ÷ Pasivo corriente', 'Activo corriente ÷ Pasivo corriente', 'Utilidad ÷ Ventas', 'Pasivo ÷ Activo'], e: 'Es más exigente que la razón corriente porque excluye los inventarios.' },
+  { t: 'a13', q: 'Costos fijos $12.000.000, precio $25.000 y costo variable unitario $15.000. ¿Cuál es el punto de equilibrio en unidades?', o: ['1.200', '480', '800', '2.400'], e: 'PE = CF ÷ (P − CVu) = 12.000.000 ÷ 10.000 = 1.200 unidades.' },
+  { t: 'a13', q: 'En un crédito de cuota fija (sistema francés)...', o: ['La cuota es igual y los intereses van bajando', 'El abono a capital es igual en todas las cuotas', 'Los intereses suben cada mes', 'No se pagan intereses'], e: 'Con cuota fija, al inicio se paga más interés y con el tiempo crece la parte de capital.' },
+  { t: 'a13', q: 'Una tasa nominal del 24 % con capitalización mensual da una tasa efectiva anual...', o: ['Mayor al 24 %', 'Menor al 24 %', 'Igual al 24 %', 'Del 12 %'], e: 'Por la capitalización, la efectiva anual es (1,02)¹² − 1 ≈ 26,82 %.' },
+  { t: 'a13', q: 'El margen bruto se calcula como...', o: ['(Ventas − Costo de ventas) ÷ Ventas', 'Utilidad neta ÷ Activo', 'Costo de ventas ÷ Ventas', 'Gastos ÷ Ventas'], e: 'Muestra qué parte de cada peso vendido queda después de cubrir el costo de lo vendido.' },
+  { t: 'a13', q: 'Una rotación de inventario alta indica que...', o: ['El inventario se vende rápido', 'Hay mucha mercancía parada', 'La empresa no vende', 'Hay pérdidas seguras'], e: 'Rotación = costo de ventas ÷ inventario promedio; cuanto mayor, más ágil es la venta.' },
+  { t: 'a13', q: 'Un equipo cuesta $12.000.000, valor residual $0 y vida útil de 5 años. ¿Cuál es la depreciación anual en línea recta?', o: ['$2.400.000', '$1.200.000', '$3.000.000', '$600.000'], e: '(12.000.000 − 0) ÷ 5 = 2.400.000.' },
+  { t: 'a13', q: 'Una anualidad es...', o: ['Una serie de pagos iguales a intervalos regulares', 'Un pago único al final del año', 'Un impuesto anual', 'Un préstamo sin cuotas'], e: 'Por ejemplo, ahorrar la misma cantidad cada mes.' }
 ];
 
 (function () {
@@ -270,7 +267,6 @@ const BANK = [
   { const nat = Element.prototype.append; app.append = (...n) => nat.apply(app, n.flat().filter(x => x != null && x !== false)); }
   let T, role = null, code = null, pid = null, myName = '', room = null, offRoom = null, lastSig = '';
   // ---------- preguntas propias del docente (se guardan solo en este navegador) ----------
-  const PAL = ['--fin', '--lab', '--tri', '--con', '--inv'];
   function parseQs(text) {
     const topics = [], bank = [], errs = []; let tid = null, blk = [], ln0 = 0;
     const flush = () => {
@@ -295,9 +291,31 @@ const BANK = [
     });
     flush(); return { topics, bank, errs };
   }
-  let CUSTOM = parseQs(LS.get('ruleta-custom') || '');
-  const ALLT = () => TOPICS.concat(CUSTOM.topics), ALLB = () => BANK.concat(CUSTOM.bank);
-  const defTopics = () => (CUSTOM.topics.length ? CUSTOM.topics : TOPICS).map(t => t.id);
+  const PAL = ['--fin', '--lab', '--tri', '--con', '--inv'];
+  const QKEY = id => 'ruleta-q-' + id;
+  const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  function matchAsig(name) { const n = norm(name), m = n.match(/^(\d{1,2})(\s|$)/); if (m) { const a = TOPICS.find(t => t.num === +m[1]); if (a) return a; } return TOPICS.find(t => norm(t.full) === n || norm(t.name) === n) || TOPICS.find(t => n.length > 4 && (norm(t.full).includes(n) || n.includes(norm(t.full)))) || null; }
+  function parseQsRaw(text, tid) { const r = parseQs('# Tema: x\n' + text); r.bank.forEach(b => { b.t = tid; }); return { bank: r.bank, errs: r.errs }; }
+  function splitAll(text) { const parts = {}, un = []; let cur = null; String(text).split(/\r?\n/).forEach(raw => { const m = raw.trim().match(/^#\s*(tema\s*:?)?\s*(.+)$/i); if (m && raw.trim()[0] === '#') { const a = matchAsig(m[2]); cur = a ? a.id : null; if (!a) un.push(m[2].trim()); else if (!parts[a.id]) parts[a.id] = ''; return; } if (cur) parts[cur] += raw + '\n'; }); return { parts, un }; }
+  let CUSTOM = { topics: [], bank: [] };
+  function loadCustom() { const bank = []; TOPICS.forEach(t => { const tx = LS.get(QKEY(t.id)); if (tx) bank.push.apply(bank, parseQsRaw(tx, t.id).bank); }); CUSTOM = { topics: [], bank }; }
+  (function migrate() { const old = LS.get('ruleta-custom'); if (!old || LS.get('ruleta-mig')) return; const s = splitAll(old); Object.keys(s.parts).forEach(id => { if (!LS.get(QKEY(id)) && s.parts[id].trim()) LS.set(QKEY(id), s.parts[id].trim()); }); LS.set('ruleta-mig', '1'); })();
+  loadCustom();
+  const hasCustom = id => CUSTOM.bank.some(b => b.t === id);
+  const ALLT = () => TOPICS, ALLB = () => BANK.filter(b => !hasCustom(b.t)).concat(CUSTOM.bank);
+  const defTopics = () => TOPICS.filter(t => ALLB().some(b => b.t === t.id)).map(t => t.id);
+  function topicPicker() {
+    const box = el('div', {});
+    Object.keys(MODULOS).forEach(m => {
+      const list = TOPICS.filter(t => t.m == m);
+      const cnt = t => ALLB().filter(b => b.t === t.id).length;
+      const allOn = () => list.filter(t => cnt(t)).every(t => game.topics.includes(t.id));
+      const setMod = on => { const ids = list.filter(t => cnt(t)).map(t => t.id); let g = game.topics.filter(x => !ids.includes(x)); if (on) g = g.concat(ids); if (!g.length) g = [ids[0] || game.topics[0]]; game.topics = TOPICS.filter(t => g.includes(t.id)).map(t => t.id); saveMeta(); };
+      box.append(el('div', { class: 'modh' }, el('span', {}, MODULOS[m]), el('button', { type: 'button', class: 'btn ghost', style: 'padding:4px 12px;font-size:13px', onclick: () => setMod(!allOn()) }, allOn() ? 'Quitar todas' : 'Marcar todas')),
+        el('div', { class: 'opts' }, list.map(t => { const n = cnt(t); return el('label', { class: 'chk', style: n ? '' : 'opacity:.45' }, el('input', { type: 'checkbox', disabled: !n, checked: n && game.topics.includes(t.id), onchange: e => { game.topics = TOPICS.filter(x => (x.id === t.id ? e.target.checked : game.topics.includes(x.id))).map(x => x.id); if (!game.topics.length) game.topics = [t.id]; saveMeta(); } }), t.num + '. ' + t.full + (n ? ' (' + n + ')' : ' (sin preguntas)')); })));
+    });
+    return box;
+  }
   let game = { topics: defTopics(), secs: 20, rounds: 10, teams: 3 };
   let used = {}, cur = null, closeT = null, closing = false, tickT = null, raf = null;
   const P = p => 'ad360/equipos/' + code + (p ? '/' + p : '');
@@ -417,26 +435,40 @@ const BANK = [
       T.mode === 'local' ? el('div', { class: 'notice' }, T.failed ? 'No se pudo conectar con el servicio en línea. Estás en modo de prueba: solo funciona entre pestañas de este mismo navegador.' : 'Modo de prueba: la sala solo funciona entre pestañas de este mismo navegador. Para jugar con celulares hay que activar la sala en línea (se hace una sola vez, con la guía).') : null);
   }
 
-  const EJEMPLO = '# Tema: Inventarios\n¿Qué método de inventario vende primero lo que entró primero?\n*PEPS\nUEPS\nPromedio ponderado\nIdentificación específica\nExplicación: PEPS significa primeras en entrar, primeras en salir.\n\n¿Qué documento registra las entradas y salidas de mercancía?\n*Kardex\nBalance general\nRecibo de caja\nExtracto bancario\n\n# Tema: Mi segundo tema\n¿Pregunta de ejemplo?\n*Respuesta correcta\nIncorrecta 1\nIncorrecta 2\nIncorrecta 3\n';
+  const EJEMPLO = '¿Qué método de inventario vende primero lo que entró primero?\n*PEPS\nUEPS\nPromedio ponderado\nIdentificación específica\nExplicación: PEPS significa primeras en entrar, primeras en salir.\n\n¿Qué documento registra las entradas y salidas de mercancía?\n*Kárdex\nBalance general\nNota crédito\nRecibo de caja\nExplicación: El kárdex controla cada movimiento del inventario.';
+  function download(name, text) { const a = el('a', { href: URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' })), download: name }); document.body.append(a); a.click(); a.remove(); }
+  let qsSel = null;
   function viewQs() {
     top.textContent = ''; app.textContent = '';
-    const ta = el('textarea', { id: 'qs', rows: '16', spellcheck: 'false', style: 'width:100%;font:15px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink)' });
-    ta.value = LS.get('ruleta-custom') || '';
+    if (!qsSel) qsSel = TOPICS[0].id;
+    const sel = el('select', { id: 'asig', style: 'width:100%;font:700 16px var(--f-body,inherit);padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink)' });
+    const ta = el('textarea', { id: 'qs', rows: '14', spellcheck: 'false', style: 'width:100%;font:15px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:12px;border:2px solid var(--line);border-radius:14px;background:var(--surface2);color:var(--ink)' });
     const msg = el('div', { style: 'margin:12px 0;font-weight:700' });
-    const check = () => { const r = parseQs(ta.value); msg.style.color = r.errs.length ? 'var(--bad)' : 'var(--ok)'; msg.textContent = ''; msg.append(r.bank.length + ' preguntas en ' + r.topics.length + ' temas.' + (r.errs.length ? ' Hay ' + r.errs.length + ' problemas:' : '')); if (r.errs.length) msg.append(el('ul', { style: 'margin:6px 0 0;padding-left:20px;font-weight:600' }, r.errs.slice(0, 6).map(e => el('li', {}, e)))); return r; };
+    const fill = () => { sel.textContent = ''; Object.keys(MODULOS).forEach(m => { const og = el('optgroup', { label: MODULOS[m] }); TOPICS.filter(t => t.m == m).forEach(t => { const n = parseQsRaw(LS.get(QKEY(t.id)) || '', t.id).bank.length; const o = el('option', { value: t.id }, t.num + '. ' + t.full + (n ? ' — ' + n + ' preguntas' : '')); if (t.id === qsSel) o.selected = true; og.append(o); }); sel.append(og); }); };
+    const load = () => { ta.value = LS.get(QKEY(qsSel)) || ''; check(); };
+    const check = () => { const r = parseQsRaw(ta.value, qsSel); msg.style.color = r.errs.length ? 'var(--bad)' : 'var(--ok)'; msg.textContent = ''; msg.append(r.bank.length + ' preguntas en esta asignatura.' + (r.errs.length ? ' Hay ' + r.errs.length + ' problemas:' : '')); if (r.errs.length) msg.append(el('ul', { style: 'margin:6px 0 0;padding-left:20px;font-weight:600' }, r.errs.slice(0, 6).map(e => el('li', {}, e)))); return r; };
+    sel.addEventListener('change', () => { qsSel = sel.value; load(); });
     ta.addEventListener('input', check);
-    const file = el('input', { type: 'file', accept: '.txt,text/plain', style: 'display:none', onchange: e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { ta.value = String(rd.result); check(); }; rd.readAsText(f, 'utf-8'); } });
+    const save = () => { const r = check(); if (r.errs.length) return false; const tx = ta.value.trim(); if (tx) LS.set(QKEY(qsSel), tx); else LS.set(QKEY(qsSel), ''); loadCustom(); game = { topics: defTopics(), secs: game.secs || 20, rounds: game.rounds || 10 }; fill(); msg.style.color = 'var(--ok)'; msg.textContent = '✔ Guardado: ' + r.bank.length + ' preguntas en esta asignatura.'; return true; };
+    const file = el('input', { type: 'file', accept: '.txt,text/plain', style: 'display:none', onchange: e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { ta.value = String(rd.result); check(); }; rd.readAsText(f, 'utf-8'); e.target.value = ''; } });
+    const fileAll = el('input', { type: 'file', accept: '.txt,text/plain', style: 'display:none', onchange: e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { const s = splitAll(String(rd.result)); let n = 0; Object.keys(s.parts).forEach(id => { if (s.parts[id].trim()) { LS.set(QKEY(id), s.parts[id].trim()); n++; } }); loadCustom(); game = { topics: defTopics(), secs: game.secs || 20, rounds: game.rounds || 10 }; fill(); load(); msg.style.color = s.un.length ? 'var(--bad)' : 'var(--ok)'; msg.textContent = '✔ Se cargaron ' + n + ' asignaturas.' + (s.un.length ? ' No reconocí: ' + s.un.join(', ') + ' (el encabezado debe ser # Tema: seguido del número o nombre de la asignatura).' : ''); }; rd.readAsText(f, 'utf-8'); e.target.value = ''; } });
     app.append(el('div', { class: 'card' },
-      el('h2', {}, 'Mis preguntas'),
-      el('p', { class: 'muted' }, 'Escribe o pega tus preguntas con este formato. Cada tema empieza con #. La respuesta correcta lleva * al inicio. Cada pregunta tiene exactamente 4 opciones y se separa de la siguiente con una línea en blanco. La explicación es opcional.'),
-      ta, msg,
+      el('h2', {}, 'Mis preguntas por asignatura'),
+      el('p', { class: 'muted' }, 'Elige la asignatura y pega solo sus preguntas. Cada asignatura queda guardada aparte: no se borra al cambiar de una a otra. La respuesta correcta lleva * al inicio, cada pregunta tiene 4 opciones y se separa de la siguiente con una línea en blanco. La explicación es opcional.'),
+      sel, el('div', { class: 'sp' }), ta, msg,
       el('div', { class: 'row' },
-        el('button', { class: 'btn alt big', type: 'button', onclick: () => { const r = check(); if (r.errs.length) return; LS.set('ruleta-custom', ta.value.trim()); CUSTOM = r; game = { topics: defTopics(), secs: 20, rounds: 10, teams: 3 }; viewHome(); } }, 'Guardar'),
+        el('button', { class: 'btn alt big', type: 'button', onclick: save }, 'Guardar esta asignatura'),
         el('button', { class: 'btn ghost', type: 'button', onclick: () => { ta.value = EJEMPLO; check(); } }, 'Poner ejemplo'),
-        el('button', { class: 'btn ghost', type: 'button', onclick: () => file.click() }, 'Cargar archivo .txt'), file,
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => file.click() }, 'Cargar .txt'), file,
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => { ta.value = ''; save(); } }, 'Borrar esta asignatura'),
         el('button', { class: 'btn ghost', type: 'button', onclick: () => viewHome() }, 'Volver')),
-      el('p', { class: 'muted', style: 'margin-top:14px' }, 'Las preguntas se guardan en este computador y navegador. Si abres la ruleta en otro equipo, vuelve a pegarlas. Si borras todo y guardas, se usan otra vez las preguntas de ejemplo.')));
-    check();
+      el('h3', { style: 'margin-top:22px' }, 'Todas las asignaturas'),
+      el('p', { class: 'muted' }, 'Exporta un solo archivo con todo (respaldo o para pasarlo a otro computador) e impórtalo allá. También puedes cargar un archivo con varias asignaturas: cada bloque empieza con # Tema: 11 (número o nombre de la asignatura).'),
+      el('div', { class: 'row' },
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => { const out = TOPICS.map(t => { const tx = (LS.get(QKEY(t.id)) || '').trim(); return tx ? '# Tema: ' + t.num + '. ' + t.full + '\n' + tx + '\n' : ''; }).filter(Boolean).join('\n'); if (!out) { msg.style.color = 'var(--bad)'; msg.textContent = 'Aún no hay preguntas guardadas para exportar.'; return; } download('preguntas-asignaturas.txt', out); } }, 'Exportar todo'),
+        el('button', { class: 'btn ghost', type: 'button', onclick: () => fileAll.click() }, 'Importar varias'), fileAll),
+      el('p', { class: 'muted', style: 'margin-top:14px' }, 'Se guardan en este navegador y las usan todas las ruletas y juegos de Aula Didáctica 360 abiertos aquí. En otro equipo usa Exportar / Importar. Si una asignatura no tiene preguntas propias, solo aparece si hay preguntas de ejemplo.')));
+    fill(); load();
   }
 
   // ---------- estudiante ----------
@@ -551,7 +583,7 @@ const BANK = [
       st.phase === 'lobby' ? (ps.length ? el('ol', { class: 'board' }, ps.map((p, i) => el('li', {}, el('span', { class: 'n' }, i + 1), el('span', { class: 'nm' }, p.name), el('span', { class: 'd' }, teamTag(p.team))))) : el('p', { class: 'muted' }, 'Aún no entra nadie. Pide a tus estudiantes que abran el enlace o escaneen el código QR.')) : rankView(null));
     let main;
     if (st.phase === 'lobby') {
-      const tp = el('div', { class: 'opts' }, ALLT().filter(t => ALLB().some(b => b.t === t.id)).map(t => el('label', { class: 'chk' }, el('input', { type: 'checkbox', checked: game.topics.includes(t.id), onchange: e => { game.topics = ALLT().filter(x => (x.id === t.id ? e.target.checked : game.topics.includes(x.id))).map(x => x.id); if (!game.topics.length) { game.topics = [t.id]; } saveMeta(); } }), t.name + ' (' + ALLB().filter(b => b.t === t.id).length + ')')));
+      const tp = topicPicker();
       const seg = (arr, key, suf) => el('div', { class: 'seg' }, arr.map(v => el('button', { type: 'button', 'aria-pressed': String(game[key] === v), onclick: () => { game[key] = v; saveMeta(); if (key === 'teams') setTimeout(mixTeams, 90); } }, v + suf)));
       main = el('div', { class: 'card' },
         el('div', { class: 'joinbox' }, el('div', {}, el('div', { class: 'muted', style: 'font-weight:700' }, 'Código de la sala'), el('div', { class: 'roomcode' }, code), el('p', { class: 'muted', style: 'margin:8px 0 0;word-break:break-all' }, 'Enlace: ', el('b', {}, url))), el('div', { id: 'qr' })),
