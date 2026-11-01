@@ -303,6 +303,7 @@ const BANK = [
   loadCustom();
   const hasCustom = id => CUSTOM.bank.some(b => b.t === id);
   const ALLT = () => TOPICS, ALLB = () => BANK.filter(b => !hasCustom(b.t)).concat(CUSTOM.bank);
+  const playable = () => { const g = game.topics.filter(id => ALLB().some(b => b.t === id)); return g.length ? g : defTopics(); };
   const defTopics = () => TOPICS.filter(t => ALLB().some(b => b.t === t.id)).map(t => t.id);
   function topicPicker() {
     const box = el('div', {});
@@ -312,7 +313,7 @@ const BANK = [
       const allOn = () => list.filter(t => cnt(t)).every(t => game.topics.includes(t.id));
       const setMod = on => { const ids = list.filter(t => cnt(t)).map(t => t.id); let g = game.topics.filter(x => !ids.includes(x)); if (on) g = g.concat(ids); if (!g.length) g = [ids[0] || game.topics[0]]; game.topics = TOPICS.filter(t => g.includes(t.id)).map(t => t.id); saveMeta(); };
       box.append(el('div', { class: 'modh' }, el('span', {}, MODULOS[m]), el('button', { type: 'button', class: 'btn ghost', style: 'padding:4px 12px;font-size:13px', onclick: () => setMod(!allOn()) }, allOn() ? 'Quitar todas' : 'Marcar todas')),
-        el('div', { class: 'opts' }, list.map(t => { const n = cnt(t); return el('label', { class: 'chk', style: n ? '' : 'opacity:.45' }, el('input', { type: 'checkbox', disabled: !n, checked: n && game.topics.includes(t.id), onchange: e => { game.topics = TOPICS.filter(x => (x.id === t.id ? e.target.checked : game.topics.includes(x.id))).map(x => x.id); if (!game.topics.length) game.topics = [t.id]; saveMeta(); } }), t.num + '. ' + t.full + (n ? ' (' + n + ')' : ' (sin preguntas)')); })));
+        el('div', { class: 'opts' }, list.map(t => { const n = cnt(t); return el('label', { class: 'chk', style: n ? '' : 'opacity:.7' }, el('input', { type: 'checkbox', checked: game.topics.includes(t.id), onchange: e => { game.topics = TOPICS.filter(x => (x.id === t.id ? e.target.checked : game.topics.includes(x.id))).map(x => x.id); if (!game.topics.length) game.topics = [t.id]; saveMeta(); } }), t.num + '. ' + t.full + (n ? ' (' + n + ')' : ' (aún sin preguntas)')); })));
     });
     return box;
   }
@@ -530,7 +531,7 @@ const BANK = [
   function createRoom() {
     code = Array.from({ length: 4 }, () => CODE_CHARS[rnd(CODE_CHARS.length)]).join(''); LS.set('equipos-host-code', code);
     used = {}; cur = null; role = 'host';
-    T.set(P(), { meta: { topics: game.topics, tn: tnMap(), secs: game.secs, rounds: game.rounds, teams: game.teams, created: T.now() }, st: { phase: 'lobby', n: 0 } });
+    T.set(P(), { meta: { topics: playable(), tn: tnMap(), secs: game.secs, rounds: game.rounds, teams: game.teams, created: T.now() }, st: { phase: 'lobby', n: 0 } });
     listenHost();
   }
   function tnMap() { const o = {}; ALLT().forEach(t => { o[t.id] = { name: t.name, color: t.color }; }); return o; }
@@ -548,7 +549,7 @@ const BANK = [
     const ps = players(), ans = (room.answers && room.answers[st.n]) || {};
     if (ps.length && ps.every(p => ans[p.id])) { closing = true; clearTimeout(closeT); setTimeout(closeQuestion, 700); }
   }
-  function saveMeta() { if (room && room.st && room.st.phase === 'lobby') T.set(P('meta'), { topics: game.topics, tn: tnMap(), secs: game.secs, rounds: game.rounds, teams: game.teams, created: room.meta.created }); }
+  function saveMeta() { if (room && room.st && room.st.phase === 'lobby') T.set(P('meta'), { topics: playable(), tn: tnMap(), secs: game.secs, rounds: game.rounds, teams: game.teams, created: room.meta.created }); }
   function hostSpin() {
     const st = room.st, n = (st.n || 0) + 1, g = room.meta;
     if (n > g.rounds) return T.set(P('st'), { phase: 'end', n: st.n });
