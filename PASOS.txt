@@ -73,3 +73,25 @@ F) PUNTAJE (editable en puntaje.js; la tabla se muestra al crear la partida y a 
 
 G) PARA ACTUALIZAR DESPUÉS
 Sube los archivos nuevos al mismo repositorio: Add file > Upload files > Commit changes (reemplaza los anteriores).
+
+
+=== NOVEDADES (cargar preguntas sin escribir una a una) ===
+Archivos nuevos: bancos.js (6 bancos listos de 10 preguntas) -- subirlo junto con los demás.
+En "Mis preguntas":
+ 1) Bancos listos: elige un tema y pulsa "Agregar al banco".
+ 2) Pegar muchas de una vez (o subir un .txt). Formato natural:
+      1. ¿Cuál es un activo?
+      A. Proveedores
+      B. Caja
+      C. Capital
+      D. Ingresos
+      Respuesta: B
+      2. Verdadero o falso: El IVA es indirecto.
+      Respuesta: Verdadero
+      3. Define pasivo.
+      Respuesta modelo: Obligaciones con terceros.
+    Opcional: "Tema: IVA" y "Tiempo: 30".
+    Formato corto (una línea por pregunta):
+      M|Pregunta|A|B|C|D|B|20     VF|Pregunta|V|15     D|Pregunta|modelo|60
+Diseño: igual al de la primera ruleta (teclas de colores A/B/C/D).
+No reemplaces config.js si ya pegaste tus datos de Firebase.

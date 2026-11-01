@@ -4,14 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ruleta de preguntas · Aula Didáctica 360</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
 <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
 
 <header>
   <h1 id="titulo"></h1>
+  <span id="miInfo"></span>
   <a id="linkJuegos" href="index.html" hidden>← Juegos</a>
-  <span id="miInfo" class="muted" style="color:#fff"></span>
 </header>
 
 <main>
@@ -63,6 +64,16 @@
     <!-- ---------- Mis preguntas ---------- -->
     <div id="tabPreg">
       <div class="card">
+        <h2>📚 Bancos de preguntas listos</h2>
+        <p class="muted">Elige un tema y agrégalo con un clic: ya trae preguntas de selección múltiple, verdadero/falso y descriptivas, sin escribir nada.</p>
+        <div class="row">
+          <select id="selBanco" style="flex:1 1 220px"></select>
+          <button id="btnBanco">Agregar al banco</button>
+        </div>
+        <p id="resBanco" class="muted"></p>
+      </div>
+
+      <div class="card">
         <h2 id="tituloForm">Agregar pregunta</h2>
         <label for="pTipo">Tipo de pregunta</label>
         <select id="pTipo">
@@ -109,21 +120,22 @@
         <div class="row" style="margin-top:8px">
           <button id="btnEjemplo" class="sec">Cargar 3 de ejemplo</button>
           <button id="btnBajar" class="sec">⬇ Descargar copia</button>
-          <button id="btnSubir" class="sec">⬆ Cargar copia</button>
+          <button id="btnSubir" class="sec">⬆ Cargar archivo (.txt o .json)</button>
           <button id="btnBorrarTodo" class="red">Borrar todas</button>
-          <input id="fileCopia" type="file" accept=".json,application/json" hidden>
+          <input id="fileCopia" type="file" accept=".txt,.json,text/plain,application/json" hidden>
         </div>
         <p class="muted">Tus preguntas se guardan en este navegador y las usan las dos ruletas. Descarga una copia de vez en cuando, por si cambias de equipo.</p>
       </div>
 
       <div class="card">
-        <h2>Pegar varias preguntas de una vez</h2>
-        <p class="muted">Una pregunta por línea, separando con <b>|</b>. Según el tipo:</p>
-        <p class="muted"><b>Múltiple:</b><br><code>M | Pregunta | Opción A | Opción B | Opción C | Opción D | Letra correcta | Segundos</code></p>
-        <p class="muted"><b>Verdadero/Falso:</b><br><code>VF | Pregunta | V (o F) | Segundos</code></p>
-        <p class="muted"><b>Descriptiva:</b><br><code>D | Pregunta | Respuesta modelo | Segundos</code></p>
-        <textarea id="bulk" placeholder="M | ¿Cuál cuenta es un activo? | Caja | Proveedores | Capital | Ingresos | A | 20&#10;VF | El IVA es un impuesto indirecto | V | 15&#10;D | Define qué es un pasivo | Obligaciones con terceros | 60"></textarea>
-        <div class="row" style="margin-top:8px"><button id="btnImportar">Importar</button></div>
+        <h2>Pegar muchas preguntas de una vez</h2>
+        <p class="muted">Pega todo el bloque (o sube un archivo .txt con el botón de arriba). La página detecta sola si cada pregunta es de selección múltiple, verdadero/falso o descriptiva. Formato:</p>
+        <p class="muted"><code>1. ¿Cuál es un activo?<br>A. Proveedores<br>B. Caja<br>C. Capital<br>D. Ingresos<br>Respuesta: B</code></p>
+        <p class="muted"><code>2. Verdadero o falso: El IVA es un impuesto indirecto.<br>Respuesta: Verdadero</code></p>
+        <p class="muted"><code>3. Define qué es un pasivo.<br>Respuesta modelo: Obligaciones con terceros.</code></p>
+        <p class="muted">Opcional en cada pregunta: <code>Tema: IVA</code> y <code>Tiempo: 30</code> (segundos).</p>
+        <textarea id="bulk" style="min-height:160px" placeholder="1. ¿Cuál es un activo?&#10;A. Proveedores&#10;B. Caja&#10;C. Capital&#10;D. Ingresos&#10;Respuesta: B&#10;&#10;2. Verdadero o falso: El IVA es un impuesto indirecto.&#10;Respuesta: Verdadero&#10;&#10;3. Define qué es un pasivo.&#10;Respuesta modelo: Obligaciones con terceros."></textarea>
+        <div class="row" style="margin-top:8px"><button id="btnImportar">Importar preguntas</button></div>
         <p id="resImport" class="muted"></p>
       </div>
     </div>
@@ -248,6 +260,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="config.js"></script>
 <script src="puntaje.js"></script>
+<script src="bancos.js"></script>
 <script>window.MODO = 'preguntas';</script>
 <script src="ruleta-core.js"></script>
 </body>

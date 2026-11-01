@@ -83,6 +83,7 @@ function validarClave(){
 function abrirPanel(){
   mostrar('vProfe');
   formTipo();
+  llenarBancos();
   renderPreguntas();
   actualizarInfoPartida();
 }
@@ -213,43 +214,143 @@ on('#fileCopia', 'change', e => {
   const rd = new FileReader();
   rd.onload = () => {
     try {
-      const data = JSON.parse(rd.result);
-      if (!Array.isArray(data)) throw 0;
-      const validas = data.map(normalizar).filter(p => p.texto && (
-        (p.tipo === 'multiple' && Array.isArray(p.opciones) && p.opciones.length === 4 && p.correcta >= 0 && p.correcta <= 3) ||
-        (p.tipo === 'vf' && (p.correcta === 0 || p.correcta === 1)) ||
-        (p.tipo === 'desc')
-      )).map(p => Object.assign({}, p, { id: uid(), segundos: +p.segundos || 20 }));
-      guardarP(leerP().concat(validas)); renderPreguntas();
-      alert('Se cargaron ' + validas.length + ' preguntas.');
-    } catch (err) { alert('El archivo no es una copia válida.'); }
+      if (/\.json$/i.test(f.name)) {
+        const data = JSON.parse(rd.result);
+        if (!Array.isArray(data)) throw 0;
+        const validas = data.map(normalizar).filter(p => p.texto && (
+          (p.tipo === 'multiple' && Array.isArray(p.opciones) && p.opciones.length === 4 && p.correcta >= 0 && p.correcta <= 3) ||
+          (p.tipo === 'vf' && (p.correcta === 0 || p.correcta === 1)) ||
+          (p.tipo === 'desc')
+        )).map(p => Object.assign({}, p, { id: uid(), segundos: +p.segundos || 20 }));
+        guardarP(leerP().concat(validas)); renderPreguntas();
+        alert('Se cargaron ' + validas.length + ' preguntas.');
+      } else {
+        T_('#resImport', importarTexto(String(rd.result)));
+      }
+    } catch (err) { alert('No pude leer ese archivo. Usa un .txt con el formato de las preguntas o una copia .json.'); }
     e.target.value = '';
   };
   rd.readAsText(f);
 });
-on('#btnImportar', 'click', () => {
-  const lineas = $('#bulk').value.split('\n').map(l => l.trim()).filter(Boolean);
-  const arr = leerP(); let ok = 0, mal = 0;
-  lineas.forEach(l => {
+
+/* ---------- Importador inteligente: detecta el tipo de cada pregunta ---------- */
+const SEG_DEF = { multiple: 20, vf: 15, desc: 60 };
+function parsearPipes(lineas){
+  const arr = [], malas = [];
+  lineas.forEach((l, n) => {
     const p = l.split('|').map(x => x.trim());
     const k = (p[0] || '').toUpperCase();
-    if (k === 'VF') {                                   // VF | pregunta | V o F | segundos
+    if (k === 'VF') {
       const c = (p[2] || '').toUpperCase(), idx = c.startsWith('V') ? 0 : (c.startsWith('F') ? 1 : -1);
-      if (!p[1] || idx < 0) { mal++; return; }
-      arr.push({ id: uid(), tipo: 'vf', tema: '', texto: p[1], correcta: idx, segundos: clamp(parseInt(p[3]) || 15, 5, 600) }); ok++; return;
+      if (!p[1] || idx < 0) { malas.push('Línea ' + (n + 1)); return; }
+      arr.push({ tipo: 'vf', tema: '', texto: p[1], correcta: idx, segundos: clamp(parseInt(p[3]) || SEG_DEF.vf, 5, 600) }); return;
     }
-    if (k === 'D') {                                    // D | pregunta | respuesta modelo | segundos
-      if (!p[1]) { mal++; return; }
-      arr.push({ id: uid(), tipo: 'desc', tema: '', texto: p[1], modelo: p[2] || '', segundos: clamp(parseInt(p[3]) || 60, 5, 600) }); ok++; return;
+    if (k === 'D') {
+      if (!p[1]) { malas.push('Línea ' + (n + 1)); return; }
+      arr.push({ tipo: 'desc', tema: '', texto: p[1], modelo: p[2] || '', segundos: clamp(parseInt(p[3]) || SEG_DEF.desc, 5, 600) }); return;
     }
-    const q = (k === 'M') ? p.slice(1) : p;             // M | pregunta | A | B | C | D | letra | segundos  (o sin "M")
+    const q = (k === 'M') ? p.slice(1) : p;
     const idx = LET.indexOf((q[5] || '').toUpperCase());
-    if (q.length < 6 || !q[0] || q.slice(1, 5).some(x => !x) || idx < 0) { mal++; return; }
-    arr.push({ id: uid(), tipo: 'multiple', tema: '', texto: q[0], opciones: q.slice(1, 5), correcta: idx, segundos: clamp(parseInt(q[6]) || 20, 5, 600) }); ok++;
+    if (q.length < 6 || !q[0] || q.slice(1, 5).some(x => !x) || idx < 0) { malas.push('Línea ' + (n + 1)); return; }
+    arr.push({ tipo: 'multiple', tema: '', texto: q[0], opciones: q.slice(1, 5), correcta: idx, segundos: clamp(parseInt(q[6]) || SEG_DEF.multiple, 5, 600) });
   });
-  guardarP(arr); renderPreguntas();
-  T_('#resImport', ok + ' importadas' + (mal ? ', ' + mal + ' con formato incorrecto (revisa esas líneas).' : '.'));
-  if (ok) $('#bulk').value = '';
+  return { arr, malas };
+}
+function parsearNatural(texto){
+  const RE_NUM = /^\s*(?:pregunta\s*)?(\d+)\s*[\.\)\-:]\s*(.*)$/i;
+  const RE_OPC = /^\s*\(?([A-Da-d])\s*[\.\)\-:]\s*(.+)$/;
+  const RE_MODELO = /^\s*(?:respuesta\s+modelo|respuesta\s+esperada|modelo|criterio(?:\s+de\s+calificaci[oó]n)?)\s*[:\-]\s*(.+)$/i;
+  const RE_RESP = /^\s*(?:respuesta(?:\s+correcta)?|correcta|rta|clave|answer)\s*[:\-]\s*(.+)$/i;
+  const RE_SEG = /^\s*(?:tiempo|segundos)\s*[:\-]\s*(\d+)/i;
+  const RE_TEMA = /^\s*tema\s*[:\-]\s*(.+)$/i;
+  const lineas = texto.replace(/\r/g, '').split('\n').map(l => l.trim());
+  const hayNum = lineas.some(l => RE_NUM.test(l) && !RE_OPC.test(l));
+  const bloques = []; let cur = null;
+  lineas.forEach(l => {
+    if (!l) { if (!hayNum && cur) { bloques.push(cur); cur = null; } return; }
+    if (hayNum && RE_NUM.test(l) && !RE_OPC.test(l)) { if (cur) bloques.push(cur); cur = [l]; }
+    else { if (!cur) cur = []; cur.push(l); }
+  });
+  if (cur) bloques.push(cur);
+  const arr = [], malas = [];
+  bloques.forEach((b, bi) => {
+    const nom = 'Pregunta ' + (bi + 1);
+    let m = RE_NUM.exec(b[0]);
+    let texto = (m && hayNum ? m[2] : b[0]).trim();
+    const opciones = [], marcadas = [];
+    let resp = '', modelo = '', seg = 0, tema = '', enModelo = false;
+    b.slice(1).forEach(l => {
+      let mm;
+      if ((mm = RE_TEMA.exec(l))) { tema = mm[1].trim(); enModelo = false; }
+      else if ((mm = RE_SEG.exec(l))) { seg = parseInt(mm[1]); enModelo = false; }
+      else if ((mm = RE_MODELO.exec(l))) { modelo = mm[1].trim(); enModelo = true; }
+      else if ((mm = RE_RESP.exec(l))) { resp = mm[1].trim(); enModelo = false; }
+      else if ((mm = RE_OPC.exec(l)) && opciones.length < 4 && mm[1].toUpperCase() === LET[opciones.length]) {
+        let t = mm[2].trim();
+        const marca = /(?:✓|✔|\(correcta\))\s*$/i.test(t) || t.startsWith('*');
+        t = t.replace(/\s*(?:✓|✔|\(correcta\))\s*$/i, '').replace(/^\*\s*/, '').trim();
+        if (marca) marcadas.push(opciones.length);
+        opciones.push(t); enModelo = false;
+      }
+      else if (enModelo) modelo += ' ' + l;
+      else if (!opciones.length && !resp) texto += ' ' + l;
+    });
+    if (!texto) { malas.push(nom + ': sin texto'); return; }
+    if (opciones.length) {
+      if (opciones.length !== 4) { malas.push(nom + ': necesita 4 opciones (A, B, C y D)'); return; }
+      let idx = marcadas.length ? marcadas[0] : -1;
+      const ml = /^\(?([A-Da-d])\b/.exec(resp);
+      if (ml) idx = LET.indexOf(ml[1].toUpperCase());
+      if (idx < 0) { malas.push(nom + ': falta la respuesta correcta (ej. "Respuesta: B")'); return; }
+      arr.push({ tipo: 'multiple', tema, texto, opciones, correcta: idx, segundos: clamp(seg || SEG_DEF.multiple, 5, 600) });
+      return;
+    }
+    const rl = resp.toLowerCase();
+    const prefijo = /^\s*(?:verdadero\s*(?:o|\/)\s*falso|v\s*\/\s*f)\s*[:\.\-\)]?\s*/i;
+    const esVF = /^(verdadero|falso|v|f|true|false)\b/.test(rl) || prefijo.test(texto);
+    if (esVF) {
+      const idx = /^(verdadero|v|true)\b/.test(rl) ? 0 : (/^(falso|f|false)\b/.test(rl) ? 1 : -1);
+      if (idx < 0) { malas.push(nom + ': falta "Respuesta: Verdadero" o "Falso"'); return; }
+      arr.push({ tipo: 'vf', tema, texto: texto.replace(prefijo, '').trim() || texto, correcta: idx, segundos: clamp(seg || SEG_DEF.vf, 5, 600) });
+      return;
+    }
+    arr.push({ tipo: 'desc', tema, texto, modelo: (modelo || resp).trim(), segundos: clamp(seg || SEG_DEF.desc, 5, 600) });
+  });
+  return { arr, malas };
+}
+function importarTexto(texto){
+  const lineas = texto.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lineas.length) return 'No hay nada para importar.';
+  const r = lineas.every(l => l.includes('|')) ? parsearPipes(lineas) : parsearNatural(texto);
+  const actuales = leerP(), vistos = new Set(actuales.map(p => p.texto.toLowerCase()));
+  const nuevas = r.arr.filter(p => !vistos.has(p.texto.toLowerCase())).map(p => Object.assign({ id: uid(), tema: '', modelo: '' }, p));
+  guardarP(actuales.concat(nuevas)); renderPreguntas();
+  const c = { multiple: 0, vf: 0, desc: 0 }; nuevas.forEach(p => { c[p.tipo]++; });
+  let msg = nuevas.length + ' preguntas importadas (' + c.multiple + ' de selección múltiple, ' + c.vf + ' de verdadero/falso, ' + c.desc + ' descriptivas).';
+  const rep = r.arr.length - nuevas.length; if (rep) msg += ' ' + rep + ' ya estaban y se omitieron.';
+  if (r.malas.length) msg += ' No pude leer: ' + r.malas.join('; ') + '.';
+  return msg;
+}
+on('#btnImportar', 'click', () => {
+  const t = importarTexto($('#bulk').value);
+  T_('#resImport', t);
+  if (!/No pude leer|No hay nada/.test(t)) $('#bulk').value = '';
+});
+
+/* ---------- Bancos de preguntas listos ---------- */
+function llenarBancos(){
+  const sel = $('#selBanco'); if (!sel || sel.options.length) return;
+  (window.BANCOS || []).forEach(b => {
+    const o = document.createElement('option'); o.value = b.id;
+    o.textContent = b.nombre + ' (' + b.preguntas.length + ' preguntas)'; sel.appendChild(o);
+  });
+}
+on('#btnBanco', 'click', () => {
+  const b = (window.BANCOS || []).find(x => x.id === $('#selBanco').value); if (!b) return;
+  const actuales = leerP(), vistos = new Set(actuales.map(p => p.texto.toLowerCase()));
+  const nuevas = b.preguntas.filter(p => !vistos.has(p.texto.toLowerCase())).map(p => Object.assign({ id: uid(), modelo: '' }, p));
+  guardarP(actuales.concat(nuevas)); renderPreguntas();
+  T_('#resBanco', nuevas.length ? '✅ Se agregaron ' + nuevas.length + ' preguntas de «' + b.nombre + '».' : 'Ese banco ya estaba cargado completo.');
 });
 
 /* ---------------------------------------------------------
