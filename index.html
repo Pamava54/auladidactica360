@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula Didáctica 360</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1f2a44; --muted:#667090;
+    --brand:#4f46e5; --brand2:#06b6d4; --line:#e3e7f2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:36px 20px 44px;text-align:center}
+  header h1{margin:0 0 6px;font-size:clamp(26px,6vw,40px);letter-spacing:.3px}
+  header p{margin:0;opacity:.92;font-size:clamp(14px,3.5vw,17px)}
+  main{max-width:960px;margin:-26px auto 40px;padding:0 16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 14px rgba(31,42,68,.06)}
+  .card .ico{font-size:34px}
+  .card h2{margin:0;font-size:19px}
+  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.45;flex:1}
+  .tag{align-self:flex-start;font-size:12px;padding:3px 10px;border-radius:999px;background:#e8f7ee;color:#157347;font-weight:600}
+  .tag.soon{background:#eef0f7;color:#6b7390}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  a.btn{display:inline-block;text-decoration:none;text-align:center;padding:10px 14px;border-radius:10px;font-weight:600;font-size:14px}
+  a.primary{background:var(--brand);color:#fff}
+  a.ghost{background:#eef0ff;color:var(--brand)}
+  .card.off{opacity:.6}
+  .tip{margin-top:22px;background:#fff8e6;border:1px solid #f3dca0;color:#6b5314;border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.5}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;padding:0 16px 28px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎓 Aula Didáctica 360</h1>
+  <p>Juegos y actividades para aprender en clase</p>
+</header>
+
+<main>
+  <div class="grid" id="lista"></div>
+  <div class="tip">
+    <b>Para el profesor:</b> cada juego tiene su propio enlace. Comparte con los estudiantes solo el enlace del juego que vayas a usar; no necesitan pasar por esta portada.
+  </div>
+</main>
+
+<footer>Aula Didáctica 360 · Pamava soluciones</footer>
+
+<script>
+/* Para agregar un juego nuevo: copia un bloque y cambia los datos.
+   estado: "listo" o "pronto". Si está "listo" pon el archivo en "archivo". */
+const JUEGOS = [
+  { icono:"🎡", titulo:"Ruleta de preguntas",
+    desc:"El profesor gira la ruleta y lanza la pregunta; los estudiantes responden desde el celular con tiempo límite, suman o restan puntos y hay ranking.",
+    estado:"listo", archivo:"ruleta.html", archivoProfe:"ruleta.html?profe" },
+  { icono:"🕵️", titulo:"Detective de fraudes",
+    desc:"Casos de auditoría: los estudiantes buscan las señales de fraude en documentos y registros.", estado:"pronto" },
+  { icono:"🏦", titulo:"Taller de conciliación bancaria",
+    desc:"Cada estudiante recibe su extracto y sus libros para conciliar.", estado:"pronto" },
+  { icono:"🎯", titulo:"Bingo / concurso por equipos",
+    desc:"Competencia en vivo por equipos con preguntas del tema de la clase.", estado:"pronto" },
+  { icono:"🃏", titulo:"Tarjetas de repaso",
+    desc:"Flashcards para repasar conceptos antes de la evaluación.", estado:"pronto" }
+];
+
+const cont = document.getElementById("lista");
+JUEGOS.forEach(j=>{
+  const d = document.createElement("div");
+  d.className = "card" + (j.estado==="pronto" ? " off" : "");
+  let botones = "";
+  if(j.estado==="listo"){
+    botones = `<div class="btns">
+      <a class="btn primary" href="${j.archivo}">Abrir (estudiantes)</a>
+      <a class="btn ghost" href="${j.archivoProfe}">Panel profesor</a></div>`;
+  }
+  d.innerHTML = `<div class="ico">${j.icono}</div>
+    <span class="tag ${j.estado==="pronto"?"soon":""}">${j.estado==="pronto"?"Próximamente":"Disponible"}</span>
+    <h2>${j.titulo}</h2><p>${j.desc}</p>${botones}`;
+  cont.appendChild(d);
+});
+</script>
+</body>
+</html>

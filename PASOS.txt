@@ -1,0 +1,47 @@
+AULA DIDÁCTICA 360 - PASOS RÁPIDOS
+==================================
+
+A) CONECTAR FIREBASE (una sola vez)
+1. Entra a console.firebase.google.com y abre tu proyecto (pamava-ruleta).
+2. Engranaje (arriba a la izquierda) > Configuración del proyecto > "Tus apps" > app web > "Configuración del SDK" (opción "Config").
+3. Copia los valores (apiKey, databaseURL, etc.) y pégalos en config.js, reemplazando los "PEGAR_AQUI".
+   - databaseURL se ve parecido a: https://pamava-ruleta-default-rtdb.firebaseio.com
+4. En el menú izquierdo: Compilación > Realtime Database. Si no existe, "Crear base de datos" (modo de prueba está bien para empezar).
+5. Pestaña "Reglas" de Realtime Database: pega esto y "Publicar":
+
+{
+  "rules": {
+    "ad360": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
+
+   (Este juego guarda todo bajo "ad360", sin tocar lo que ya tengas en tu base.)
+6. En config.js cambia CLAVE_PROFESOR por la clave que quieras.
+
+B) SUBIR A GITHUB (sitio nuevo)
+1. En github.com: botón verde "New" > nombre: auladidactica360 > Public > Create repository.
+2. "uploading an existing file" > arrastra los 4 archivos (index.html, ruleta.html, config.js, PASOS.txt) > Commit changes.
+3. Settings > Pages > Source: "Deploy from a branch" > Branch: main / (root) > Save.
+4. Espera 1-2 minutos. Tu sitio queda en: https://TU-USUARIO.github.io/auladidactica360/
+
+C) ENLACES
+- Portada con todos los juegos:   https://TU-USUARIO.github.io/auladidactica360/
+- Ruleta para estudiantes:        https://TU-USUARIO.github.io/auladidactica360/ruleta.html
+- Ruleta panel del profesor:      https://TU-USUARIO.github.io/auladidactica360/ruleta.html?profe
+
+D) CÓMO SE JUEGA
+1. Profesor: abre el enlace con ?profe > pon la clave > "Mis preguntas" (carga las tuyas) > pestaña "Partida" > "Crear sala".
+2. Estudiantes: abren el enlace de la ruleta, escriben el código de 4 números y su nombre.
+3. Profesor: "Girar ruleta" > se lanza la pregunta > al terminar el tiempo se muestran resultado y ranking.
+4. "Terminar juego" muestra el podio a todos. "Salir y borrar sala" limpia la partida.
+
+E) PUNTOS (se cambian en config.js)
+- Respuesta correcta: 100 + hasta 50 extra por rapidez.
+- Respuesta incorrecta: -30.
+- Sin respuesta: 0.
+
+F) PARA ACTUALIZAR DESPUÉS
+Sube el archivo nuevo al mismo repositorio: Add file > Upload files > Commit changes.
