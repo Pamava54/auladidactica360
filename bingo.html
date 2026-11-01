@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Bingo de conceptos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Concepto: concurso en vivo. El docente proyecta la ruleta; cada celular es un tablero de cuatro teclas de colores. */
+:root{
+  --bg:#F3F6FB; --surface:#FFFFFF; --surface2:#EEF2F9; --ink:#0E1B2E; --muted:#56667E; --line:#DAE2EE;
+  --hero:#0E1B2E; --hero-fg:#F2F6FF; --hero-mut:#A9B8D2;
+  --fin:#2459F5; --lab:#D6247A; --tri:#0A9468; --con:#EE4B24; --inv:#F2A900; --oninv:#1E1500;
+  --ok:#0A9468; --ok-s:#D7F4E6; --bad:#D6362B; --bad-s:#FDE3E0; --focus:#F2A900;
+  --shadow:0 1px 2px rgba(14,27,46,.06),0 8px 24px rgba(14,27,46,.07);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%230E1B2E' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  --f-display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Figtree','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-num:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --fin:#7B9DFF; --lab:#FF7DB5; --tri:#3DD6A0; --con:#FF8A66; --inv:#FFC93D;
+  --ok:#3DD6A0; --ok-s:#0E382B; --bad:#FF8585; --bad-s:#4A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#09111F; --surface:#111D33; --surface2:#17253F; --ink:#E9EFFB; --muted:#93A4C0; --line:#223252;
+  --hero:#0F1D38; --fin:#7B9DFF; --lab:#FF7DB5; --tri:#3DD6A0; --con:#FF8A66; --inv:#FFC93D;
+  --ok:#3DD6A0; --ok-s:#0E382B; --bad:#FF8585; --bad-s:#4A1D1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='230'%3E%3Ctext x='170' y='115' text-anchor='middle' transform='rotate(-24 170 115)' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='24' fill='%23FFFFFF' fill-opacity='.07'%3EPamava soluciones%3C/text%3E%3C/svg%3E");
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+body::after{content:"";position:fixed;inset:0;background-image:var(--wm);pointer-events:none;z-index:12}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hero);z-index:30}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:8px}
+h1,h2,h3{font-family:var(--f-display);margin:0;letter-spacing:-.015em;text-wrap:balance}
+.in{width:100%;max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hero);color:var(--hero-fg)}
+.bar .in{display:flex;align-items:center;gap:12px;padding-block:10px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:19px;text-decoration:none;color:inherit;margin-right:auto}
+.logo b{width:34px;height:34px;border-radius:10px;background:var(--inv);color:var(--oninv);display:grid;place-items:center;font-size:20px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.tag{font-family:var(--f-num);font-size:13px;background:rgba(255,255,255,.14);border-radius:999px;padding:5px 12px}
+.back{color:var(--hero-fg);text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:6px 14px}
+main{padding-block:22px 60px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(16px,3vw,26px);box-shadow:var(--shadow);min-width:0}
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:800;font-size:16px;background:var(--fin);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.btn.alt{background:var(--inv);color:var(--oninv)}
+.btn.ghost{background:var(--surface2);color:var(--ink);box-shadow:none;border:2px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.big{padding:16px 30px;font-size:19px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-weight:700;font-size:14px}
+input[type=text]{width:100%;border:2px solid var(--line);background:var(--surface2);border-radius:14px;padding:14px 16px;font-size:20px;font-weight:600}
+input[type=text]:focus{border-color:var(--fin);outline:none;background:var(--surface)}
+input.code{font-family:var(--f-num);letter-spacing:.3em;text-transform:uppercase;text-align:center;font-size:30px}
+.hero{background:var(--hero);color:var(--hero-fg);border-radius:26px;padding:clamp(22px,4vw,42px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.hero h1{font-size:clamp(32px,6vw,56px);line-height:1.02;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--inv)}
+.hero p{color:var(--hero-mut);margin:12px 0 0;max-width:46ch}
+.keys4{display:grid;grid-template-columns:repeat(2,70px);gap:12px;transform:rotate(-5deg)}
+.keys4 i{height:70px;border-radius:18px;background:var(--c);display:grid;place-items:center;font-style:normal;font-family:var(--f-display);font-weight:800;font-size:28px;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.38)}
+@media (max-width:640px){.hero{grid-template-columns:1fr}.keys4{display:none}}
+.choose{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px}
+.choose .card h2{font-size:22px;margin-bottom:6px}
+.choose .card p{margin:0 0 14px;color:var(--muted)}
+.notice{background:#FFF4CF;color:#4B3700;border-radius:14px;padding:10px 14px;font-size:14px;margin-top:14px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .notice{background:#3A3010;color:#FBE7A6}}
+:root[data-theme="dark"] .notice{background:#3A3010;color:#FBE7A6}
+/* docente */
+.t-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+@media (max-width:980px){.t-grid{grid-template-columns:1fr}}
+.roomcode{font-family:var(--f-num);font-weight:600;font-size:clamp(46px,9vw,84px);letter-spacing:.14em;line-height:1}
+.joinbox{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+#qr{background:#fff;padding:10px;border-radius:14px;line-height:0}
+.opts{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 16px}
+.chk{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:600;background:var(--surface2)}
+.chk input{width:18px;height:18px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:2px solid var(--line);background:var(--surface2);border-radius:12px;padding:8px 16px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stage{text-align:center}
+.wheelwrap{position:relative;width:min(88vw,420px);margin:0 auto}
+.wheelwrap canvas{width:100%;height:auto;display:block}
+.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:34px solid var(--ink);filter:drop-shadow(0 3px 0 rgba(0,0,0,.25))}
+.topicname{font-family:var(--f-display);font-weight:800;font-size:clamp(24px,4vw,36px);margin:14px 0 0;min-height:1.3em}
+.qbox{text-align:left}
+.qmeta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:5px 14px;color:#fff;background:var(--c,var(--fin))}
+.timer{font-family:var(--f-num);font-weight:600;font-size:clamp(34px,6vw,56px);line-height:1}
+.bar-t{height:14px;border-radius:999px;background:var(--surface2);overflow:hidden;margin:8px 0 18px}
+.bar-t i{display:block;height:100%;width:100%;background:var(--tri);border-radius:999px;transition:width .2s linear,background .3s}
+.qtext{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3.6vw,34px);line-height:1.2;margin:0 0 18px;text-wrap:balance}
+.answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.answers{grid-template-columns:1fr}}
+.ans{position:relative;display:flex;align-items:center;gap:12px;text-align:left;border:0;border-radius:18px;padding:16px 16px;min-height:78px;font-weight:700;font-size:clamp(16px,2.4vw,20px);color:#fff;background:var(--c);box-shadow:0 5px 0 rgba(0,0,0,.28);line-height:1.25}
+.ans b{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.25);display:grid;place-items:center;font-family:var(--f-display);font-size:18px}
+.ans[data-k="0"]{--c:var(--fin)}.ans[data-k="1"]{--c:var(--lab)}.ans[data-k="2"]{--c:var(--tri)}.ans[data-k="3"]{--c:var(--con)}
+.ans.dim{opacity:.35}
+.ans.right{outline:5px solid var(--ok);outline-offset:2px}
+.ans.picked::after{content:"✓ Tu respuesta";position:absolute;right:12px;top:8px;font-size:12px;background:rgba(0,0,0,.35);border-radius:999px;padding:1px 10px}
+.ans .cnt{margin-left:auto;font-family:var(--f-num);font-size:20px;background:rgba(0,0,0,.28);border-radius:10px;padding:2px 10px}
+.expl{margin-top:16px;background:var(--surface2);border-radius:16px;padding:14px 18px}
+.res{border-radius:20px;padding:18px 22px;margin-bottom:14px;display:flex;align-items:center;gap:16px}
+.res.ok{background:var(--ok-s);color:var(--ink)}.res.bad{background:var(--bad-s);color:var(--ink)}
+.res .big{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,6vw,44px);line-height:1}
+.res .pts{margin-left:auto;font-family:var(--f-num);font-weight:600;font-size:clamp(26px,5vw,38px)}
+.board{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.board li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface2);border-radius:14px;padding:9px 12px;font-weight:700}
+.board li .n{font-family:var(--f-num);color:var(--muted)}
+.board li .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board li .sc{font-family:var(--f-num)}
+.board li .d{font-size:12px;font-family:var(--f-num);margin-left:8px}
+.board li .d.p{color:var(--ok)}.board li .d.m{color:var(--bad)}
+.board li.me{outline:3px solid var(--inv)}
+.board li:nth-child(1) .n{color:var(--inv)}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end;margin:12px 0 20px}
+.podium div{border-radius:18px 18px 0 0;padding:14px 8px;text-align:center;background:var(--surface2)}
+.podium .p1{background:var(--inv);color:var(--oninv);padding-block:34px}
+.podium .p2{padding-block:22px}.podium .p3{padding-block:12px}
+.podium b{display:block;font-family:var(--f-display);font-size:clamp(16px,3vw,26px);overflow:hidden;text-overflow:ellipsis}
+.podium span{font-family:var(--f-num);font-size:18px}
+.muted{color:var(--muted)}
+.ans:disabled{cursor:default}
+.bgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.bcell{min-height:78px;border-radius:14px;border:3px solid var(--line);background:var(--surface2);color:var(--ink);font-weight:700;font-size:clamp(12px,2.6vw,17px);padding:6px;box-shadow:none;line-height:1.15}
+.bcell.on{background:var(--tri);color:#fff;border-color:var(--tri)}
+.bcell.shake{animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.defbox{background:var(--hero);color:var(--hero-fg);border-radius:22px;padding:clamp(18px,3vw,30px);text-align:center}
+.defbox .t{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,4vw,38px);line-height:1.2}
+.defbox .k{color:var(--hero-mut);font-weight:700;margin-bottom:8px}
+.chipsw{display:flex;flex-wrap:wrap;gap:6px}
+.chipsw span{background:var(--surface2);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700}
+
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.sp{height:14px}
+.who{font-weight:700;font-size:14px;color:var(--muted)}
+.me-score{font-family:var(--f-num);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.tag:empty{display:none}
+</style>
+</head><body>
+<header class="bar"><div class="in"><a class="logo" href="index.html"><b>🎲</b><span>Bingo de conceptos</span></a><span class="tag" id="tag"></span><a class="back" href="index.html">← Juegos</a></div></header>
+<main class="in" id="app"><p class="muted">Cargando…</p></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="config.js"></script>
+<script>(function(){var c=window.FIREBASE_CONFIG;if(c&&c.databaseURL&&c.databaseURL.indexOf("PEGAR")<0&&c.apiKey&&c.apiKey.indexOf("PEGAR")<0)window.RULETA_CONFIG=c;})();</script>
+<script>
+(function () {
+  const $ = (s, r) => (r || document).querySelector(s);
+  function el(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const k in (attrs || {})) {
+      const v = attrs[k];
+      if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (v === true) e.setAttribute(k, '');
+      else if (v !== false && v != null) e.setAttribute(k, v);
+    }
+    kids.flat().forEach(c => { if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c))); });
+    return e;
+  }
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#888';
+  const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+  const rnd = n => Math.floor(Math.random() * n);
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const LETTERS = ['A', 'B', 'C', 'D'];
+  const SPIN_MS = 4200;
+
+  // ---------- transporte: sala en línea (Firebase) o modo de prueba local ----------
+  function makeLocal() {
+    const KEY = 'ruleta-demo-db'; let L = [];
+    const load = () => { try { return JSON.parse(LS.get(KEY) || '{}'); } catch (e) { return {}; } };
+    let mem = load();
+    const getP = (o, p) => p.split('/').reduce((a, k) => (a == null ? null : a[k]), o);
+    const setP = (o, p, v) => { const ks = p.split('/'); let a = o; ks.slice(0, -1).forEach(k => { if (typeof a[k] !== 'object' || a[k] === null) a[k] = {}; a = a[k]; }); if (v === null) delete a[ks[ks.length - 1]]; else a[ks[ks.length - 1]] = v; };
+    const notify = () => L.forEach(l => { const v = getP(mem, l.path), s = JSON.stringify(v); if (s !== l.last) { l.last = s; l.cb(v == null ? null : JSON.parse(s)); } });
+    window.addEventListener('storage', e => { if (e.key === KEY) { mem = load(); notify(); } });
+    setInterval(() => { mem = load(); notify(); }, 1000);
+    return {
+      mode: 'local', now: () => Date.now(),
+      set(p, v) { mem = load(); setP(mem, p, v === undefined ? null : v); LS.set(KEY, JSON.stringify(mem)); notify(); },
+      on(p, cb) { const l = { path: p, cb, last: undefined }; L.push(l); mem = load(); const v = getP(mem, p); l.last = JSON.stringify(v); cb(v == null ? null : JSON.parse(l.last)); return () => { L = L.filter(x => x !== l); }; }
+    };
+  }
+  function makeFirebase(cfg) {
+    firebase.initializeApp(cfg); const db = firebase.database(); let off = 0;
+    db.ref('.info/serverTimeOffset').on('value', s => { off = s.val() || 0; });
+    return {
+      mode: 'firebase', now: () => Date.now() + off, set: (p, v) => db.ref(p).set(v === undefined ? null : v),
+      on(p, cb) { const r = db.ref(p), f = r.on('value', s => cb(s.val())); return () => r.off('value', f); }
+    };
+  }
+  function loadScript(src) { return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); }); }
+  async function initTransport() {
+    const cfg = window.RULETA_CONFIG;
+    if (cfg && cfg.databaseURL) {
+      try {
+        await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+        await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js');
+        return makeFirebase(cfg);
+      } catch (e) { return Object.assign(makeLocal(), { failed: true }); }
+    }
+    return makeLocal();
+  }
+
+  // ---------- estado ----------
+  const app = $('#app'), top = $('#tag');
+  { const nat = Element.prototype.append; app.append = (...n) => nat.apply(app, n.flat().filter(x => x != null && x !== false)); }
+  const PAIRS = [{"t": "Activo", "d": "Bienes y derechos que posee la empresa y que generan beneficios futuros."}, {"t": "Pasivo", "d": "Obligaciones o deudas que la empresa tiene con terceros."}, {"t": "Patrimonio", "d": "Aporte de los dueños más los resultados acumulados: activo menos pasivo."}, {"t": "Partida doble", "d": "Cada hecho económico afecta al menos dos cuentas y los débitos igualan a los créditos."}, {"t": "Balance general", "d": "Estado financiero que muestra activos, pasivos y patrimonio a una fecha."}, {"t": "Estado de resultados", "d": "Informe de ingresos, costos y gastos de un periodo y la utilidad o pérdida."}, {"t": "Libro diario", "d": "Registro cronológico de los asientos contables."}, {"t": "Libro mayor", "d": "Agrupa los movimientos de cada cuenta para conocer su saldo."}, {"t": "PUC", "d": "Plan Único de Cuentas: catálogo que clasifica y codifica las cuentas."}, {"t": "Depreciación", "d": "Distribución del costo de un activo fijo a lo largo de su vida útil."}, {"t": "Inventario", "d": "Mercancía que la empresa tiene disponible para vender."}, {"t": "Kardex", "d": "Registro de entradas, salidas y saldo de cada producto."}, {"t": "PEPS", "d": "Método de inventario: las primeras unidades en entrar son las primeras en salir."}, {"t": "Conciliación bancaria", "d": "Comparar el extracto del banco con los libros para explicar las diferencias."}, {"t": "Cheque girado no cobrado", "d": "Cheque que la empresa ya registró pero que el banco aún no ha pagado."}, {"t": "Depósito en tránsito", "d": "Consignación que la empresa registró y que el banco aún no refleja."}, {"t": "Causación", "d": "Reconocer un ingreso o gasto cuando ocurre, sin importar cuándo se pague."}, {"t": "Cesantías", "d": "Prestación equivalente a un mes de salario por cada año trabajado."}, {"t": "Prima de servicios", "d": "Prestación de 15 días de salario por semestre."}, {"t": "Vacaciones", "d": "Descanso remunerado de 15 días hábiles por cada año de servicio."}, {"t": "Auxilio de transporte", "d": "Pago adicional para quienes ganan hasta dos salarios mínimos."}, {"t": "Hora extra diurna", "d": "Hora trabajada fuera de la jornada ordinaria, de día, con recargo del 25 %."}, {"t": "IBC", "d": "Ingreso base de cotización: valor sobre el que se calculan los aportes a seguridad social."}, {"t": "Liquidación de contrato", "d": "Pago final de salarios y prestaciones pendientes al terminar el contrato."}, {"t": "IVA", "d": "Impuesto sobre las ventas, con tarifa general del 19 % en Colombia."}, {"t": "IVA descontable", "d": "IVA pagado en las compras que se resta del IVA cobrado en las ventas."}, {"t": "Retención en la fuente", "d": "Recaudo anticipado del impuesto de renta que practica quien paga."}, {"t": "UVT", "d": "Unidad de Valor Tributario, usada para fijar montos en impuestos y sanciones."}, {"t": "ICA", "d": "Impuesto municipal de industria y comercio."}, {"t": "Factura electrónica", "d": "Documento digital que soporta una venta y se valida con la DIAN."}, {"t": "DIAN", "d": "Entidad que administra los impuestos nacionales en Colombia."}, {"t": "Interés simple", "d": "Interés que se calcula siempre sobre el capital inicial."}, {"t": "Interés compuesto", "d": "Interés que se calcula sobre el capital más los intereses ya generados."}, {"t": "Punto de equilibrio", "d": "Nivel de ventas en el que los ingresos igualan a los costos totales."}, {"t": "Razón corriente", "d": "Activo corriente dividido entre pasivo corriente; mide la liquidez."}, {"t": "VPN", "d": "Valor presente neto: si es positivo, el proyecto genera valor."}, {"t": "TIR", "d": "Tasa que hace el valor presente neto igual a cero."}, {"t": "Margen bruto", "d": "(Ventas − costo de ventas) ÷ ventas."}];
+  const put = (p, ...n) => p.append(...n.flat().filter(x => x != null && x !== false));
+  let T, role = null, code = null, pid = null, myName = '', room = null, offRoom = null, lastSig = '', marks = new Set(), myRound = -1, card = [], verTermino = false;
+  const P = p => 'ad360/bingo/' + code + (p ? '/' + p : '');
+  const players = () => Object.keys((room && room.players) || {}).map(id => ({ id, name: room.players[id].name }));
+  const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const LINES = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],[0,5,10,15],[3,6,9,12]];
+  const called = () => ((room && room.st && room.st.called) || []);
+  const histList = () => { const h = Object.keys((room && room.hist) || {}).sort((a, b) => a - b).map(k => room.hist[k]); return h.length ? el('ol', { class: 'board' }, h.map((x, i) => el('li', {}, el('span', { class: 'n' }, 'R' + (i + 1)), el('span', { class: 'nm' }, x.name), el('span', { class: 'sc' }, '🎉'))) ) : el('p', { class: 'muted' }, 'Aún no hay ganadores.'); };
+
+  function viewHome() {
+    top.textContent = ''; const qs = new URLSearchParams(location.search).get('sala'); if (qs) return viewJoin(qs.toUpperCase());
+    const saved = LS.get('ad360-host-bingo'); app.textContent = '';
+    put(app, el('section', { class: 'hero' }, el('div', {}, el('h1', {}, 'Bingo de ', el('em', {}, 'conceptos')), el('p', {}, 'Cada estudiante tiene un cartón con términos contables. El docente lee una definición y ellos buscan y marcan el término. Gana quien complete una línea.')),
+        el('div', { class: 'keys4', 'aria-hidden': 'true' }, ['B', 'I', 'N', 'G'].map((l, i) => el('i', { style: '--c:var(' + ['--fin', '--lab', '--tri', '--con'][i] + ')' }, l)))),
+      el('div', { class: 'choose' },
+        el('div', { class: 'card' }, el('h2', {}, 'Soy estudiante'), el('p', {}, 'Escribe el código de cuatro letras que ves en la pantalla del profesor.'), el('button', { class: 'btn big', id: 'bJoin', type: 'button', onclick: () => viewJoin('') }, 'Entrar a la sala')),
+        el('div', { class: 'card' }, el('h2', {}, 'Soy docente'), el('p', {}, 'Crea una sala y lee las definiciones desde tu computador.'), el('div', { class: 'row' }, el('button', { class: 'btn alt big', id: 'bCrear', type: 'button', onclick: createRoom }, 'Crear una sala'), saved ? el('button', { class: 'btn ghost', type: 'button', onclick: () => resumeRoom(saved) }, 'Continuar sala ' + saved) : null))),
+      T.mode === 'local' ? el('div', { class: 'notice' }, 'Modo de prueba: la sala solo funciona entre pestañas de este mismo navegador. Para celulares revisa config.js.') : null);
+  }
+
+  function viewJoin(prefill) {
+    role = 'join'; app.textContent = '';
+    const ci = el('input', { type: 'text', class: 'code', id: 'code', maxlength: '4', autocomplete: 'off', placeholder: 'ABCD', value: prefill || '' });
+    const ni = el('input', { type: 'text', id: 'nm', maxlength: '20', autocomplete: 'off', placeholder: 'Tu nombre', value: LS.get('ruleta-name') || '' });
+    const err = el('p', { style: 'color:var(--bad);font-weight:700;min-height:1.4em;margin:0 0 8px' });
+    const go = () => { const c = ci.value.trim().toUpperCase(), n = ni.value.trim(); if (c.length !== 4) { err.textContent = 'El código tiene 4 letras.'; return; } if (n.length < 2) { err.textContent = 'Escribe tu nombre.'; return; } joinRoom(c, n, err); };
+    ni.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    put(app, el('div', { class: 'card', style: 'max-width:520px;margin:0 auto' }, el('h2', { style: 'margin-bottom:14px' }, 'Entrar a la sala'),
+      el('div', { class: 'field' }, el('label', { for: 'code' }, 'Código de la sala'), ci), el('div', { class: 'field' }, el('label', { for: 'nm' }, 'Tu nombre'), ni), err,
+      el('button', { class: 'btn big', id: 'bEntrar', type: 'button', style: 'width:100%', onclick: go }, 'Entrar')));
+  }
+  function joinRoom(c, n, err) {
+    let first = true, off = null; code = c; myName = n;
+    const pk = 'ruleta-pid-bingo' + c + '-' + n.toLowerCase(); pid = LS.get(pk) || Math.random().toString(36).slice(2, 10); LS.set(pk, pid); LS.set('ruleta-name', n);
+    off = T.on(P(), v => {
+      if (first) { first = false;
+        if (!v || !v.meta) { off(); code = null; err.textContent = 'No encontramos esa sala. Revisa el código.'; return; }
+        T.set(P('players/' + pid), { name: n, j: T.now() }); role = 'student'; top.textContent = 'Sala ' + c; offRoom = off; }
+      room = v; render();
+    });
+  }
+
+  function newCard() { card = shuffle(PAIRS.map((p, i) => i)).slice(0, 16); marks = new Set(); }
+  function renderStudent() {
+    const st = room.st || { phase: 'lobby' }; app.textContent = '';
+    const head = el('div', { class: 'row', style: 'justify-content:space-between;margin-bottom:12px' }, el('span', { class: 'who' }, myName), el('span', { class: 'me-score' }, 'Ronda ' + (st.round || 1)));
+    if (st.phase === 'lobby') { put(app, head, el('div', { class: 'card stage' }, el('h2', {}, '¡Ya estás dentro!'), el('p', { class: 'muted' }, 'Espera a que el profesor empiece el bingo.'), el('p', { class: 'who' }, players().length + ' en la sala'))); return; }
+    if (myRound !== st.round) { newCard(); myRound = st.round; }
+    const w = room.winner && room.winner.round === st.round ? room.winner : null, cur = st.cur >= 0 ? PAIRS[st.cur] : null;
+    const msg = el('p', { class: 'muted', id: 'msg', style: 'text-align:center;font-weight:700;min-height:1.4em;margin:12px 0 0' }, '');
+    const bingo = () => {
+      if (w) { msg.textContent = 'Ya hay un ganador en esta ronda.'; return; }
+      const ok = LINES.some(l => l.every(i => marks.has(card[i]) && called().includes(card[i])));
+      if (!ok) { msg.textContent = 'Todavía no tienes una línea completa de términos ya cantados.'; return; }
+      if (room.winner && room.winner.round === st.round) return;
+      T.set(P('winner'), { pid, name: myName, round: st.round }); T.set(P('hist/' + st.round), { name: myName });
+    };
+    put(app, head,
+      w ? el('div', { class: 'res ' + (w.pid === pid ? 'ok' : 'bad') }, el('div', {}, el('div', { class: 'big' }, w.pid === pid ? '🎉 ¡Ganaste!' : '¡Bingo de ' + w.name + '!'), el('div', { class: 'muted' }, 'Espera la siguiente ronda.'))) : null,
+      el('div', { class: 'defbox' }, el('div', { class: 'k' }, cur ? 'Definición ' + called().length + ': busca el término en tu cartón' : 'Esperando la primera definición…'), el('div', { class: 't', id: 'defTxt' }, cur ? cur.d : '…')),
+      el('div', { class: 'sp' }), el('div', { class: 'card' }, el('div', { class: 'bgrid', id: 'carton' }, card.map((idx, k) => { const b = el('button', { class: 'bcell' + (marks.has(idx) ? ' on' : ''), type: 'button', 'data-i': k, onclick: () => {
+          if (w) return; if (!called().includes(idx)) { b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 350); msg.textContent = 'Ese término aún no ha salido.'; return; }
+          if (marks.has(idx)) { marks.delete(idx); b.classList.remove('on'); } else { marks.add(idx); b.classList.add('on'); msg.textContent = ''; } } }, PAIRS[idx].t); return b; })),
+        el('div', { class: 'row', style: 'justify-content:center;margin-top:14px' }, el('button', { class: 'btn alt big', id: 'bBingo', type: 'button', disabled: !!w, onclick: bingo }, '¡BINGO!')), msg));
+  }
+  function createRoom() {
+    code = Array.from({ length: 4 }, () => CODE_CHARS[rnd(CODE_CHARS.length)]).join(''); LS.set('ad360-host-bingo', code); role = 'host';
+    T.set(P(), { meta: { created: T.now() }, st: { phase: 'lobby', round: 1, called: [], cur: -1 } }); listenHost();
+  }
+  function resumeRoom(c) { code = c; role = 'host'; listenHost(); }
+  function listenHost() {
+    top.textContent = 'Sala ' + code;
+    offRoom = T.on(P(), v => { if (!v || !v.meta) { LS.set('ad360-host-bingo', ''); if (offRoom) { offRoom(); offRoom = null; } role = null; code = null; room = null; viewHome(); return; } room = v; render(); });
+  }
+  const upd = p => T.set(P('st'), Object.assign({}, room.st, p));
+  function callNext() {
+    const st = room.st, c = called(), pool = PAIRS.map((p, i) => i).filter(i => !c.includes(i)); if (!pool.length) return;
+    const k = pool[rnd(pool.length)]; verTermino = false; upd({ phase: 'play', called: c.concat([k]), cur: k });
+  }
+  function newRound() { const st = room.st; T.set(P('winner'), null); T.set(P('st'), { phase: 'play', round: st.round + 1, called: [], cur: -1 }); }
+  function qrDraw(url) { const b = $('#qr'); if (!b) return; b.textContent = ''; if (window.QRCode) { try { new QRCode(b, { text: url, width: 150, height: 150 }); return; } catch (e) { } } b.style.display = 'none'; }
+  function renderHost() {
+    const st = room.st || { phase: 'lobby' }, url = location.origin + location.pathname.replace(/[^/]*$/, '') + 'bingo.html?sala=' + code, ps = players(), c = called(), cur = st.cur >= 0 ? PAIRS[st.cur] : null;
+    const w = room.winner && room.winner.round === st.round ? room.winner : null; app.textContent = '';
+    let main;
+    if (st.phase === 'lobby') {
+      main = el('div', { class: 'card' }, el('div', { class: 'joinbox' }, el('div', {}, el('div', { class: 'muted', style: 'font-weight:700' }, 'Código de la sala'), el('div', { class: 'roomcode' }, code), el('p', { class: 'muted', style: 'margin:8px 0 0;word-break:break-all' }, 'Enlace: ', el('b', {}, url))), el('div', { id: 'qr' })),
+        el('p', { class: 'muted', style: 'font-weight:700;margin:14px 0' }, ps.length + ' jugadores en la sala'), el('button', { class: 'btn alt big', id: 'bStart', type: 'button', disabled: !ps.length, onclick: () => { upd({ phase: 'play' }); callNext(); } }, ps.length ? '¡Empezar el bingo!' : 'Esperando estudiantes…'));
+      setTimeout(() => qrDraw(url), 0);
+    } else {
+      main = el('div', {}, w ? el('div', { class: 'res ok' }, el('div', {}, el('div', { class: 'big' }, '🎉 ¡Bingo de ' + w.name + '!'), el('div', { class: 'muted' }, 'Ronda ' + st.round))) : null,
+        el('div', { class: 'defbox' }, el('div', { class: 'k' }, 'Ronda ' + st.round + ' · definición ' + c.length + ' de ' + PAIRS.length), el('div', { class: 't', id: 'defTxt' }, cur ? cur.d : '…'),
+          cur && verTermino ? el('div', { class: 'k', style: 'margin-top:12px;color:var(--inv)' }, 'Término: ' + cur.t) : null),
+        el('div', { class: 'sp' }), el('div', { class: 'card' }, el('div', { class: 'row' },
+          el('button', { class: 'btn alt big', id: 'bNext', type: 'button', disabled: !!w || c.length >= PAIRS.length, onclick: callNext }, c.length ? 'Cantar siguiente →' : 'Cantar primera'),
+          el('button', { class: 'btn ghost', id: 'bVer', type: 'button', onclick: () => { verTermino = !verTermino; lastSig = ''; render(); } }, verTermino ? 'Ocultar término' : '👁 Ver término'),
+          el('button', { class: 'btn ghost', id: 'bRonda', type: 'button', onclick: newRound }, 'Nueva ronda')),
+          el('h3', { style: 'margin-top:16px' }, 'Términos ya cantados (' + c.length + ')'), el('div', { class: 'chipsw' }, c.map(i => el('span', {}, PAIRS[i].t)))));
+    }
+    put(app, el('div', { class: 't-grid' }, main, el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, st.phase === 'lobby' ? 'En la sala (' + ps.length + ')' : '🏆 Ganadores por ronda'),
+      st.phase === 'lobby' ? el('ol', { class: 'board' }, ps.map((p, i) => el('li', {}, el('span', { class: 'n' }, i + 1), el('span', { class: 'nm' }, p.name), el('span')))) : histList())));
+  }
+  function render() {
+    const st = (room && room.st) || {}, w = room && room.winner ? room.winner.pid : '';
+    const sig = [role, st.phase, st.round, (st.called || []).length, w, st.phase === 'lobby' ? players().map(p => p.id).join(',') : '', role === 'host' ? Object.keys(room.hist || {}).length : ''].join('|');
+    if (sig === lastSig) return; lastSig = sig;
+    if (role === 'host') renderHost(); else if (role === 'student') renderStudent();
+  }
+  initTransport().then(t => { T = t; viewHome(); });
+})();
+</script>
+</body></html>
