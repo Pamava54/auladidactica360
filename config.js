@@ -10,7 +10,7 @@
 window.FIREBASE_CONFIG = {
   apiKey: "PEGAR_AQUI",
   authDomain: "pamava-ruleta.firebaseapp.com",
-  databaseURL: "PEGAR_AQUI",
+  databaseURL: "https://pamava-ruleta-default-rtdb.firebaseio.com",
   projectId: "pamava-ruleta",
   storageBucket: "",
   messagingSenderId: "",
