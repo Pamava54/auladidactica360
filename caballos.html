@@ -94,7 +94,7 @@ input.code{font-family:var(--f-num);letter-spacing:.3em;text-transform:uppercase
 .timer{font-family:var(--f-num);font-weight:600;font-size:clamp(34px,6vw,56px);line-height:1}
 .bar-t{height:14px;border-radius:999px;background:var(--surface2);overflow:hidden;margin:8px 0 18px}
 .bar-t i{display:block;height:100%;width:100%;background:var(--tri);border-radius:999px;transition:width .2s linear,background .3s}
-.qtext{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,3.6vw,34px);line-height:1.2;margin:0 0 18px;text-wrap:balance}
+.qtext{font-family:var(--f-display);font-weight:700;font-size:clamp(19px,3vw,30px);line-height:1.3;margin:0 0 18px;white-space:pre-line}
 .answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 @media (max-width:640px){.answers{grid-template-columns:1fr}}
 .ans{position:relative;display:flex;align-items:center;gap:12px;text-align:left;border:0;border-radius:18px;padding:16px 16px;min-height:78px;font-weight:700;font-size:clamp(16px,2.4vw,20px);color:#fff;background:var(--c);box-shadow:0 5px 0 rgba(0,0,0,.28);line-height:1.25}
@@ -505,13 +505,13 @@ const BANK = [
       app.append(head, wheelView(room.meta.topics, st.topic, st.spinAt));
     } else if (st.phase === 'question') {
       const mine = myAnswer(st.n);
-      app.append(head, el('div', { class: 'card qbox' }, timerBlock(st), el('p', { class: 'qtext' }, st.q.t), answersView(st, i => { if (myAnswer(st.n) == null) { T.set(P('answers/' + st.n + '/' + pid), { c: i, t: T.now() }); } }, mine, false),
+      app.append(head, el('div', { class: 'card qbox' }, timerBlock(st), el('p', { class: 'qtext' }, String(st.q.t).replace(/\s*\/\/\s*/g, '\n')), answersView(st, i => { if (myAnswer(st.n) == null) { T.set(P('answers/' + st.n + '/' + pid), { c: i, t: T.now() }); } }, mine, false),
         el('p', { class: 'muted', id: 'sw', style: 'text-align:center;font-weight:700;margin:14px 0 0' }, mine != null ? 'Respuesta enviada. Espera el resultado…' : '')));
       startTick(st);
     } else if (st.phase === 'reveal') {
       const mine = myAnswer(st.n), ok = sc ? sc.ok : 0, d = sc ? sc.d : 0, wn = st.win ? players().find(p => p.id === st.win) : null;
       app.append(head, wn ? el('div', { class: 'res ok' }, el('div', { class: 'big' }, '🏆 ¡Ganó ' + wn.name + '!')) : null, el('div', { class: 'res ' + (ok === 1 ? 'ok' : 'bad') }, el('div', {}, el('div', { class: 'big' }, ok === 1 ? '¡Correcto!' : ok === -1 ? 'Incorrecta' : 'Sin respuesta'), el('div', { class: 'muted' }, ok === 1 ? 'Tu caballo avanza un paso.' : ok === -1 ? 'Tu caballo no avanza.' : 'Se acabó el tiempo.')), el('div', { class: 'pts' }, (d > 0 ? '+' : '') + d)),
-        el('div', { class: 'card qbox' }, el('p', { class: 'qtext' }, st.q.t), answersView(st, null, mine, true), el('div', { class: 'expl' }, el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. ', st.expl)),
+        el('div', { class: 'card qbox' }, el('p', { class: 'qtext' }, String(st.q.t).replace(/\s*\/\/\s*/g, '\n')), answersView(st, null, mine, true), el('div', { class: 'expl' }, el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. ', st.expl)),
         el('div', { class: 'sp' }), el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, '🏁 La carrera'), trackView(pid, true)), el('div', { class: 'sp' }), el('div', { class: 'card' }, el('h3', { style: 'margin-bottom:12px' }, 'Ranking'), boardView(pid, 8)));
     } else {
       app.append(head, el('div', { class: 'card stage' }, el('h2', {}, '¡Fin del juego!'), podium(b), el('p', { class: 'muted' }, rank ? 'Quedaste en el puesto ' + rank + ' de ' + b.length + ' con ' + (sc ? sc.s : 0) + ' puntos.' : '')), el('div', { class: 'sp' }), el('div', { class: 'card' }, boardView(pid, 20)));
@@ -589,11 +589,11 @@ const BANK = [
     } else if (st.phase === 'spin') {
       main = wheelView(g.topics, st.topic, st.spinAt);
     } else if (st.phase === 'question') {
-      main = el('div', { class: 'card qbox' }, timerBlock(st), el('p', { class: 'qtext' }, st.q.t), answersView(st, null, null, false), el('p', { class: 'muted', id: 'acount', style: 'font-weight:700;margin:16px 0 0' }, ''));
+      main = el('div', { class: 'card qbox' }, timerBlock(st), el('p', { class: 'qtext' }, String(st.q.t).replace(/\s*\/\/\s*/g, '\n')), answersView(st, null, null, false), el('p', { class: 'muted', id: 'acount', style: 'font-weight:700;margin:16px 0 0' }, ''));
       setTimeout(() => startTick(st), 0);
     } else if (st.phase === 'reveal') {
       const last = !!st.win || st.n >= g.rounds;
-      main = el('div', { class: 'card qbox' }, el('p', { class: 'qtext' }, st.q.t), answersView(st, null, null, true), el('div', { class: 'expl' }, el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. ', st.expl),
+      main = el('div', { class: 'card qbox' }, el('p', { class: 'qtext' }, String(st.q.t).replace(/\s*\/\/\s*/g, '\n')), answersView(st, null, null, true), el('div', { class: 'expl' }, el('b', {}, 'Respuesta: '), st.q.o[st.correct] + '. ', st.expl),
         el('div', { class: 'row', style: 'margin-top:18px' }, el('button', { class: 'btn alt big', type: 'button', onclick: () => (last ? T.set(P('st'), { phase: 'end', n: st.n }) : hostSpin()) }, last ? 'Ver el podio' : 'Siguiente pregunta →')));
     } else {
       const b = board();
