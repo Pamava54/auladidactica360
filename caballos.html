@@ -125,12 +125,15 @@ input.code{font-family:var(--f-num);letter-spacing:.3em;text-transform:uppercase
 .podium b{display:block;font-family:var(--f-display);font-size:clamp(16px,3vw,26px);overflow:hidden;text-overflow:ellipsis}
 .podium span{font-family:var(--f-num);font-size:18px}
 .muted{color:var(--muted)}
-.track{display:flex;flex-direction:column;gap:6px}
-.lane{position:relative;height:44px;border-radius:12px;background:repeating-linear-gradient(90deg,var(--surface2) 0 24px,var(--bg) 24px 48px);border:2px solid var(--line);overflow:hidden}
+.track{display:flex;flex-direction:column;gap:18px}
+.racer .rname{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-weight:800;font-size:16px;margin:0 2px 5px}
+.racer .rname small{font-weight:700;font-size:13px;color:var(--muted);white-space:nowrap}
+.racer.me .rname{color:var(--inv)}
+.lane{position:relative;height:54px;border-radius:12px;background:repeating-linear-gradient(90deg,var(--surface2) 0 24px,var(--bg) 24px 48px);border:2px solid var(--line);overflow:hidden}
 .lane.me{border-color:var(--inv)}
 .lname{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-weight:700;font-size:14px;z-index:1;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--surface);border-radius:8px;padding:0 8px}
 .flag{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:22px}
-.horse{position:absolute;top:50%;font-size:28px;line-height:1;transform:translateY(-50%) scaleX(-1);transition:left .9s ease-in-out;z-index:2}
+.horse{position:absolute;top:50%;font-size:34px;line-height:1;transform:translateY(-50%) scaleX(-1);transition:left .9s ease-in-out;z-index:2}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .sp{height:14px}
 .who{font-weight:700;font-size:14px;color:var(--muted)}
@@ -407,9 +410,9 @@ const BANK = [
     const goal = (room.meta && room.meta.goal) || 8, sc = room.scores || {}, ps = players().slice().sort((a, b) => a.name.localeCompare(b.name));
     return el('div', { class: 'track' }, ps.map(p => {
       const s = (sc[p.id] && sc[p.id].s) || 0, d = (sc[p.id] && sc[p.id].d) || 0, pos = Math.min(1, s / goal), pre = Math.min(1, Math.max(0, s - (anim ? d : 0)) / goal);
-      const h = el('span', { class: 'horse' }, '🐎'); h.style.left = 'calc(' + pre + ' * (100% - 34px))';
-      if (anim && pre !== pos) setTimeout(() => { h.style.left = 'calc(' + pos + ' * (100% - 34px))'; }, 80);
-      return el('div', { class: 'lane' + (p.id === me ? ' me' : '') }, el('span', { class: 'lname' }, p.name), el('span', { class: 'flag' }, '🏁'), h);
+      const h = el('span', { class: 'horse' }, '🐎'); h.style.left = 'calc(' + pre + ' * (100% - 42px))';
+      if (anim && pre !== pos) setTimeout(() => { h.style.left = 'calc(' + pos + ' * (100% - 42px))'; }, 80);
+      return el('div', { class: 'racer' + (p.id === me ? ' me' : '') }, el('div', { class: 'rname' }, el('span', {}, p.name), el('small', {}, Math.min(s, goal) + ' / ' + goal)), el('div', { class: 'lane' + (p.id === me ? ' me' : '') }, el('span', { class: 'flag' }, '🏁'), h));
     }));
   }
   // ---------- inicio ----------
@@ -419,7 +422,7 @@ const BANK = [
     if (qs) return viewJoin(qs.toUpperCase());
     app.textContent = '';
     app.append(
-      el('section', { class: 'hero' }, el('div', {}, el('h1', {}, 'Carrera de ', el('em', {}, 'caballos')), el('p', {}, 'Cada estudiante es un caballo: responde bien desde su celular y avanza un paso. Gana el primero en llegar a la meta.')),
+      el('section', { class: 'hero' }, el('div', {}, el('h1', {}, 'Carrera de ', el('em', {}, 'caballos')), el('p', {}, 'Cada estudiante es el jinete de su caballo: responde bien desde su celular y su caballo avanza un paso. Gana el primero en llegar a la meta.')),
         el('div', { class: 'keys4', 'aria-hidden': 'true' }, ['A', 'B', 'C', 'D'].map((l, i) => el('i', { style: '--c:var(' + ['--fin', '--lab', '--tri', '--con'][i] + ')' }, l)))),
       el('div', { class: 'choose' },
         el('div', { class: 'card' }, el('h2', {}, 'Soy estudiante'), el('p', {}, 'Escribe el código de cuatro letras que ves en la pantalla del profesor.'), el('button', { class: 'btn big', type: 'button', onclick: () => viewJoin('') }, 'Entrar a la sala')),
