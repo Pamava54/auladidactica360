@@ -1,0 +1,25 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prueba de conexión</title>
+<style>body{font:17px/1.5 system-ui,sans-serif;max-width:560px;margin:20px auto;padding:0 16px}li{margin:8px 0;padding:8px 10px;border-radius:8px;background:#eee;list-style:none}.ok{background:#d9f2e3}.bad{background:#fbd9d9}ul{padding:0}</style></head><body>
+<h1>Prueba de conexión</h1><p>Abre esta página en el celular y en el computador y mándame una captura.</p><ul id="r"></ul>
+<script src="config.js"></script>
+<script>
+const r=document.getElementById('r');
+function add(t,ok){const l=document.createElement('li');l.className=ok?'ok':'bad';l.textContent=(ok?'✔ ':'✘ ')+t;r.append(l);}
+function ld(s){return new Promise((a,b)=>{const e=document.createElement('script');e.src=s;e.onload=a;e.onerror=b;document.head.append(e);});}
+(async()=>{
+ const c=window.FIREBASE_CONFIG;
+ if(!c){add('No se cargó config.js (falta el archivo o está en otra carpeta)',false);return;}
+ add('config.js cargado. databaseURL: '+c.databaseURL, c.databaseURL&&c.databaseURL.indexOf('PEGAR')<0);
+ add('apiKey presente: '+(c.apiKey&&c.apiKey.indexOf('PEGAR')<0?'sí':'NO'), c.apiKey&&c.apiKey.indexOf('PEGAR')<0);
+ try{await ld('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');await ld('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js');add('Se descargó Firebase',true);}catch(e){add('No se pudo descargar Firebase (revisa internet o bloqueo)',false);return;}
+ try{firebase.initializeApp(c);const db=firebase.database();
+  const ref=db.ref('ad360/rooms2/PRUEBA');
+  const t=Date.now();
+  await Promise.race([ref.set({t}),new Promise((_,j)=>setTimeout(()=>j(new Error('tiempo agotado: no hay conexión con la base')),8000))]);
+  add('Escribir en ad360/rooms2/PRUEBA: correcto',true);
+  const s=await ref.get();
+  add('Leer de vuelta: '+(s.val()&&s.val().t===t?'correcto':'no coincide'),s.val()&&s.val().t===t);
+  await ref.remove();
+ }catch(e){add('Error: '+(e.code||'')+' '+e.message,false);}
+})();
+</script></body></html>
